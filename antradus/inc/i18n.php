@@ -202,6 +202,7 @@ function antradus_global_field_keys() {
 			'link',
 			'cta_url',
 			'plan_id',
+			'licenses',
 			'icon',
 			'image',
 		),

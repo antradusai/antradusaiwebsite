@@ -1062,6 +1062,29 @@ function antradus_settings_schema() {
 									'help'  => __( 'Required for the checkout, unless you paste the snippet below instead. It must be a plan that really exists in your Freemius dashboard - a wrong ID renders fine and then fails at checkout.', 'antradus' ),
 								),
 								array(
+									'key'   => 'licenses',
+									'label' => __( 'Licences', 'antradus' ),
+									'type'  => 'text',
+									'help'  => __( 'How many sites this plan is sold for. Leave it empty - then the checkout asks for no particular quantity and the plan sells at the price it has, which is what you want almost every time. Fill it in only if the checkout answers "Invalid pricing": Freemius checks the price and the quantity together, so a plan sold as "up to 5 sites" has no one-site price to sell you. The <code>licenses</code> line in the code Freemius gives you is a sample number, not your plan, and is deliberately ignored.', 'antradus' ),
+								),
+								array(
+									'key'     => 'trial',
+									'label'   => __( 'Free trial', 'antradus' ),
+									'type'    => 'select',
+									'options' => array(
+										''     => __( 'No trial - charge today', 'antradus' ),
+										'paid' => __( 'Free trial, card required', 'antradus' ),
+										'free' => __( 'Free trial, no card', 'antradus' ),
+									),
+									'help'  => __( 'A trial only happens when the checkout asks for one. Having set a trial on the plan in Freemius is not enough - leave this on "charge today" and the customer is billed the full price the moment they buy, however many free days the note underneath promises. Only pick a trial the plan really has.', 'antradus' ),
+								),
+								array(
+									'key'   => 'trial_text',
+									'label' => __( 'Trial link under the button', 'antradus' ),
+									'type'  => 'text',
+									'help'  => __( 'Words for a second, quieter link below the button - "or start a 7-day free trial". Write them and the button stops offering the trial and buys the plan outright, so the two sit side by side and the reader picks. Leave them empty and the trial stays on the button itself. Either way it needs a trial chosen above to appear at all.', 'antradus' ),
+								),
+								array(
 									'key'   => 'fs_snippet',
 									'label' => __( 'Or paste the Freemius code', 'antradus' ),
 									'type'  => 'code',

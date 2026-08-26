@@ -1772,6 +1772,30 @@ td.ant-cost-us .ant-ic {
 	text-align: center;
 }
 
+.ant-plan-trial {
+	margin: 12px 0 0;
+	text-align: center;
+}
+
+.ant-plan-trial-link {
+	color: var(--ant-ink-3);
+	font-size: 13.5px;
+	font-weight: 600;
+	text-decoration: underline;
+	text-decoration-color: rgba(var(--ant-accent-rgb), .35);
+	text-underline-offset: 3px;
+}
+
+.ant-plan-trial-link:hover,
+.ant-plan-trial-link:focus-visible {
+	color: var(--ant-accent);
+	text-decoration-color: currentColor;
+}
+
+.ant-plan-trial-link[aria-busy="true"] {
+	opacity: .6;
+}
+
 .ant-plan-note {
 	margin: 12px 0 0;
 	color: var(--ant-ink-4);

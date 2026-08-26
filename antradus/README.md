@@ -170,6 +170,12 @@ reads four values from it — `product_id`, `plan_id`, `public_key`, `image` —
 writes its own checkout call from them. Running pasted JavaScript would make the
 settings screen a way to put arbitrary script on the pricing page.
 
+Two things in that block are Freemius's own sample values and are deliberately
+ignored: the `licenses` number, which belongs to their example and not to your
+plan, and the `your-plugin-site.com` logo, which is a domain nobody owns and was
+drawing a broken image at the top of the checkout. Your product icon is used
+instead.
+
 Because each plan can carry its own snippet, two plans on one page can sell two
 different Freemius products.
 
@@ -182,6 +188,50 @@ pricing snippet down in August 2026.
 
 ⚠️ A plan ID that does not exist in your Freemius dashboard will render
 perfectly and then fail at checkout. That is the one thing to double-check.
+
+⚠️ If the overlay opens and says **"Invalid pricing, please make sure the
+pricing, licenses or the currency is valid"**, the plan was asked for a number
+of sites it is not sold in. Freemius validates the price and the quantity
+together, so a plan sold as "up to 5 sites" has no one-site price. Put that
+number in the plan's **Licences** field — or leave the field empty, which sends
+no count at all and lets the plan sell at whatever price it has. Empty is the
+right answer for a plan with a single price; it is also what every plan set up
+before theme 2.3.1 gets, because the count used to be hard-coded to 1.
+
+### The free trial
+
+**A trial only happens when the button asks for one.** Setting a trial on the
+plan inside Freemius is not enough — the checkout charges the full price today
+unless it is opened in trial mode. That is what the **Free trial** dropdown on
+each plan does:
+
+| Setting | What the customer sees |
+|---|---|
+| No trial — charge today | "Today's total $275.00" |
+| Free trial, card required | "7-day free trial… Today's total $0.00", card taken, billed when the trial ends |
+| Free trial, no card | The trial starts with no card at all |
+
+Pick a trial the plan actually has in Freemius. A card that promises seven free
+days beside a checkout that charges immediately is the worst of the three
+states, and it is the state every plan is in until this dropdown is set — plans
+saved before theme 2.3.1 default to "charge today", because an update never
+overwrites settings you have already saved.
+
+**Where the trial goes** is the next field, **Trial link under the button**:
+
+- **Leave it empty** and the trial is *on the button*. One button, one path: it
+  says "Start the free trial" and it opens the trial checkout.
+- **Write words in it** — "or start a 7-day free trial" — and the trial moves
+  *off* the button onto a quieter link underneath. The button then buys the plan
+  outright, so "Book now" charges today and the link beside it starts the trial.
+  Two checkouts of the same plan, and the reader picks.
+
+That is what the shipped Publisher card does. Both are real links to the hosted
+checkout before any JavaScript runs, and both fall back to it if the overlay
+never loads.
+
+⚠️ Whichever you choose, **the note under the button has to match**. It is the
+line customers read last and quote back at you.
 
 ### The comparison table
 

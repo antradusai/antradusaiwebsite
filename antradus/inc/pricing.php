@@ -40,6 +40,10 @@ function antradus_plans() {
  *
  *     product_id   plan_id   public_key   image
  *
+ * The licence count is deliberately not one of them. Freemius fills the
+ * sample block with a quantity and a logo URL that belong to nobody - see
+ * antradus_plan_checkout() for where the real number comes from.
+ *
  * The theme then writes its own checkout call from those, escaped. You get to
  * paste what Freemius gave you; the page runs code we wrote.
  *
@@ -87,7 +91,12 @@ function antradus_parse_freemius_snippet( $text ) {
 		$out['key'] = '';
 	}
 	if ( '' !== $out['image'] ) {
-		$out['image'] = esc_url_raw( $out['image'] );
+		/*
+		 * Freemius fills the sample block with a placeholder logo on a domain
+		 * nobody owns. Passing it on puts a broken image at the top of the
+		 * checkout, so it is dropped and the configured logo is used instead.
+		 */
+		$out['image'] = ( false !== strpos( $out['image'], 'your-plugin-site.com' ) ) ? '' : esc_url_raw( $out['image'] );
 	}
 
 	return $out;
@@ -123,8 +132,19 @@ function antradus_freemius_account() {
  * one snippet per plan and never fill in another field, or fill in one plan ID
  * and inherit the rest - both work, and mixing them works too.
  *
+ * The licence count is the exception: it is read from the plan's own field
+ * and never from a pasted snippet, because the block Freemius hands you
+ * carries a sample "licenses" number the same way it carries a logo on
+ * your-plugin-site.com. Unless a plan names a count, none is sent at all -
+ * Freemius validates the price and the quantity together, so a plan priced
+ * for five sites has no one-site price and refuses a request for one.
+ *
+ * The trial is the same kind of switch: Freemius charges today unless the
+ * checkout is opened asking for one, so a plan whose button promises seven
+ * free days has to say so here as well.
+ *
  * @param array $plan Plan row.
- * @return array{product:string,key:string,plan:string,image:string}|null
+ * @return array{product:string,key:string,plan:string,image:string,licenses:string,trial:string}|null
  */
 function antradus_plan_checkout( $plan ) {
 	if ( 'freemius' !== antradus_cell( $plan, 'cta_type' ) ) {
@@ -134,20 +154,33 @@ function antradus_plan_checkout( $plan ) {
 	$account = antradus_freemius_account();
 	$snippet = antradus_parse_freemius_snippet( antradus_cell( $plan, 'fs_snippet' ) );
 
-	$plan_id = '' !== $snippet['plan'] ? $snippet['plan'] : trim( (string) antradus_cell( $plan, 'plan_id' ) );
-	$product = '' !== $snippet['product'] ? $snippet['product'] : $account['product'];
-	$key     = '' !== $snippet['key'] ? $snippet['key'] : $account['key'];
-	$image   = '' !== $snippet['image'] ? $snippet['image'] : $account['image'];
+	$plan_id  = '' !== $snippet['plan'] ? $snippet['plan'] : trim( (string) antradus_cell( $plan, 'plan_id' ) );
+	$product  = '' !== $snippet['product'] ? $snippet['product'] : $account['product'];
+	$key      = '' !== $snippet['key'] ? $snippet['key'] : $account['key'];
+	$image    = '' !== $snippet['image'] ? $snippet['image'] : $account['image'];
+	$licenses = trim( (string) antradus_cell( $plan, 'licenses' ) );
+
+	// Anything that is not a positive whole number is no licence count at all.
+	if ( ! ctype_digit( $licenses ) || '0' === $licenses ) {
+		$licenses = '';
+	}
+
+	$trial = antradus_cell( $plan, 'trial' );
+	if ( ! in_array( $trial, array( 'free', 'paid' ), true ) ) {
+		$trial = '';
+	}
 
 	if ( '' === $plan_id || '' === $product || '' === $key ) {
 		return null; // Not enough to reach a real checkout - so do not pretend.
 	}
 
 	return array(
-		'product' => $product,
-		'key'     => $key,
-		'plan'    => $plan_id,
-		'image'   => $image,
+		'product'  => $product,
+		'key'      => $key,
+		'plan'     => $plan_id,
+		'image'    => $image,
+		'licenses' => $licenses,
+		'trial'    => $trial,
 	);
 }
 
@@ -214,11 +247,13 @@ function antradus_checkout_assets() {
 /**
  * The hosted checkout URL for a plan - the fallback the button points at.
  *
- * @param string $plan_id Freemius plan id.
- * @param string $product Freemius product id, or '' for the account default.
+ * @param string $plan_id  Freemius plan id.
+ * @param string $product  Freemius product id, or '' for the account default.
+ * @param string $licenses Licence count, or '' to let the plan price itself.
+ * @param string $trial    'paid', 'free', or '' for no trial.
  * @return string
  */
-function antradus_checkout_url( $plan_id, $product = '' ) {
+function antradus_checkout_url( $plan_id, $product = '', $licenses = '', $trial = '' ) {
 	$account = antradus_freemius_account();
 	$product = trim( (string) $product );
 	$product = ( '' !== $product ) ? $product : $account['product'];
@@ -226,7 +261,38 @@ function antradus_checkout_url( $plan_id, $product = '' ) {
 	if ( '' === $product || '' === $plan_id ) {
 		return '';
 	}
-	return 'https://checkout.freemius.com/product/' . rawurlencode( $product ) . '/plan/' . rawurlencode( $plan_id ) . '/';
+	$url      = 'https://checkout.freemius.com/product/' . rawurlencode( $product ) . '/plan/' . rawurlencode( $plan_id ) . '/';
+	$licenses = trim( (string) $licenses );
+
+	if ( '' !== $licenses ) {
+		$url = add_query_arg( 'licenses', $licenses, $url );
+	}
+	if ( '' !== $trial ) {
+		$url = add_query_arg( 'trial', $trial, $url );
+	}
+
+	return $url;
+}
+
+/**
+ * The data-* attributes that turn an ordinary link into the overlay.
+ *
+ * Two links per card can carry them - the button and the trial link under it -
+ * and they differ in one value, so they are built in one place.
+ *
+ * @param array  $checkout Checkout details from antradus_plan_checkout().
+ * @param string $name     Plan name, shown at the top of the checkout.
+ * @param string $trial    'paid', 'free' or '' for a straight purchase.
+ * @return string Escaped attributes, ready to print.
+ */
+function antradus_checkout_attrs( $checkout, $name, $trial ) {
+	return ' data-checkout="' . esc_attr( $checkout['plan'] ) . '"'
+		. ' data-fs-product="' . esc_attr( $checkout['product'] ) . '"'
+		. ' data-fs-key="' . esc_attr( $checkout['key'] ) . '"'
+		. ' data-fs-image="' . esc_attr( $checkout['image'] ) . '"'
+		. ' data-licenses="' . esc_attr( $checkout['licenses'] ) . '"'
+		. ' data-trial="' . esc_attr( $trial ) . '"'
+		. ' data-plan-name="' . esc_attr( $name ) . '"';
 }
 
 /**
@@ -249,6 +315,16 @@ function antradus_render_plans( $args = array() ) {
 		$mode     = antradus_cell( $plan, 'mode', 'amount' );
 		$checkout = antradus_plan_checkout( $plan );
 
+		/*
+		 * A trial that has been given its own words takes the trial off the
+		 * button: the button then buys the plan outright and the link under it
+		 * starts the trial. They are two checkouts of the same plan, and which
+		 * one a reader wants is not something the page should decide for them.
+		 * Leaving those words empty puts the trial back on the button.
+		 */
+		$trial_text = antradus_cell( $plan, 'trial_text' );
+		$split      = ( $checkout && '' !== $checkout['trial'] && '' !== $trial_text );
+
 		$href  = '';
 		$attrs = '';
 		if ( $checkout ) {
@@ -258,12 +334,9 @@ function antradus_render_plans( $args = array() ) {
 			 * overlay. Each plan carries its own product and key, so two plans
 			 * from two different Freemius products can sit on one page.
 			 */
-			$href  = antradus_checkout_url( $checkout['plan'], $checkout['product'] );
-			$attrs = ' data-checkout="' . esc_attr( $checkout['plan'] ) . '"'
-				. ' data-fs-product="' . esc_attr( $checkout['product'] ) . '"'
-				. ' data-fs-key="' . esc_attr( $checkout['key'] ) . '"'
-				. ' data-fs-image="' . esc_attr( $checkout['image'] ) . '"'
-				. ' data-plan-name="' . esc_attr( antradus_cell( $plan, 'name' ) ) . '"';
+			$buys  = $split ? '' : $checkout['trial'];
+			$href  = antradus_checkout_url( $checkout['plan'], $checkout['product'], $checkout['licenses'], $buys );
+			$attrs = antradus_checkout_attrs( $checkout, antradus_cell( $plan, 'name' ), $buys );
 		} else {
 			$href = antradus_link( antradus_cell( $plan, 'cta_url' ) );
 		}
@@ -340,6 +413,15 @@ function antradus_render_plans( $args = array() ) {
 		} elseif ( '' !== $cta ) {
 			// A button whose destination is missing says so rather than lying.
 			echo '<span class="ant-plan-cta is-disabled">' . esc_html__( 'Link not set', 'antradus' ) . '</span>';
+		}
+
+		if ( $split ) {
+			printf(
+				'<p class="ant-plan-trial"><a class="ant-plan-trial-link" href="%1$s"%2$s>%3$s</a></p>',
+				esc_url( antradus_checkout_url( $checkout['plan'], $checkout['product'], $checkout['licenses'], $checkout['trial'] ) ),
+				antradus_checkout_attrs( $checkout, antradus_cell( $plan, 'name' ), $checkout['trial'] ), // phpcs:ignore WordPress.Security.EscapeOutput -- built with esc_attr() above.
+				esc_html( $trial_text )
+			);
 		}
 
 		$note = antradus_cell( $plan, 'note' );

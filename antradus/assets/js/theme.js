@@ -442,6 +442,14 @@
 		var product = btn.getAttribute('data-fs-product') || cfg.product;
 		var key = btn.getAttribute('data-fs-key') || cfg.key;
 		var image = btn.getAttribute('data-fs-image') || cfg.logo;
+		var licenses = parseInt(btn.getAttribute('data-licenses') || '', 10);
+		if (!(licenses > 0)) {
+			licenses = 0;
+		}
+		var trial = btn.getAttribute('data-trial') || '';
+		if ('free' !== trial && 'paid' !== trial) {
+			trial = '';
+		}
 		var card = btn.closest('.ant-plan');
 		var errorBox = card ? card.querySelector('[data-plan-error]') : null;
 
@@ -486,11 +494,33 @@
 					errorBox.hidden = true;
 				}
 
-				handler.open({
+				var opts = {
 					name: planName,
-					plan_id: planId,
-					licenses: 1
-				});
+					plan_id: planId
+				};
+
+				/*
+				 * A licence count is sent only when the plan names one. Freemius
+				 * checks the price and the quantity together, so a plan sold as
+				 * "up to five sites" has no one-site price and answers a request
+				 * for one with "Invalid pricing" instead of opening. Sending no
+				 * count lets the plan sell at the price it actually has, which is
+				 * right for every plan that has one price.
+				 */
+				if (licenses) {
+					opts.licenses = licenses;
+				}
+
+				/*
+				 * A trial happens only when the checkout is asked for one. Freemius
+				 * having a trial on the plan is not enough - open it without this and
+				 * the customer is charged today, whatever the button promised.
+				 */
+				if (trial) {
+					opts.trial = trial;
+				}
+
+				handler.open(opts);
 			});
 		});
 	});
