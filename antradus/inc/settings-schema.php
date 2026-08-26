@@ -1392,7 +1392,7 @@ function antradus_settings_schema() {
 		 * ============================================================== */
 		'contact'  => array(
 			'label'    => __( 'Contact', 'antradus' ),
-			'blurb'    => __( 'The contact page and the affiliate section beneath it. Both forms are whatever shortcode you paste in - Forminator, Contact Form 7, WPForms, anything.', 'antradus' ),
+			'blurb'    => __( 'The contact page and the affiliate section beneath it. Both forms are whatever shortcode you paste in - Forminator, Contact Form 7, WPForms, anything - and both are per language, so an Arabic form built in Arabic is what an Arabic reader gets.', 'antradus' ),
 			'sections' => array(
 				array(
 					'title'  => __( 'Hero', 'antradus' ),
@@ -1430,10 +1430,11 @@ function antradus_settings_schema() {
 							'rows'  => 2,
 						),
 						array(
-							'key'   => 'contact_form',
-							'label' => __( 'Form shortcode', 'antradus' ),
-							'type'  => 'text',
-							'help'  => __( 'Leave empty to use whatever the page itself contains.', 'antradus' ),
+							'key'     => 'contact_form',
+							'label'   => __( 'Form shortcode', 'antradus' ),
+							'type'    => 'text',
+							'help'    => __( 'Leave empty to use whatever the page itself contains. Each language keeps its own - paste the Arabic form on the العربية tab, and an Arabic reader gets the Arabic form. Left empty there, they get this one.', 'antradus' ),
+							'restore' => false,
 						),
 					),
 				),
@@ -1539,9 +1540,11 @@ function antradus_settings_schema() {
 							'rows'  => 3,
 						),
 						array(
-							'key'   => 'aff_form',
-							'label' => __( 'Form shortcode', 'antradus' ),
-							'type'  => 'text',
+							'key'     => 'aff_form',
+							'label'   => __( 'Form shortcode', 'antradus' ),
+							'type'    => 'text',
+							'help'    => __( 'Each language keeps its own - paste the Arabic form on the العربية tab. Left empty there, the Arabic page shows this form.', 'antradus' ),
+							'restore' => false,
 						),
 					),
 				),
@@ -1599,10 +1602,11 @@ function antradus_settings_schema() {
 							'type'  => 'image',
 						),
 						array(
-							'key'   => 'welcome_form',
-							'label' => __( 'Form shortcode', 'antradus' ),
-							'type'  => 'text',
-							'help'  => __( 'Leave empty to use the page content.', 'antradus' ),
+							'key'     => 'welcome_form',
+							'label'   => __( 'Form shortcode', 'antradus' ),
+							'type'    => 'text',
+							'help'    => __( 'Leave empty to use the page content. Each language keeps its own - paste the Arabic form on the العربية tab. Left empty there, the Arabic page shows this form.', 'antradus' ),
+							'restore' => false,
 						),
 						array(
 							'key'   => 'welcome_note',

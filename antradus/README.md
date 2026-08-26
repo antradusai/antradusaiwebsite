@@ -78,7 +78,8 @@ page. Arabic pages are laid out right to left and set in IBM Plex Sans Arabic.
 | Links and button targets | Every heading, paragraph and label |
 | Images and logos | Feature lists and bullet points |
 | Colours and the content width | Plan names, prices as written, badges |
-| Shortcodes, Freemius IDs, page slugs | Table rows, questions and answers |
+| Freemius IDs, page slugs, licence counts | Table rows, questions and answers |
+| Which plans exist, and in what order | **Form shortcodes** — one form per language |
 
 That split is why adding a pricing plan is a one-time job: the plan exists in
 both languages the moment you create it, untranslated at first — which is
@@ -118,6 +119,12 @@ correcting one is editing a line.
   an unfinished page tells you what it needs instead of showing a broken frame.
 - **Lists** (feature bullets, trust lines, footer links) are one item per line.
   Footer and menu links are `Label | target`.
+- **Forms** are a shortcode you paste, and **each language has its own**. An
+  Arabic form has Arabic labels, Arabic error messages and an Arabic
+  confirmation email — it is a different form, not a translation of one, so the
+  shortcode lives on the العربية tab beside the words. Leave it empty there and
+  the Arabic page falls back to the English form rather than showing none.
+  Contact, affiliate and welcome forms all work this way.
 
 Saving one tab never touches the others, and saving one language never touches
 the other.

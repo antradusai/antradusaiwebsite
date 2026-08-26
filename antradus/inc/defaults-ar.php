@@ -8,10 +8,15 @@
  * changes, you open both files at the same section heading and edit the two
  * strings side by side; nothing has to be hunted for.
  *
- * Only the keys a reader sees are here. Links, images, colours, shortcodes,
- * Freemius IDs and page slugs are global - they live once, in defaults.php,
- * and both languages use them. That is why there is no 'home_hero_cta1_url'
- * below even though 'home_hero_cta1' is right there.
+ * Only the keys a reader sees are here. Links, images, colours, Freemius IDs
+ * and page slugs are global - they live once, in defaults.php, and both
+ * languages use them. That is why there is no 'home_hero_cta1_url' below even
+ * though 'home_hero_cta1' is right there.
+ *
+ * Form shortcodes are the one piece of wiring that is not global, because a
+ * form is written in a language like everything else. There are no Arabic
+ * ones shipped - the site owner pastes their own, and until they do the
+ * Arabic pages fall back to the English forms.
  *
  * Register in Modern Standard Arabic, business tone. Numerals are kept in
  * Western digits because the prices, versions and counts are the same numbers

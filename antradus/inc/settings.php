@@ -1251,18 +1251,23 @@ function antradus_handle_restore_section() {
 	}
 
 	/*
-	 * Words only. The tab also owns wiring - the Freemius product and key, the
-	 * form shortcodes, image IDs, page slugs, link targets - and the shipped
-	 * default for every one of those is either empty or ours, so restoring them
-	 * would quietly delete the picture somebody picked or replace their
-	 * checkout details with ours. antradus_field_is_translatable() already
-	 * draws exactly that line for the translation editor, so reuse it rather
-	 * than keeping a second list that can disagree with the first.
+	 * Words only. The tab also owns wiring - the Freemius product and key,
+	 * image IDs, page slugs, link targets - and the shipped default for every
+	 * one of those is either empty or ours, so restoring them would quietly
+	 * delete the picture somebody picked or replace their checkout details
+	 * with ours.
+	 *
+	 * The form shortcodes are the awkward case: they are words now, since a
+	 * form is written in a language, but the shipped default for one is this
+	 * site's own Forminator ID and restoring it would point somebody else's
+	 * contact page at our form. They carry 'restore' => false for that reason,
+	 * which antradus_field_is_restorable() reads on top of the translation
+	 * rule - one question asked in one place, not a second list to keep.
 	 */
 	$schema  = antradus_schema_fields();
 	$keys    = array();
 	foreach ( antradus_tab_field_keys( $section ) as $key ) {
-		if ( isset( $schema[ $key ] ) && antradus_field_is_translatable( $schema[ $key ] ) ) {
+		if ( isset( $schema[ $key ] ) && antradus_field_is_restorable( $schema[ $key ] ) ) {
 			$keys[] = $key;
 		}
 	}

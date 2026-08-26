@@ -10,9 +10,17 @@
  *   antradus_theme_options_ar    nothing but the Arabic words.
  *
  * A field is translatable when it is words a reader sees. A field is global
- * when it is a URL, an image, a colour, a shortcode, a Freemius ID or a slug -
- * those are the same in both languages by definition, so there is exactly one
- * place to edit them and no way for the two languages to drift apart.
+ * when it is a URL, an image, a colour, a Freemius ID or a slug - those are
+ * the same in both languages by definition, so there is exactly one place to
+ * edit them and no way for the two languages to drift apart.
+ *
+ * Form shortcodes are the exception, and they earned it. They look like pure
+ * wiring, and they were global until it turned out a form IS words: its
+ * labels, its placeholder text, its confirmation email and its error
+ * messages are all written in one language, so a site publishing in two
+ * languages builds two forms and has two shortcodes. Each language now holds
+ * its own, and an Arabic one left empty still falls back to the English form
+ * rather than leaving the page with no form at all.
  *
  * Repeaters (plans, cards, table rows) follow the same rule row by row: the
  * English side owns how many rows there are and what each one links to; the
@@ -194,9 +202,6 @@ function antradus_global_field_keys() {
 			'fs_public_key',
 			'fs_logo',
 			'fs_snippet',
-			'contact_form',
-			'aff_form',
-			'welcome_form',
 			'blog_per_page',
 			// Repeater sub-keys.
 			'link',
@@ -215,7 +220,7 @@ function antradus_global_field_keys() {
  * Is this field one a translator should see?
  *
  * Types decide most of it - an image, a colour or a checkbox is never
- * translated. Text fields that hold a URL, an ID or a shortcode are named in
+ * translated. Text fields that hold a URL or an ID are named in
  * antradus_global_field_keys(), and a schema entry can always settle it
  * outright with 'i18n' => false.
  *
@@ -255,6 +260,28 @@ function antradus_field_is_translatable( $field ) {
 	}
 
 	return true;
+}
+
+/**
+ * May "bring back the shipped wording" replace this field?
+ *
+ * Nearly the same question as the one above, and it used to be the same
+ * answer, which is why the restore simply asked that one. The form shortcodes
+ * split the two apart: a translator has to see them, because a form is built
+ * in a language, but the shipped default for one is a Forminator ID belonging
+ * to this site and restoring it over somebody else's would point their contact
+ * page at our form. A field says so for itself with 'restore' => false, next to
+ * the field, rather than in a second list that can fall out of step with this
+ * one.
+ *
+ * @param array $field Field definition.
+ * @return bool
+ */
+function antradus_field_is_restorable( $field ) {
+	if ( ! antradus_field_is_translatable( $field ) ) {
+		return false;
+	}
+	return ( ! isset( $field['restore'] ) || false !== $field['restore'] );
 }
 
 /**
