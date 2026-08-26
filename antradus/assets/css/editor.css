@@ -1,0 +1,98 @@
+/*
+ * Antradus theme - block editor styles.
+ *
+ * Enough of the reading design that a draft looks like the published article,
+ * without dragging the whole marketing stylesheet into wp-admin.
+ */
+
+.editor-styles-wrapper {
+	--ant-accent: #1f6feb;
+	--ant-accent-deep: #164fa9;
+	--ant-ink: #0c1730;
+	--ant-ink-2: #3c4a66;
+	--ant-ink-4: #8d99b3;
+	--ant-tint: #f4f7ff;
+	--ant-tint-2: #eef3fe;
+	--ant-line-2: rgba(16, 42, 92, .06);
+
+	background: #fff;
+	color: var(--ant-ink-2);
+	font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+	font-size: 17.5px;
+	line-height: 1.72;
+}
+
+.editor-styles-wrapper .wp-block {
+	max-width: 780px;
+}
+
+.editor-styles-wrapper h1,
+.editor-styles-wrapper h2,
+.editor-styles-wrapper h3,
+.editor-styles-wrapper h4 {
+	color: var(--ant-ink);
+	font-weight: 800;
+	letter-spacing: -.022em;
+	line-height: 1.2;
+}
+
+.editor-styles-wrapper h1 {
+	font-size: 42px;
+	line-height: 1.12;
+}
+
+.editor-styles-wrapper h2 {
+	font-size: 30px;
+}
+
+.editor-styles-wrapper h3 {
+	font-size: 23px;
+}
+
+.editor-styles-wrapper a {
+	color: var(--ant-accent-deep);
+	text-decoration-color: rgba(31, 111, 235, .35);
+	text-underline-offset: 3px;
+}
+
+.editor-styles-wrapper li::marker {
+	color: var(--ant-accent);
+}
+
+.editor-styles-wrapper blockquote {
+	padding: 20px 24px;
+	background: var(--ant-tint);
+	border-left: 3px solid var(--ant-accent);
+	border-radius: 0 14px 14px 0;
+	color: var(--ant-ink);
+}
+
+.editor-styles-wrapper code {
+	padding: 2px 7px;
+	background: var(--ant-tint-2);
+	border-radius: 6px;
+}
+
+.editor-styles-wrapper pre {
+	padding: 20px 22px;
+	background: #0e1a34;
+	border-radius: 14px;
+	color: #dbe6ff;
+}
+
+.editor-styles-wrapper figcaption {
+	color: var(--ant-ink-4);
+	font-size: 14px;
+	text-align: center;
+}
+
+.editor-styles-wrapper table th {
+	background: var(--ant-tint);
+	color: var(--ant-ink);
+}
+
+.editor-styles-wrapper table th,
+.editor-styles-wrapper table td {
+	border: 1px solid var(--ant-line-2);
+	padding: 12px 14px;
+}

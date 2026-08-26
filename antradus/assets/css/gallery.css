@@ -1,0 +1,127 @@
+/*
+ * Antradus theme - the showcase gallery.
+ *
+ * Loaded only on pages that actually contain a gallery.
+ */
+
+.antgl {
+	margin: 2em 0;
+}
+
+.antgl-main {
+	position: relative;
+	border-radius: var(--ant-r, 20px);
+	overflow: hidden;
+	box-shadow: var(--ant-sh-2, 0 12px 30px rgba(16, 42, 92, .08));
+}
+
+.antgl-main-img {
+	display: block;
+	width: 100%;
+	aspect-ratio: 16 / 9;
+	object-fit: cover;
+	transition: opacity 250ms ease;
+}
+
+.antgl-nav {
+	position: absolute;
+	top: 50%;
+	z-index: 2;
+	display: grid;
+	place-items: center;
+	width: 44px;
+	height: 44px;
+	padding: 0;
+	background: rgba(255, 255, 255, .9);
+	border: 1px solid rgba(16, 42, 92, .08);
+	border-radius: 50%;
+	box-shadow: 0 6px 20px rgba(16, 42, 92, .18);
+	color: var(--ant-ink, #0c1730);
+	cursor: pointer;
+	transform: translateY(-50%);
+	transition: background 200ms ease, transform 200ms ease;
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
+}
+
+.antgl-nav:hover {
+	background: #fff;
+	color: var(--ant-accent-deep, #164fa9);
+	transform: translateY(-50%) scale(1.06);
+}
+
+.antgl-prev {
+	left: 14px;
+}
+
+.antgl-next {
+	right: 14px;
+}
+
+.antgl-title {
+	min-height: 1.6em;
+	padding: 14px 0 4px;
+	color: var(--ant-ink-3, #66748f);
+	font-size: 14.5px;
+	font-weight: 600;
+	text-align: center;
+}
+
+.antgl-thumbs {
+	display: flex;
+	gap: 10px;
+	overflow-x: auto;
+	padding: 6px 2px 10px;
+	scrollbar-width: thin;
+	scrollbar-color: rgba(var(--ant-accent-rgb, 31, 111, 235), .5) transparent;
+}
+
+.antgl-thumb {
+	flex: 0 0 auto;
+	padding: 0;
+	background: none;
+	border: 2px solid transparent;
+	border-radius: 12px;
+	cursor: pointer;
+	opacity: .6;
+	transition: opacity 200ms ease, border-color 200ms ease, transform 200ms ease;
+}
+
+.antgl-thumb img {
+	display: block;
+	width: 112px;
+	height: 74px;
+	border-radius: 9px;
+	object-fit: cover;
+}
+
+.antgl-thumb:hover {
+	opacity: 1;
+	transform: translateY(-2px);
+}
+
+.antgl-thumb.is-active {
+	opacity: 1;
+	border-color: var(--ant-accent, #1f6feb);
+	cursor: default;
+}
+
+@media (max-width: 600px) {
+	.antgl-thumb img {
+		width: 86px;
+		height: 58px;
+	}
+
+	.antgl-nav {
+		width: 38px;
+		height: 38px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.antgl-main-img,
+	.antgl-thumb,
+	.antgl-nav {
+		transition: none;
+	}
+}

@@ -1,0 +1,4008 @@
+/*
+ * Antradus theme.
+ *
+ * One design system, white and wide, built on frosted glass over soft blue
+ * light. Every colour in here is either a token or derived from --ant-accent,
+ * which functions.php prints from the settings - so changing the brand blue in
+ * wp-admin genuinely recolours the whole site rather than half of it.
+ *
+ * Contents
+ *   1.  Tokens
+ *   2.  Reset and base
+ *   3.  Typography
+ *   4.  Layout: wrap, section, band, ambience
+ *   5.  Glass, buttons, small parts
+ *   6.  Header, announcement bar, footer
+ *   7.  Home sections
+ *   8.  Pricing
+ *   9.  Blog index and article cards
+ *   10. Reading: the paper, the prose, the rail
+ *   11. Forms and page furniture
+ *   12. Responsive
+ *   13. Language switch
+ *   14. The trust bar
+ *   15. The compatibility flow lines
+ *   16. The documentation hub
+ *   17. Quotations
+ *   18. Contact cards
+ *   19. Wider layouts
+ *
+ * Right-to-left lives in rtl.css, loaded only on Arabic pages.
+ */
+
+/* =========================================================================
+ * 1. Tokens
+ * ====================================================================== */
+
+:root {
+	/* --ant-accent, --ant-accent-rgb, --ant-accent-deep, --ant-accent-lift and
+	   --ant-wide are printed by the theme; these are the fallbacks. */
+	--ant-accent: #1f6feb;
+	--ant-accent-rgb: 31, 111, 235;
+	--ant-accent-deep: #164fa9;
+	--ant-accent-lift: #6ea3f3;
+	--ant-wide: 1320px;
+	--ant-narrow: 820px;
+
+	--ant-ink: #0c1730;
+	--ant-ink-2: #3c4a66;
+	--ant-ink-3: #66748f;
+	--ant-ink-4: #8d99b3;
+
+	--ant-white: #ffffff;
+	--ant-paper: #ffffff;
+	--ant-tint: #f4f7ff;
+	--ant-tint-2: #eef3fe;
+	--ant-line: rgba(16, 42, 92, .10);
+	--ant-line-2: rgba(16, 42, 92, .06);
+
+	--ant-glass: linear-gradient(158deg, rgba(255, 255, 255, .88), rgba(255, 255, 255, .58));
+	--ant-glass-edge: rgba(255, 255, 255, .85);
+	--ant-blur: saturate(150%) blur(18px);
+
+	--ant-ok: #10826a;
+	--ant-warn: #a8631a;
+
+	--ant-r-xs: 10px;
+	--ant-r-sm: 14px;
+	--ant-r: 20px;
+	--ant-r-lg: 28px;
+	--ant-r-xl: 36px;
+
+	--ant-sh-1: 0 1px 2px rgba(12, 23, 48, .05);
+	--ant-sh-2: 0 12px 30px rgba(16, 42, 92, .08);
+	--ant-sh-3: 0 30px 70px rgba(16, 42, 92, .13);
+	--ant-sh-glow: 0 16px 40px rgba(var(--ant-accent-rgb), .28);
+
+	--ant-t: 220ms cubic-bezier(.2, .7, .3, 1);
+
+	--ant-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+	--ant-serif: "Instrument Serif", "Iowan Old Style", Georgia, "Times New Roman", serif;
+}
+
+/* =========================================================================
+ * 2. Reset and base
+ * ====================================================================== */
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html {
+	-webkit-text-size-adjust: 100%;
+}
+
+body.ant-site {
+	margin: 0;
+	background: var(--ant-white);
+	color: var(--ant-ink);
+	font-family: var(--ant-sans);
+	font-size: 17px;
+	line-height: 1.6;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	overflow-x: hidden;
+}
+
+.ant-site img,
+.ant-site svg,
+.ant-site video {
+	max-width: 100%;
+	height: auto;
+}
+
+/*
+ * The default link colour is wrapped in :where() so it carries no specificity
+ * at all. Without that it is (0,1,1) - a class plus an element - which quietly
+ * beats every single-class component rule below it, and the first thing you
+ * notice is white button text turning blue and vanishing into the button.
+ */
+:where(.ant-site a) {
+	color: var(--ant-accent);
+	text-decoration: none;
+}
+
+:where(.ant-site a:hover) {
+	color: var(--ant-accent-deep);
+}
+
+.ant-site :focus-visible {
+	outline: 2px solid var(--ant-accent);
+	outline-offset: 3px;
+	border-radius: 6px;
+}
+
+.ant-skip {
+	position: absolute;
+	left: -9999px;
+	top: 0;
+	z-index: 100;
+	padding: 12px 18px;
+	background: var(--ant-white);
+	border-radius: 0 0 var(--ant-r-sm) 0;
+	box-shadow: var(--ant-sh-2);
+	font-weight: 700;
+}
+
+.ant-skip:focus {
+	left: 0;
+}
+
+.screen-reader-text {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(1px, 1px, 1px, 1px);
+	white-space: nowrap;
+}
+
+/* =========================================================================
+ * 3. Typography
+ * ====================================================================== */
+
+.ant-h1,
+.ant-h2,
+.ant-site h1,
+.ant-site h2,
+.ant-site h3,
+.ant-site h4 {
+	margin: 0;
+	color: var(--ant-ink);
+	font-weight: 800;
+	letter-spacing: -.022em;
+	line-height: 1.1;
+}
+
+.ant-h1 {
+	font-size: clamp(38px, 5.4vw, 66px);
+	line-height: 1.04;
+}
+
+.ant-h1--page {
+	font-size: clamp(34px, 4.4vw, 54px);
+}
+
+.ant-h1-line {
+	display: block;
+}
+
+.ant-h2 {
+	font-size: clamp(28px, 3.4vw, 44px);
+	line-height: 1.12;
+}
+
+/* The signature: one phrase per heading set in serif italic. */
+.ant-ital {
+	font-family: var(--ant-serif);
+	font-style: italic;
+	font-weight: 400;
+	letter-spacing: -.01em;
+	background: linear-gradient(96deg, var(--ant-accent), var(--ant-accent-lift));
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+	padding-inline-end: .06em;
+}
+
+.ant-eyebrow {
+	margin: 0 0 14px;
+	color: var(--ant-accent);
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: .14em;
+	text-transform: uppercase;
+}
+
+.ant-lede {
+	margin: 20px 0 0;
+	max-width: 56ch;
+	color: var(--ant-ink-2);
+	font-size: clamp(17px, 1.35vw, 19px);
+	line-height: 1.62;
+}
+
+.ant-sub {
+	margin: 16px auto 0;
+	max-width: 64ch;
+	color: var(--ant-ink-2);
+	font-size: 17px;
+	line-height: 1.6;
+}
+
+.ant-note {
+	margin: 18px 0 0;
+	color: var(--ant-ink-3);
+	font-size: 14.5px;
+}
+
+.ant-center {
+	text-align: center;
+}
+
+.ant-head {
+	max-width: 780px;
+	margin: 0 auto 46px;
+}
+
+.ant-head--center {
+	text-align: center;
+}
+
+.ant-head--left {
+	margin-inline-start: 0;
+	text-align: start;
+}
+
+.ant-head--left .ant-sub {
+	margin-inline-start: 0;
+}
+
+.ant-dot {
+	display: inline-block;
+	width: 3px;
+	height: 3px;
+	border-radius: 50%;
+	background: currentColor;
+	opacity: .45;
+	vertical-align: middle;
+}
+
+/* =========================================================================
+ * 4. Layout
+ * ====================================================================== */
+
+.ant-main {
+	display: block;
+}
+
+.ant-wrap {
+	position: relative;
+	z-index: 1;
+	width: 100%;
+	max-width: var(--ant-wide);
+	margin: 0 auto;
+	padding: 0 clamp(20px, 4vw, 44px);
+}
+
+.ant-wrap--narrow {
+	max-width: var(--ant-narrow);
+}
+
+.ant-section {
+	position: relative;
+	padding: clamp(64px, 8vw, 112px) 0;
+	isolation: isolate;
+}
+
+.ant-section--tight {
+	padding: clamp(24px, 3vw, 40px) 0;
+}
+
+.ant-section--top {
+	padding-top: 0;
+}
+
+/* Full-bleed tinted bands. The page is never boxed - only the content is. */
+.ant-band {
+	background: linear-gradient(180deg, var(--ant-tint) 0%, rgba(255, 255, 255, 0) 78%);
+}
+
+.ant-band--deep {
+	background: linear-gradient(180deg, var(--ant-tint-2) 0%, rgba(255, 255, 255, 0) 82%);
+}
+
+.ant-grid {
+	display: grid;
+	gap: clamp(16px, 1.8vw, 24px);
+}
+
+.ant-grid--2 {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ant-grid--3 {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.ant-grid--cards {
+	grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+	gap: 26px;
+}
+
+/* Ambience: soft light behind the glass. Purely decorative. */
+.ant-orb {
+	position: absolute;
+	z-index: 0;
+	border-radius: 50%;
+	filter: blur(80px);
+	pointer-events: none;
+}
+
+/*
+ * The orbs are up to 620px across and are deliberately hung off the edge of
+ * their section (left: -200px, right: -220px). Nothing was clipping them, so
+ * they were part of the page's scrollable width: on a 412px phone the document
+ * measured 756px, which is why every page could be dragged sideways and the
+ * right-hand end of every line sat off-screen. On Arabic pages it showed up at
+ * desktop widths too, because the layout starts from the other edge.
+ *
+ * overflow-x: clip - NOT hidden. `hidden` on one axis forces the other axis to
+ * `auto`, which turns each section into a scroll container and kills every
+ * `position: sticky` inside it: the header, the article rail, the welcome panel
+ * and the docs contents list. `clip` takes the horizontal overflow away and
+ * leaves the vertical axis genuinely visible, so the badge that sits above a
+ * plan card and every soft shadow still spill out as designed.
+ *
+ * These three selectors are every element an .ant-orb is printed into.
+ * Browsers without `overflow: clip` (Safari 15 and older) simply behave as
+ * they do today.
+ */
+.ant-section,
+.ant-reading-shell,
+.ant-cta {
+	overflow-x: clip;
+	overflow-y: visible;
+}
+
+.ant-orb--a {
+	width: 620px;
+	height: 620px;
+	top: -220px;
+	left: 50%;
+	transform: translateX(-58%);
+	background: radial-gradient(circle, rgba(var(--ant-accent-rgb), .20), transparent 68%);
+}
+
+.ant-orb--b {
+	width: 520px;
+	height: 520px;
+	right: -180px;
+	top: 120px;
+	background: radial-gradient(circle, rgba(126, 152, 255, .18), transparent 68%);
+}
+
+.ant-orb--c {
+	width: 560px;
+	height: 560px;
+	left: -200px;
+	top: 60px;
+	background: radial-gradient(circle, rgba(var(--ant-accent-rgb), .13), transparent 68%);
+}
+
+.ant-orb--d {
+	width: 620px;
+	height: 620px;
+	right: -220px;
+	bottom: -180px;
+	background: radial-gradient(circle, rgba(120, 180, 255, .16), transparent 68%);
+}
+
+.ant-orb--e {
+	width: 560px;
+	height: 560px;
+	left: 40%;
+	bottom: -240px;
+	background: radial-gradient(circle, rgba(var(--ant-accent-rgb), .14), transparent 68%);
+}
+
+.ant-orb--f {
+	width: 460px;
+	height: 460px;
+	right: -140px;
+	top: -140px;
+	background: radial-gradient(circle, rgba(var(--ant-accent-rgb), .22), transparent 68%);
+}
+
+.ant-mesh {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+	background-image:
+		linear-gradient(rgba(16, 42, 92, .045) 1px, transparent 1px),
+		linear-gradient(90deg, rgba(16, 42, 92, .045) 1px, transparent 1px);
+	background-size: 58px 58px;
+	-webkit-mask-image: radial-gradient(ellipse 78% 62% at 50% 12%, #000 20%, transparent 78%);
+	mask-image: radial-gradient(ellipse 78% 62% at 50% 12%, #000 20%, transparent 78%);
+}
+
+/* =========================================================================
+ * 5. Glass, buttons, small parts
+ * ====================================================================== */
+
+.ant-glass {
+	position: relative;
+	background: var(--ant-glass);
+	border: 1px solid var(--ant-glass-edge);
+	border-radius: var(--ant-r-lg);
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, .9),
+		0 1px 1px rgba(16, 42, 92, .04),
+		var(--ant-sh-2);
+	-webkit-backdrop-filter: var(--ant-blur);
+	backdrop-filter: var(--ant-blur);
+}
+
+.ant-glass::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	border: 1px solid var(--ant-line-2);
+	pointer-events: none;
+}
+
+.ant-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	min-height: 50px;
+	padding: 0 26px;
+	border: 1px solid transparent;
+	border-radius: 999px;
+	font-family: inherit;
+	font-size: 15.5px;
+	font-weight: 700;
+	letter-spacing: -.005em;
+	line-height: 1;
+	cursor: pointer;
+	white-space: nowrap;
+	transition: transform var(--ant-t), box-shadow var(--ant-t), background var(--ant-t), color var(--ant-t);
+}
+
+.ant-btn--primary {
+	background: linear-gradient(160deg, var(--ant-accent), var(--ant-accent-deep));
+	color: #fff;
+	box-shadow: var(--ant-sh-glow);
+}
+
+.ant-btn--primary:hover {
+	color: #fff;
+	transform: translateY(-2px);
+	box-shadow: 0 20px 46px rgba(var(--ant-accent-rgb), .38);
+}
+
+.ant-btn--ghost {
+	background: rgba(255, 255, 255, .7);
+	border-color: var(--ant-line);
+	color: var(--ant-ink);
+	box-shadow: var(--ant-sh-1);
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
+}
+
+.ant-btn--ghost:hover {
+	color: var(--ant-ink);
+	border-color: rgba(var(--ant-accent-rgb), .4);
+	transform: translateY(-2px);
+	box-shadow: var(--ant-sh-2);
+}
+
+.ant-btn--soft {
+	background: rgba(var(--ant-accent-rgb), .09);
+	color: var(--ant-accent-deep);
+	border-color: rgba(var(--ant-accent-rgb), .16);
+}
+
+.ant-btn--soft:hover {
+	background: rgba(var(--ant-accent-rgb), .14);
+	color: var(--ant-accent-deep);
+	transform: translateY(-2px);
+}
+
+.ant-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	margin-top: 30px;
+}
+
+.ant-actions--center {
+	justify-content: center;
+}
+
+.ant-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 9px;
+	margin: 0 0 22px;
+	padding: 8px 16px 8px 12px;
+	background: rgba(255, 255, 255, .8);
+	border: 1px solid var(--ant-line);
+	border-radius: 999px;
+	box-shadow: var(--ant-sh-1);
+	color: var(--ant-ink-2);
+	font-size: 13.5px;
+	font-weight: 600;
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
+}
+
+.ant-badge-dot {
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background: var(--ant-accent);
+	box-shadow: 0 0 0 4px rgba(var(--ant-accent-rgb), .16);
+}
+
+.ant-ic {
+	display: block;
+	color: var(--ant-accent);
+}
+
+.ant-ticks {
+	margin: 18px 0 0;
+	padding: 0;
+	list-style: none;
+	display: grid;
+	gap: 11px;
+}
+
+.ant-ticks li {
+	display: grid;
+	grid-template-columns: 20px 1fr;
+	gap: 10px;
+	align-items: start;
+	color: var(--ant-ink-2);
+	font-size: 15.5px;
+	line-height: 1.5;
+}
+
+.ant-ticks li .ant-ic {
+	margin-top: 3px;
+	color: var(--ant-ok);
+}
+
+.ant-ticks--lg li {
+	font-size: 16.5px;
+}
+
+.ant-proof {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	margin: 26px 0 0;
+	color: var(--ant-ink-3);
+	font-size: 14px;
+}
+
+.ant-proof-mark {
+	display: inline-grid;
+	place-items: center;
+	width: 22px;
+	height: 22px;
+	flex: 0 0 22px;
+	border-radius: 50%;
+	background: rgba(16, 130, 106, .12);
+	color: var(--ant-ok);
+}
+
+.ant-proof-mark .ant-ic {
+	color: inherit;
+}
+
+/* Image placeholders: loud on purpose, so an unfinished page says so. */
+.ant-media {
+	display: block;
+	width: 100%;
+	border-radius: var(--ant-r);
+	object-fit: cover;
+}
+
+.ant-ph {
+	display: grid;
+	place-content: center;
+	justify-items: center;
+	gap: 6px;
+	aspect-ratio: var(--ant-ratio, 16 / 10);
+	padding: 22px;
+	text-align: center;
+	background:
+		repeating-linear-gradient(135deg, rgba(var(--ant-accent-rgb), .05) 0 12px, rgba(var(--ant-accent-rgb), .02) 12px 24px),
+		var(--ant-tint);
+	border: 1.5px dashed rgba(var(--ant-accent-rgb), .32);
+	color: var(--ant-accent-deep);
+}
+
+.ant-ph-mark {
+	color: rgba(var(--ant-accent-rgb), .55);
+}
+
+.ant-ph-label {
+	font-size: 14.5px;
+	font-weight: 700;
+}
+
+.ant-ph-hint {
+	color: var(--ant-ink-4);
+	font-size: 12.5px;
+}
+
+/* =========================================================================
+ * 6. Header, announcement, footer
+ * ====================================================================== */
+
+.ant-announce {
+	position: relative;
+	z-index: 40;
+	background: linear-gradient(90deg, rgba(var(--ant-accent-rgb), .10), rgba(var(--ant-accent-rgb), .04));
+	border-bottom: 1px solid var(--ant-line-2);
+}
+
+.ant-announce-inner {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	max-width: var(--ant-wide);
+	margin: 0 auto;
+	padding: 10px clamp(20px, 4vw, 44px);
+	color: var(--ant-ink-2);
+	font-size: 14px;
+}
+
+.ant-announce-dot {
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background: var(--ant-accent);
+	box-shadow: 0 0 0 4px rgba(var(--ant-accent-rgb), .15);
+}
+
+.ant-announce-link {
+	font-weight: 700;
+	white-space: nowrap;
+}
+
+.ant-header {
+	position: sticky;
+	top: 0;
+	z-index: 50;
+	background: rgba(255, 255, 255, .74);
+	border-bottom: 1px solid transparent;
+	-webkit-backdrop-filter: saturate(160%) blur(16px);
+	backdrop-filter: saturate(160%) blur(16px);
+	transition: box-shadow var(--ant-t), border-color var(--ant-t), background var(--ant-t);
+}
+
+.ant-header.is-stuck {
+	background: rgba(255, 255, 255, .9);
+	border-bottom-color: var(--ant-line-2);
+	box-shadow: 0 10px 30px rgba(16, 42, 92, .07);
+}
+
+body.admin-bar .ant-header {
+	top: 32px;
+}
+
+.ant-header-inner {
+	display: flex;
+	align-items: center;
+	gap: 22px;
+	max-width: var(--ant-wide);
+	margin: 0 auto;
+	padding: 0 clamp(20px, 4vw, 44px);
+	height: 74px;
+}
+
+.ant-brand {
+	display: inline-flex;
+	align-items: center;
+	gap: 11px;
+	/*
+	 * Logical, not physical. `margin-right: auto` put the elastic gap on the
+	 * brand's right in Arabic too, which shoved the brand off the right edge
+	 * and packed the entire header - links, language switch, button - into
+	 * the left half of the screen with dead space beside it.
+	 */
+	margin-inline-end: auto;
+	color: var(--ant-ink);
+	font-weight: 800;
+	letter-spacing: -.02em;
+}
+
+.ant-brand:hover {
+	color: var(--ant-ink);
+}
+
+.ant-brand-logo {
+	display: block;
+	width: 36px;
+	height: 36px;
+	border-radius: 11px;
+	object-fit: cover;
+}
+
+.ant-brand-logo--mark {
+	display: grid;
+	place-items: center;
+	background: linear-gradient(160deg, var(--ant-accent), var(--ant-accent-deep));
+	color: #fff;
+	box-shadow: var(--ant-sh-glow);
+}
+
+.ant-brand-name {
+	font-size: 18px;
+}
+
+.ant-nav {
+	display: flex;
+}
+
+.ant-menu {
+	display: flex;
+	align-items: center;
+	gap: 2px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.ant-menu li {
+	position: relative;
+	list-style: none;
+}
+
+.ant-menu a {
+	display: block;
+	padding: 9px 14px;
+	border-radius: 999px;
+	color: var(--ant-ink-2);
+	font-size: 15px;
+	font-weight: 600;
+	white-space: nowrap;
+	transition: color var(--ant-t), background var(--ant-t);
+}
+
+.ant-menu a:hover {
+	background: rgba(var(--ant-accent-rgb), .07);
+	color: var(--ant-accent-deep);
+}
+
+.ant-menu .is-current > a,
+.ant-menu .current-menu-item > a,
+.ant-menu .current_page_item > a {
+	background: rgba(var(--ant-accent-rgb), .10);
+	color: var(--ant-accent-deep);
+}
+
+.ant-menu .sub-menu {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	min-width: 210px;
+	margin: 0;
+	padding: 8px;
+	list-style: none;
+	background: rgba(255, 255, 255, .96);
+	border: 1px solid var(--ant-line);
+	border-radius: var(--ant-r-sm);
+	box-shadow: var(--ant-sh-3);
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(6px);
+	transition: opacity var(--ant-t), transform var(--ant-t), visibility var(--ant-t);
+}
+
+.ant-menu li:hover > .sub-menu,
+.ant-menu li:focus-within > .sub-menu {
+	opacity: 1;
+	visibility: visible;
+	transform: translateY(0);
+}
+
+.ant-header-actions {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.ant-header-actions .ant-btn {
+	min-height: 44px;
+	padding: 0 20px;
+	font-size: 15px;
+}
+
+.ant-burger {
+	display: none;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 5px;
+	width: 44px;
+	height: 44px;
+	padding: 0;
+	background: rgba(255, 255, 255, .8);
+	border: 1px solid var(--ant-line);
+	border-radius: 12px;
+	cursor: pointer;
+}
+
+.ant-burger span {
+	display: block;
+	width: 18px;
+	height: 2px;
+	border-radius: 2px;
+	background: var(--ant-ink);
+	transition: transform var(--ant-t), opacity var(--ant-t);
+}
+
+.ant-header.nav-open .ant-burger span:nth-child(1) {
+	transform: translateY(7px) rotate(45deg);
+}
+
+.ant-header.nav-open .ant-burger span:nth-child(2) {
+	opacity: 0;
+}
+
+.ant-header.nav-open .ant-burger span:nth-child(3) {
+	transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ---- footer ---- */
+
+.ant-footer-cta {
+	padding: 0 0 clamp(40px, 6vw, 72px);
+}
+
+.ant-footer-cta-card {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 22px;
+	padding: clamp(26px, 3vw, 40px);
+	background: linear-gradient(140deg, rgba(var(--ant-accent-rgb), .10), rgba(var(--ant-accent-rgb), .03));
+	border: 1px solid rgba(var(--ant-accent-rgb), .16);
+	border-radius: var(--ant-r-lg);
+}
+
+.ant-footer-cta-title {
+	margin: 0;
+	font-size: clamp(21px, 2.2vw, 28px);
+	font-weight: 800;
+	letter-spacing: -.02em;
+}
+
+.ant-footer {
+	padding: clamp(48px, 6vw, 72px) 0 34px;
+	background: linear-gradient(180deg, #fff, var(--ant-tint));
+	border-top: 1px solid var(--ant-line-2);
+}
+
+.ant-footer-top {
+	display: grid;
+	grid-template-columns: minmax(0, 1.25fr) minmax(0, 2fr);
+	gap: clamp(28px, 4vw, 60px);
+}
+
+.ant-footer-tagline {
+	margin: 16px 0 0;
+	max-width: 42ch;
+	color: var(--ant-ink-2);
+	font-size: 15.5px;
+	line-height: 1.6;
+}
+
+.ant-footer-social {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin: 18px 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.ant-footer-social a {
+	display: block;
+	padding: 7px 14px;
+	background: rgba(255, 255, 255, .8);
+	border: 1px solid var(--ant-line);
+	border-radius: 999px;
+	color: var(--ant-ink-2);
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.ant-footer-social a:hover {
+	color: var(--ant-accent-deep);
+	border-color: rgba(var(--ant-accent-rgb), .3);
+}
+
+.ant-footer-cols {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+	gap: 28px;
+}
+
+.ant-footer-col-title {
+	margin: 0 0 14px;
+	color: var(--ant-ink);
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: .1em;
+	text-transform: uppercase;
+}
+
+.ant-footer-col ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	display: grid;
+	gap: 10px;
+}
+
+.ant-footer-col a {
+	color: var(--ant-ink-2);
+	font-size: 15px;
+}
+
+.ant-footer-col a:hover {
+	color: var(--ant-accent-deep);
+}
+
+.ant-footer-trust {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 10px 26px;
+	margin: clamp(32px, 4vw, 50px) 0 0;
+	padding: 22px 0 0;
+	border-top: 1px solid var(--ant-line-2);
+	list-style: none;
+}
+
+.ant-footer-trust li {
+	position: relative;
+	color: var(--ant-ink-3);
+	font-size: 13.5px;
+	font-weight: 600;
+}
+
+.ant-footer-trust li + li::before {
+	content: "\25C6";
+	position: absolute;
+	left: -16px;
+	color: rgba(var(--ant-accent-rgb), .4);
+	font-size: 8px;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+.ant-footer-legal {
+	margin: 16px 0 0;
+	text-align: center;
+	color: var(--ant-ink-4);
+	font-size: 13.5px;
+}
+
+.ant-footer-legal a {
+	color: var(--ant-ink-3);
+}
+
+/* =========================================================================
+ * 7. Home sections
+ * ====================================================================== */
+
+/* ---- hero ---- */
+
+.ant-hero {
+	padding-top: clamp(48px, 6vw, 84px);
+}
+
+.ant-hero-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1.02fr) minmax(0, .98fr);
+	gap: clamp(32px, 5vw, 68px);
+	align-items: center;
+}
+
+.ant-hero-visual {
+	position: relative;
+}
+
+.ant-hero-frame {
+	padding: 14px;
+	border-radius: var(--ant-r-xl);
+	box-shadow: var(--ant-sh-3);
+}
+
+.ant-hero-frame .ant-media {
+	border-radius: var(--ant-r);
+}
+
+.ant-hero-chips {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.ant-hero-chip {
+	position: absolute;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 9px 15px;
+	background: rgba(255, 255, 255, .9);
+	border: 1px solid var(--ant-glass-edge);
+	border-radius: 999px;
+	box-shadow: var(--ant-sh-2);
+	color: var(--ant-ink);
+	font-size: 13.5px;
+	font-weight: 700;
+	white-space: nowrap;
+	-webkit-backdrop-filter: blur(12px);
+	backdrop-filter: blur(12px);
+	animation: ant-float 7s ease-in-out infinite;
+}
+
+.ant-hero-chip-dot {
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background: var(--ant-accent);
+}
+
+.ant-hero-chip--1 { top: 8%; left: -4%; animation-delay: 0s; }
+.ant-hero-chip--2 { top: 28%; right: -6%; animation-delay: .8s; }
+.ant-hero-chip--3 { bottom: 26%; left: -7%; animation-delay: 1.6s; }
+.ant-hero-chip--4 { bottom: 6%; right: -3%; animation-delay: 2.4s; }
+.ant-hero-chip--5 { top: 52%; right: 6%; animation-delay: 3.2s; }
+
+@keyframes ant-float {
+	0%, 100% { transform: translateY(0); }
+	50% { transform: translateY(-7px); }
+}
+
+/* ---- stats ---- */
+
+.ant-stats {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+	gap: 4px;
+	padding: clamp(20px, 2.4vw, 30px);
+	text-align: center;
+}
+
+.ant-stat {
+	padding: 12px 16px;
+}
+
+.ant-stat + .ant-stat {
+	border-inline-start: 1px solid var(--ant-line-2);
+}
+
+.ant-stat b {
+	display: block;
+	background: linear-gradient(150deg, var(--ant-accent), var(--ant-accent-lift));
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+	font-size: clamp(30px, 3.4vw, 42px);
+	font-weight: 800;
+	letter-spacing: -.03em;
+	line-height: 1.05;
+}
+
+.ant-stat span {
+	display: block;
+	margin-top: 6px;
+	color: var(--ant-ink-3);
+	font-size: 14px;
+	font-weight: 600;
+}
+
+/* ---- logo strip ---- */
+
+.ant-logos-title {
+	margin: 0 0 22px;
+	text-align: center;
+	color: var(--ant-ink-3);
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.ant-logos-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 14px clamp(24px, 4vw, 56px);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.ant-logo img {
+	display: block;
+	max-height: 34px;
+	width: auto;
+	filter: grayscale(1);
+	opacity: .62;
+	transition: filter var(--ant-t), opacity var(--ant-t);
+}
+
+.ant-logo:hover img {
+	filter: none;
+	opacity: 1;
+}
+
+.ant-logo-slot {
+	display: grid;
+	place-items: center;
+	min-width: 128px;
+	height: 42px;
+	padding: 0 14px;
+	background: var(--ant-tint);
+	border: 1.5px dashed rgba(var(--ant-accent-rgb), .28);
+	border-radius: var(--ant-r-xs);
+	color: var(--ant-ink-4);
+	font-size: 12.5px;
+	font-weight: 600;
+	text-align: center;
+}
+
+/* ---- demo ---- */
+
+.ant-demo-frame {
+	margin: 0;
+	padding: 14px;
+	border-radius: var(--ant-r-xl);
+	box-shadow: var(--ant-sh-3);
+}
+
+.ant-demo-frame .ant-media {
+	border-radius: var(--ant-r);
+}
+
+.ant-demo-caption {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 9px;
+	padding: 16px 10px 6px;
+	color: var(--ant-ink-3);
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.ant-demo-live {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: var(--ant-ok);
+	box-shadow: 0 0 0 4px rgba(16, 130, 106, .16);
+}
+
+.ant-outputs {
+	margin: clamp(26px, 3vw, 40px) 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.ant-output {
+	display: grid;
+	gap: 6px;
+	padding: 24px;
+	border-radius: var(--ant-r);
+	transition: transform var(--ant-t), box-shadow var(--ant-t);
+}
+
+.ant-output:hover {
+	transform: translateY(-4px);
+	box-shadow: var(--ant-sh-3);
+}
+
+.ant-output-ic,
+.ant-feature-ic,
+.ant-runcard-ic,
+.ant-use-ic,
+.ant-contact-ic,
+.ant-group-ic {
+	display: grid;
+	place-items: center;
+	width: 44px;
+	height: 44px;
+	margin-bottom: 12px;
+	background: rgba(var(--ant-accent-rgb), .10);
+	border: 1px solid rgba(var(--ant-accent-rgb), .14);
+	border-radius: 13px;
+}
+
+.ant-output b {
+	font-size: 17px;
+	font-weight: 700;
+}
+
+.ant-output span:not(.ant-output-ic) {
+	color: var(--ant-ink-2);
+	font-size: 15px;
+	line-height: 1.55;
+}
+
+/* ---- core features ---- */
+
+.ant-feature {
+	display: grid;
+	grid-template-rows: auto 1fr;
+	padding: clamp(24px, 2.6vw, 34px);
+	border-radius: var(--ant-r-lg);
+	overflow: hidden;
+}
+
+.ant-feature h3 {
+	font-size: clamp(20px, 1.8vw, 24px);
+}
+
+.ant-feature p {
+	margin: 12px 0 0;
+	color: var(--ant-ink-2);
+	font-size: 15.5px;
+	line-height: 1.6;
+}
+
+.ant-feature-art {
+	margin-top: 26px;
+}
+
+.ant-feature-art .ant-media {
+	border-radius: var(--ant-r-sm);
+	box-shadow: var(--ant-sh-1);
+}
+
+/* ---- where it runs ---- */
+
+.ant-runcard {
+	padding: clamp(24px, 2.6vw, 32px);
+	border-radius: var(--ant-r-lg);
+}
+
+.ant-runcard h3 {
+	font-size: 20px;
+}
+
+/* ---- compatibility ---- */
+
+.ant-compat {
+	position: relative;
+	--ant-compat-flow: on;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+	gap: clamp(20px, 4vw, 56px);
+	align-items: center;
+	padding: clamp(26px, 3.4vw, 48px);
+	border-radius: var(--ant-r-xl);
+}
+
+.ant-compat-label {
+	margin: 0 0 14px;
+	color: var(--ant-ink-3);
+	font-size: 12.5px;
+	font-weight: 700;
+	letter-spacing: .12em;
+	text-transform: uppercase;
+}
+
+.ant-compat-col ul {
+	display: grid;
+	gap: 10px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.ant-compat-item {
+	display: flex;
+	align-items: center;
+	gap: 11px;
+	padding: 11px 16px;
+	border-radius: 999px;
+	box-shadow: var(--ant-sh-1);
+	font-size: 15px;
+	font-weight: 600;
+}
+
+.ant-compat-item img {
+	width: 22px;
+	height: 22px;
+	border-radius: 6px;
+	object-fit: contain;
+}
+
+.ant-compat-dot {
+	width: 9px;
+	height: 9px;
+	border-radius: 50%;
+	background: linear-gradient(150deg, var(--ant-accent), var(--ant-accent-lift));
+	flex: 0 0 9px;
+}
+
+.ant-compat-col--out .ant-compat-item {
+	flex-direction: row-reverse;
+	text-align: right;
+}
+
+.ant-compat-hub {
+	display: grid;
+	justify-items: center;
+	gap: 10px;
+	position: relative;
+}
+
+.ant-compat-ring {
+	position: absolute;
+	top: -18px;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 132px;
+	height: 132px;
+	border-radius: 50%;
+	background: radial-gradient(circle, rgba(var(--ant-accent-rgb), .16), transparent 66%);
+}
+
+.ant-compat-mark {
+	display: grid;
+	place-items: center;
+	position: relative;
+	width: 84px;
+	height: 84px;
+	background: #fff;
+	border: 1px solid var(--ant-glass-edge);
+	border-radius: 26px;
+	box-shadow: var(--ant-sh-3);
+	color: var(--ant-accent);
+}
+
+.ant-compat-mark img {
+	width: 46px;
+	height: 46px;
+	border-radius: 14px;
+	object-fit: cover;
+}
+
+.ant-compat-hub-name {
+	position: relative;
+	color: var(--ant-ink);
+	font-size: 14px;
+	font-weight: 700;
+}
+
+/* ---- GEO ---- */
+
+.ant-geo-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+	gap: clamp(30px, 5vw, 64px);
+	align-items: center;
+}
+
+.ant-geo-copy .ant-head {
+	margin-bottom: 26px;
+}
+
+.ant-geo-list {
+	display: grid;
+	gap: 18px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.ant-geo-list li {
+	display: grid;
+	grid-template-columns: 40px 1fr;
+	gap: 14px;
+	align-items: start;
+}
+
+.ant-geo-ic {
+	display: grid;
+	place-items: center;
+	width: 38px;
+	height: 38px;
+	background: rgba(var(--ant-accent-rgb), .10);
+	border: 1px solid rgba(var(--ant-accent-rgb), .14);
+	border-radius: 12px;
+}
+
+.ant-geo-list b {
+	display: block;
+	font-size: 16.5px;
+	font-weight: 700;
+}
+
+.ant-geo-list b + span {
+	display: block;
+	margin-top: 3px;
+	color: var(--ant-ink-2);
+	font-size: 15px;
+	line-height: 1.55;
+}
+
+.ant-geo-frame {
+	padding: 12px;
+	border-radius: var(--ant-r-xl);
+}
+
+.ant-geo-frame .ant-media {
+	border-radius: var(--ant-r);
+}
+
+/* ---- use cases ---- */
+
+.ant-use {
+	padding: clamp(22px, 2.4vw, 30px);
+	border-radius: var(--ant-r);
+	transition: transform var(--ant-t), box-shadow var(--ant-t);
+}
+
+.ant-use:hover {
+	transform: translateY(-4px);
+	box-shadow: var(--ant-sh-3);
+}
+
+.ant-use h3 {
+	font-size: 19px;
+}
+
+.ant-use p {
+	margin: 10px 0 0;
+	color: var(--ant-ink-2);
+	font-size: 15px;
+	line-height: 1.55;
+}
+
+/* ---- cost table ---- */
+
+.ant-cost {
+	padding: clamp(18px, 2.2vw, 28px);
+	border-radius: var(--ant-r-lg);
+}
+
+.ant-cost-scroll {
+	overflow-x: auto;
+}
+
+.ant-cost-table {
+	width: 100%;
+	min-width: 640px;
+	border-collapse: collapse;
+}
+
+.ant-cost-table th {
+	padding: 12px 16px;
+	color: var(--ant-ink-3);
+	font-size: 12.5px;
+	font-weight: 700;
+	letter-spacing: .1em;
+	text-align: start;
+	text-transform: uppercase;
+}
+
+.ant-cost-table th.ant-cost-us {
+	color: var(--ant-accent-deep);
+}
+
+.ant-cost-table td {
+	padding: 15px 16px;
+	border-top: 1px solid var(--ant-line-2);
+	font-size: 15.5px;
+	vertical-align: top;
+}
+
+.ant-cost-label {
+	color: var(--ant-ink);
+	font-weight: 700;
+}
+
+.ant-cost-them {
+	color: var(--ant-ink-3);
+}
+
+td.ant-cost-us {
+	background: rgba(var(--ant-accent-rgb), .045);
+	color: var(--ant-ink);
+	font-weight: 600;
+}
+
+td.ant-cost-us .ant-ic {
+	display: inline-block;
+	margin-inline-end: 7px;
+	color: var(--ant-ok);
+	vertical-align: -3px;
+}
+
+.ant-cost-note {
+	margin: 16px 6px 4px;
+	color: var(--ant-ink-4);
+	font-size: 13px;
+}
+
+/* ---- closing CTA ---- */
+
+.ant-cta {
+	position: relative;
+	overflow: hidden;
+	padding: clamp(38px, 5vw, 68px) clamp(24px, 4vw, 56px);
+	border-radius: var(--ant-r-xl);
+	text-align: center;
+}
+
+.ant-cta-inner {
+	position: relative;
+	z-index: 1;
+}
+
+.ant-more {
+	margin: 30px 0 0;
+	font-weight: 700;
+}
+
+/* =========================================================================
+ * 8. Pricing
+ * ====================================================================== */
+
+.ant-price-note {
+	max-width: 720px;
+	margin: -18px auto 44px;
+	text-align: center;
+	color: var(--ant-ink-2);
+	font-size: 15.5px;
+}
+
+/*
+ * Cards stretch to a common height so their buttons line up. The feature list
+ * takes the slack (it has flex: 1), which is what keeps the call to action on
+ * the same line across plans of very different length.
+ */
+.ant-plans {
+	display: grid;
+	gap: clamp(18px, 2vw, 26px);
+	align-items: stretch;
+}
+
+.ant-plans--1 { grid-template-columns: minmax(0, 420px); justify-content: center; }
+.ant-plans--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.ant-plans--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.ant-plans--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+.ant-plan {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	padding: clamp(26px, 2.6vw, 34px);
+	background: var(--ant-glass);
+	border: 1px solid var(--ant-glass-edge);
+	border-radius: var(--ant-r-lg);
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9), var(--ant-sh-2);
+	-webkit-backdrop-filter: var(--ant-blur);
+	backdrop-filter: var(--ant-blur);
+}
+
+.ant-plan.is-featured {
+	border-color: rgba(var(--ant-accent-rgb), .32);
+	box-shadow: 0 30px 70px rgba(var(--ant-accent-rgb), .18);
+}
+
+.ant-plan-glow {
+	position: absolute;
+	inset: -1px;
+	border-radius: inherit;
+	padding: 1px;
+	background: linear-gradient(160deg, rgba(var(--ant-accent-rgb), .55), transparent 55%);
+	-webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+	-webkit-mask-composite: xor;
+	mask-composite: exclude;
+	pointer-events: none;
+}
+
+.ant-plan-badge {
+	position: absolute;
+	top: -13px;
+	left: 50%;
+	transform: translateX(-50%);
+	padding: 6px 16px;
+	background: linear-gradient(160deg, var(--ant-accent), var(--ant-accent-deep));
+	border-radius: 999px;
+	box-shadow: var(--ant-sh-glow);
+	color: #fff;
+	font-size: 12.5px;
+	font-weight: 700;
+	letter-spacing: .04em;
+	white-space: nowrap;
+}
+
+.ant-plan-name {
+	margin: 4px 0 0;
+	font-size: 24px;
+}
+
+.ant-plan-sub {
+	margin: 6px 0 0;
+	color: var(--ant-ink-3);
+	font-size: 14.5px;
+}
+
+.ant-plan-price {
+	margin: 22px 0 0;
+	text-align: center;
+}
+
+.ant-plan-figure {
+	display: inline-flex;
+	align-items: baseline;
+	gap: 2px;
+	color: var(--ant-ink);
+}
+
+.ant-plan-cur {
+	color: var(--ant-accent);
+	font-size: 22px;
+	font-weight: 700;
+}
+
+.ant-plan-amount {
+	font-size: 52px;
+	font-weight: 800;
+	letter-spacing: -.035em;
+	line-height: 1;
+}
+
+.ant-plan-figure.is-long .ant-plan-amount {
+	font-size: 42px;
+}
+
+.ant-plan-cents {
+	font-size: 20px;
+	font-weight: 700;
+}
+
+.ant-plan-unit {
+	color: var(--ant-ink-3);
+	font-size: 16px;
+	font-weight: 600;
+}
+
+.ant-plan-words {
+	display: inline-block;
+	font-size: 32px;
+	font-weight: 800;
+	letter-spacing: -.03em;
+}
+
+.ant-plan-billed {
+	margin: 10px 0 0;
+	color: var(--ant-ink-3);
+	font-size: 13.5px;
+	font-weight: 600;
+}
+
+.ant-plan-chip {
+	margin: 16px auto 0;
+	padding: 6px 14px;
+	background: rgba(var(--ant-accent-rgb), .08);
+	border: 1px solid rgba(var(--ant-accent-rgb), .14);
+	border-radius: 999px;
+	color: var(--ant-accent-deep);
+	font-size: 12.5px;
+	font-weight: 700;
+	letter-spacing: .04em;
+	text-align: center;
+	align-self: center;
+}
+
+.ant-plan-list {
+	margin: 24px 0 0;
+	padding: 22px 0 0;
+	border-top: 1px solid var(--ant-line-2);
+	flex: 1;
+}
+
+.ant-plan-list-head {
+	margin: 0 0 14px;
+	color: var(--ant-ink-3);
+	font-size: 12.5px;
+	font-weight: 700;
+	letter-spacing: .1em;
+	text-transform: uppercase;
+}
+
+.ant-plan-list ul {
+	display: grid;
+	gap: 11px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.ant-plan-list li {
+	display: grid;
+	grid-template-columns: 19px 1fr;
+	gap: 10px;
+	align-items: start;
+	color: var(--ant-ink-2);
+	font-size: 15px;
+	line-height: 1.5;
+}
+
+.ant-plan-list li .ant-ic {
+	margin-top: 3px;
+	color: var(--ant-ok);
+}
+
+.ant-plan-cta {
+	margin: 24px 0 0;
+	width: 100%;
+}
+
+.ant-plan-cta.is-disabled {
+	display: block;
+	padding: 15px;
+	background: var(--ant-tint);
+	border-radius: 999px;
+	color: var(--ant-ink-4);
+	font-size: 14px;
+	font-weight: 600;
+	text-align: center;
+}
+
+.ant-plan-note {
+	margin: 12px 0 0;
+	color: var(--ant-ink-4);
+	font-size: 13px;
+	text-align: center;
+}
+
+.ant-plan-error {
+	margin: 12px 0 0;
+	padding: 10px 14px;
+	background: rgba(168, 99, 26, .08);
+	border-radius: var(--ant-r-xs);
+	color: var(--ant-warn);
+	font-size: 13.5px;
+	text-align: center;
+}
+
+.ant-plan-error[hidden] {
+	display: none;
+}
+
+/* ---- comparison ---- */
+
+.ant-cmp-scroll {
+	overflow-x: auto;
+	background: var(--ant-glass);
+	border: 1px solid var(--ant-glass-edge);
+	border-radius: var(--ant-r-lg);
+	box-shadow: var(--ant-sh-2);
+	-webkit-backdrop-filter: var(--ant-blur);
+	backdrop-filter: var(--ant-blur);
+}
+
+.ant-cmp {
+	width: 100%;
+	min-width: 660px;
+	border-collapse: collapse;
+}
+
+/* A third plan column needs its own width, or the feature text pays for it. */
+.ant-cmp--3 {
+	min-width: 800px;
+}
+
+.ant-cmp th {
+	padding: 20px 18px;
+	border-bottom: 1px solid var(--ant-line);
+	font-size: 17px;
+	font-weight: 800;
+	text-align: left;
+}
+
+.ant-cmp th em {
+	display: block;
+	margin-top: 3px;
+	color: var(--ant-ink-3);
+	font-size: 12.5px;
+	font-style: normal;
+	font-weight: 600;
+}
+
+.ant-cmp th.ant-cmp-c,
+.ant-cmp td.ant-cmp-c {
+	width: 130px;
+	text-align: center;
+}
+
+.ant-cmp .ant-cmp-pro {
+	background: rgba(var(--ant-accent-rgb), .05);
+}
+
+.ant-cmp th.ant-cmp-pro {
+	color: var(--ant-accent-deep);
+}
+
+.ant-cmp td {
+	padding: 15px 18px;
+	border-bottom: 1px solid var(--ant-line-2);
+	vertical-align: top;
+}
+
+.ant-cmp tr:last-child td {
+	border-bottom: 0;
+}
+
+.ant-cmp-group td {
+	padding: 14px 18px;
+	background: rgba(var(--ant-accent-rgb), .07);
+	color: var(--ant-accent-deep);
+	font-size: 12.5px;
+	font-weight: 700;
+	letter-spacing: .1em;
+	text-transform: uppercase;
+}
+
+.ant-cmp-f b {
+	display: block;
+	font-size: 15.5px;
+	font-weight: 700;
+}
+
+.ant-cmp-f span {
+	display: block;
+	margin-top: 4px;
+	color: var(--ant-ink-3);
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+.ant-cmp-yes {
+	display: inline-grid;
+	place-items: center;
+	width: 28px;
+	height: 28px;
+	border-radius: 50%;
+	background: rgba(16, 130, 106, .12);
+	color: var(--ant-ok);
+}
+
+.ant-cmp-yes .ant-ic {
+	color: inherit;
+}
+
+.ant-cmp-no {
+	color: var(--ant-ink-4);
+	font-size: 18px;
+}
+
+.ant-sales {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 18px;
+	margin-top: 26px;
+	padding: 22px 26px;
+	border-radius: var(--ant-r);
+}
+
+.ant-sales p {
+	margin: 0;
+	color: var(--ant-ink-2);
+	font-size: 15.5px;
+}
+
+.ant-trustline {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 8px 14px;
+	margin: 0 auto clamp(48px, 6vw, 78px);
+	padding: 0 24px;
+	color: var(--ant-ink-3);
+	font-size: 13.5px;
+	font-weight: 600;
+}
+
+.ant-trustline-dot {
+	color: rgba(var(--ant-accent-rgb), .4);
+	font-size: 8px;
+}
+
+/* ---- FAQ ---- */
+
+.ant-faq {
+	display: grid;
+	gap: 12px;
+}
+
+.ant-faq-item {
+	background: var(--ant-glass);
+	border: 1px solid var(--ant-glass-edge);
+	border-radius: var(--ant-r);
+	box-shadow: var(--ant-sh-1);
+	-webkit-backdrop-filter: var(--ant-blur);
+	backdrop-filter: var(--ant-blur);
+	overflow: hidden;
+}
+
+.ant-faq-item summary {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 18px;
+	padding: 20px 24px;
+	cursor: pointer;
+	font-size: 17px;
+	font-weight: 700;
+	list-style: none;
+}
+
+.ant-faq-item summary::-webkit-details-marker {
+	display: none;
+}
+
+.ant-faq-mark {
+	position: relative;
+	flex: 0 0 26px;
+	width: 26px;
+	height: 26px;
+	border-radius: 50%;
+	background: rgba(var(--ant-accent-rgb), .09);
+}
+
+.ant-faq-mark::before,
+.ant-faq-mark::after {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 11px;
+	height: 2px;
+	border-radius: 2px;
+	background: var(--ant-accent);
+	transform: translate(-50%, -50%);
+	transition: transform var(--ant-t), opacity var(--ant-t);
+}
+
+.ant-faq-mark::after {
+	transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.ant-faq-item[open] .ant-faq-mark::after {
+	opacity: 0;
+	transform: translate(-50%, -50%) rotate(0deg);
+}
+
+.ant-faq-body {
+	padding: 0 24px 22px;
+}
+
+.ant-faq-body p {
+	margin: 0;
+	max-width: 68ch;
+	color: var(--ant-ink-2);
+	font-size: 15.5px;
+	line-height: 1.62;
+}
+
+/* =========================================================================
+ * 9. Blog index
+ * ====================================================================== */
+
+.ant-page-hero {
+	padding-bottom: clamp(40px, 5vw, 70px);
+}
+
+.ant-page-hero--short {
+	padding-top: clamp(48px, 6vw, 80px);
+	padding-bottom: clamp(24px, 3vw, 40px);
+}
+
+.ant-page-hero--center .ant-head {
+	margin-bottom: 34px;
+}
+
+.ant-page-hero-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, .9fr);
+	gap: clamp(28px, 4vw, 56px);
+	align-items: center;
+}
+
+.ant-page-hero-art {
+	padding: 12px;
+	border-radius: var(--ant-r-xl);
+}
+
+.ant-page-hero-art .ant-media {
+	border-radius: var(--ant-r);
+}
+
+.ant-toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	margin-bottom: 22px;
+}
+
+.ant-search {
+	position: relative;
+	flex: 1 1 260px;
+	max-width: 420px;
+}
+
+.ant-search--center {
+	margin: 26px auto 0;
+}
+
+.ant-search .ant-ic {
+	position: absolute;
+	left: 18px;
+	top: 50%;
+	transform: translateY(-50%);
+	color: var(--ant-ink-4);
+}
+
+.ant-search input {
+	width: 100%;
+	height: 50px;
+	padding: 0 20px 0 48px;
+	background: rgba(255, 255, 255, .8);
+	border: 1px solid var(--ant-line);
+	border-radius: 999px;
+	color: var(--ant-ink);
+	font-family: inherit;
+	font-size: 15.5px;
+	outline: none;
+	transition: border-color var(--ant-t), box-shadow var(--ant-t);
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
+}
+
+.ant-search input:focus {
+	border-color: rgba(var(--ant-accent-rgb), .5);
+	box-shadow: 0 0 0 4px rgba(var(--ant-accent-rgb), .12);
+}
+
+.ant-chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	justify-content: flex-end;
+}
+
+.ant-chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
+	padding: 9px 16px;
+	background: rgba(255, 255, 255, .7);
+	border: 1px solid var(--ant-line);
+	border-radius: 999px;
+	color: var(--ant-ink-2);
+	font-size: 14px;
+	font-weight: 600;
+	transition: all var(--ant-t);
+}
+
+.ant-chip:hover {
+	border-color: rgba(var(--ant-accent-rgb), .4);
+	color: var(--ant-accent-deep);
+}
+
+.ant-chip.is-active {
+	background: rgba(var(--ant-accent-rgb), .10);
+	border-color: rgba(var(--ant-accent-rgb), .3);
+	color: var(--ant-accent-deep);
+}
+
+.ant-chip-count {
+	color: var(--ant-ink-4);
+	font-size: 12px;
+}
+
+.ant-count {
+	margin: 0 0 22px;
+	color: var(--ant-ink-3);
+	font-size: 14.5px;
+	font-weight: 600;
+}
+
+.ant-card {
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	background: var(--ant-glass);
+	border: 1px solid var(--ant-glass-edge);
+	border-radius: var(--ant-r);
+	box-shadow: var(--ant-sh-2);
+	color: var(--ant-ink);
+	transition: transform var(--ant-t), box-shadow var(--ant-t), border-color var(--ant-t);
+	-webkit-backdrop-filter: var(--ant-blur);
+	backdrop-filter: var(--ant-blur);
+}
+
+.ant-card:hover {
+	color: var(--ant-ink);
+	transform: translateY(-5px);
+	border-color: rgba(var(--ant-accent-rgb), .3);
+	box-shadow: var(--ant-sh-3);
+}
+
+/*
+ * The background here is only ever seen when a post has no featured image, so
+ * it is a soft tinted panel rather than a saturated block - a missing picture
+ * should read as a quiet gap, not as a design decision.
+ */
+.ant-card-thumb {
+	position: relative;
+	display: block;
+	aspect-ratio: 16 / 10;
+	overflow: hidden;
+	background:
+		radial-gradient(120% 120% at 20% 0%, rgba(var(--ant-accent-rgb), .16), transparent 60%),
+		var(--ant-tint-2);
+}
+
+.ant-card-thumb img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform 600ms cubic-bezier(.2, .7, .3, 1);
+}
+
+.ant-card:hover .ant-card-thumb img {
+	transform: scale(1.04);
+}
+
+.ant-card-initial {
+	position: absolute;
+	inset: 0;
+	display: grid;
+	place-items: center;
+	color: rgba(var(--ant-accent-rgb), .28);
+	font-size: 66px;
+	font-weight: 800;
+	letter-spacing: -.04em;
+}
+
+.ant-card-cat {
+	position: absolute;
+	left: 12px;
+	top: 12px;
+	padding: 5px 12px;
+	background: rgba(255, 255, 255, .92);
+	border-radius: 999px;
+	color: var(--ant-accent-deep);
+	font-size: 11.5px;
+	font-weight: 700;
+	letter-spacing: .06em;
+	text-transform: uppercase;
+	-webkit-backdrop-filter: blur(8px);
+	backdrop-filter: blur(8px);
+}
+
+.ant-card-body {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	padding: 20px 22px 22px;
+}
+
+.ant-card-title {
+	display: -webkit-box;
+	overflow: hidden;
+	margin-bottom: 9px;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	font-size: 19px;
+	font-weight: 700;
+	letter-spacing: -.015em;
+	line-height: 1.3;
+}
+
+.ant-card:hover .ant-card-title {
+	color: var(--ant-accent-deep);
+}
+
+.ant-card-excerpt {
+	display: -webkit-box;
+	flex: 1;
+	overflow: hidden;
+	margin-bottom: 16px;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3;
+	color: var(--ant-ink-2);
+	font-size: 15px;
+	line-height: 1.55;
+}
+
+.ant-card-meta {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	margin-top: auto;
+	padding-top: 14px;
+	border-top: 1px solid var(--ant-line-2);
+	color: var(--ant-ink-4);
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.ant-pagination {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 8px;
+	margin-top: clamp(34px, 4vw, 52px);
+}
+
+.ant-pagination .page-numbers,
+.ant-pagination .nav-links > * {
+	display: grid;
+	place-items: center;
+	min-width: 44px;
+	height: 44px;
+	padding: 0 12px;
+	background: rgba(255, 255, 255, .8);
+	border: 1px solid var(--ant-line);
+	border-radius: 12px;
+	color: var(--ant-ink-2);
+	font-size: 15px;
+	font-weight: 700;
+}
+
+.ant-pagination .nav-links {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 8px;
+}
+
+.ant-pagination .page-numbers.current {
+	background: linear-gradient(160deg, var(--ant-accent), var(--ant-accent-deep));
+	border-color: transparent;
+	color: #fff;
+	box-shadow: var(--ant-sh-glow);
+}
+
+.ant-pagination a.page-numbers:hover {
+	border-color: rgba(var(--ant-accent-rgb), .4);
+	color: var(--ant-accent-deep);
+}
+
+.ant-pagination .screen-reader-text {
+	display: none;
+}
+
+.ant-empty {
+	padding: clamp(48px, 7vw, 90px) 24px;
+	text-align: center;
+	color: var(--ant-ink-2);
+}
+
+.ant-empty-title {
+	margin: 0 0 8px;
+	color: var(--ant-ink);
+	font-size: 21px;
+	font-weight: 800;
+}
+
+.ant-empty-note {
+	margin: 0;
+	color: var(--ant-ink-3);
+	font-size: 15px;
+}
+
+/* =========================================================================
+ * 10. Reading
+ * ====================================================================== */
+
+.ant-reading-shell {
+	position: relative;
+	padding: clamp(30px, 4vw, 52px) 0 clamp(56px, 7vw, 92px);
+	background: linear-gradient(180deg, var(--ant-tint) 0%, rgba(255, 255, 255, 0) 44%);
+	isolation: isolate;
+}
+
+.ant-reading-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 340px;
+	gap: clamp(24px, 3vw, 40px);
+	align-items: start;
+}
+
+.ant-back {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 18px;
+	color: var(--ant-ink-3);
+	font-size: 14.5px;
+	font-weight: 600;
+}
+
+.ant-back:hover {
+	color: var(--ant-accent-deep);
+}
+
+.ant-paper {
+	overflow: hidden;
+	background: var(--ant-paper);
+	border: 1px solid var(--ant-line-2);
+	border-radius: var(--ant-r-lg);
+	box-shadow: var(--ant-sh-3);
+}
+
+.ant-paper-hero img {
+	display: block;
+	width: 100%;
+	max-height: 460px;
+	object-fit: cover;
+}
+
+.ant-paper-inner {
+	padding: clamp(26px, 4vw, 52px);
+}
+
+.ant-paper-cat {
+	display: inline-block;
+	margin-bottom: 16px;
+	padding: 6px 14px;
+	background: rgba(var(--ant-accent-rgb), .08);
+	border-radius: 999px;
+	color: var(--ant-accent-deep);
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: .08em;
+	text-transform: uppercase;
+}
+
+.ant-paper-title {
+	font-size: clamp(30px, 3.6vw, 46px);
+	font-weight: 800;
+	letter-spacing: -.025em;
+	line-height: 1.12;
+}
+
+.ant-paper-meta {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 16px 0 30px;
+	padding-bottom: 22px;
+	border-bottom: 1px solid var(--ant-line-2);
+	color: var(--ant-ink-4);
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.ant-paper-tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: 34px;
+	padding-top: 24px;
+	border-top: 1px solid var(--ant-line-2);
+}
+
+.ant-paper-tags a {
+	padding: 6px 14px;
+	background: var(--ant-tint);
+	border-radius: 999px;
+	color: var(--ant-ink-2);
+	font-size: 13.5px;
+	font-weight: 600;
+}
+
+.ant-paper--comments {
+	margin-top: 22px;
+}
+
+/* ---- the prose ---- */
+
+.ant-prose {
+	color: var(--ant-ink-2);
+	font-size: 17.5px;
+	line-height: 1.72;
+}
+
+.ant-prose > *:first-child {
+	margin-top: 0;
+}
+
+.ant-prose > *:last-child {
+	margin-bottom: 0;
+}
+
+.ant-prose p {
+	margin: 0 0 1.15em;
+}
+
+.ant-prose h2,
+.ant-prose h3,
+.ant-prose h4 {
+	margin: 1.9em 0 .55em;
+	color: var(--ant-ink);
+	letter-spacing: -.02em;
+	line-height: 1.22;
+}
+
+.ant-prose h2 {
+	font-size: clamp(24px, 2.4vw, 31px);
+}
+
+.ant-prose h3 {
+	font-size: clamp(20px, 1.9vw, 24px);
+}
+
+.ant-prose h4 {
+	font-size: 19px;
+}
+
+.ant-prose ul,
+.ant-prose ol {
+	margin: 0 0 1.2em;
+	padding-left: 1.35em;
+}
+
+.ant-prose li {
+	margin-bottom: .5em;
+}
+
+.ant-prose li::marker {
+	color: var(--ant-accent);
+}
+
+.ant-prose a {
+	color: var(--ant-accent-deep);
+	text-decoration: underline;
+	text-decoration-color: rgba(var(--ant-accent-rgb), .35);
+	text-underline-offset: 3px;
+}
+
+.ant-prose a:hover {
+	text-decoration-color: var(--ant-accent);
+}
+
+.ant-prose strong {
+	color: var(--ant-ink);
+	font-weight: 700;
+}
+
+.ant-prose blockquote {
+	position: relative;
+	margin: 1.7em 0;
+	padding: 22px 26px;
+	background: var(--ant-tint);
+	border-left: 3px solid var(--ant-accent);
+	border-radius: 0 var(--ant-r-sm) var(--ant-r-sm) 0;
+	color: var(--ant-ink);
+	font-size: 18px;
+}
+
+.ant-prose blockquote p:last-child {
+	margin-bottom: 0;
+}
+
+.ant-prose img,
+.ant-prose figure {
+	margin: 1.7em 0;
+}
+
+.ant-prose img {
+	border-radius: var(--ant-r-sm);
+}
+
+.ant-prose figcaption {
+	margin-top: 10px;
+	color: var(--ant-ink-4);
+	font-size: 14px;
+	text-align: center;
+}
+
+.ant-prose code {
+	padding: 2px 7px;
+	background: var(--ant-tint-2);
+	border-radius: 6px;
+	font-size: .9em;
+}
+
+.ant-prose pre {
+	overflow-x: auto;
+	margin: 1.6em 0;
+	padding: 20px 22px;
+	background: #0e1a34;
+	border-radius: var(--ant-r-sm);
+	color: #dbe6ff;
+	font-size: 14.5px;
+	line-height: 1.6;
+}
+
+.ant-prose pre code {
+	padding: 0;
+	background: none;
+	color: inherit;
+}
+
+.ant-prose table {
+	width: 100%;
+	margin: 1.6em 0;
+	border-collapse: collapse;
+	font-size: 15.5px;
+}
+
+.ant-prose th,
+.ant-prose td {
+	padding: 12px 14px;
+	border: 1px solid var(--ant-line-2);
+	text-align: left;
+}
+
+.ant-prose th {
+	background: var(--ant-tint);
+	color: var(--ant-ink);
+	font-weight: 700;
+}
+
+.ant-prose hr {
+	margin: 2.4em 0;
+	border: 0;
+	border-top: 1px solid var(--ant-line-2);
+}
+
+.ant-pagelinks {
+	display: flex;
+	gap: 8px;
+	margin-top: 24px;
+	font-weight: 700;
+}
+
+/* ---- post CTA and the rail ---- */
+
+.ant-post-cta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 18px;
+	margin-top: 22px;
+	padding: 26px clamp(22px, 3vw, 34px);
+	border-radius: var(--ant-r-lg);
+}
+
+.ant-post-cta b {
+	display: block;
+	font-size: 18px;
+	font-weight: 800;
+	letter-spacing: -.015em;
+}
+
+.ant-post-cta span {
+	display: block;
+	margin-top: 5px;
+	color: var(--ant-ink-2);
+	font-size: 15px;
+}
+
+.ant-reading-rail {
+	position: sticky;
+	top: 96px;
+}
+
+.ant-rail {
+	padding: 24px;
+	border-radius: var(--ant-r-lg);
+}
+
+.ant-rail-eyebrow {
+	margin: 0;
+	color: var(--ant-accent);
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: .12em;
+	text-transform: uppercase;
+}
+
+.ant-rail-title {
+	margin: 6px 0 18px;
+	font-size: 20px;
+}
+
+.ant-rail-item {
+	display: grid;
+	grid-template-columns: 74px 1fr;
+	gap: 13px;
+	align-items: center;
+	padding: 10px;
+	margin: 0 -10px;
+	border-radius: var(--ant-r-sm);
+	color: var(--ant-ink);
+	transition: background var(--ant-t);
+}
+
+.ant-rail-item:hover {
+	background: rgba(var(--ant-accent-rgb), .06);
+	color: var(--ant-ink);
+}
+
+.ant-rail-thumb {
+	position: relative;
+	display: block;
+	overflow: hidden;
+	aspect-ratio: 4 / 3;
+	border-radius: 10px;
+	background:
+		radial-gradient(120% 120% at 20% 0%, rgba(var(--ant-accent-rgb), .16), transparent 60%),
+		var(--ant-tint-2);
+}
+
+.ant-rail-thumb img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+/* Stands in for a missing thumbnail: a small mark, not an empty blue box. */
+.ant-rail-mark {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 18px;
+	height: 18px;
+	border: 2px solid rgba(var(--ant-accent-rgb), .3);
+	border-radius: 5px;
+	transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.ant-rail-item-title {
+	display: -webkit-box;
+	overflow: hidden;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	font-size: 15px;
+	font-weight: 700;
+	line-height: 1.35;
+}
+
+.ant-rail-item-date {
+	display: block;
+	margin-top: 4px;
+	color: var(--ant-ink-4);
+	font-size: 12.5px;
+}
+
+/* ---- comments ---- */
+
+.ant-comments {
+	margin-top: 8px;
+}
+
+.ant-comments-title {
+	margin-bottom: 20px;
+	font-size: 22px;
+}
+
+.ant-comment-list {
+	margin: 0 0 30px;
+	padding: 0;
+	list-style: none;
+}
+
+.ant-comment-list ol {
+	list-style: none;
+	padding-inline-start: 26px;
+}
+
+.ant-comment-list .comment-body {
+	padding: 18px 0;
+	border-bottom: 1px solid var(--ant-line-2);
+}
+
+.ant-comments input[type="text"],
+.ant-comments input[type="email"],
+.ant-comments input[type="url"],
+.ant-comments textarea {
+	width: 100%;
+	padding: 12px 16px;
+	background: #fff;
+	border: 1px solid var(--ant-line);
+	border-radius: var(--ant-r-sm);
+	font-family: inherit;
+	font-size: 15.5px;
+}
+
+.ant-comments .submit {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 50px;
+	padding: 0 26px;
+	border: 0;
+	border-radius: 999px;
+	background: linear-gradient(160deg, var(--ant-accent), var(--ant-accent-deep));
+	color: #fff;
+	font-family: inherit;
+	font-size: 15.5px;
+	font-weight: 700;
+	cursor: pointer;
+}
+
+/* =========================================================================
+ * 11. Forms and page furniture
+ * ====================================================================== */
+
+.ant-contact-grid {
+	display: grid;
+	grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr);
+	gap: clamp(22px, 3vw, 38px);
+	align-items: start;
+}
+
+.ant-contact-cards {
+	display: grid;
+	gap: 14px;
+}
+
+.ant-contact-card {
+	padding: 24px;
+	border-radius: var(--ant-r);
+}
+
+.ant-contact-card b {
+	display: block;
+	font-size: 17px;
+	font-weight: 700;
+}
+
+.ant-contact-card > span:not(.ant-contact-ic) {
+	display: block;
+	margin-top: 6px;
+	color: var(--ant-ink-2);
+	font-size: 15px;
+	line-height: 1.55;
+}
+
+.ant-contact-link {
+	display: inline-block;
+	margin-top: 12px;
+	font-weight: 700;
+}
+
+.ant-form-panel {
+	padding: clamp(26px, 3vw, 38px);
+	border-radius: var(--ant-r-lg);
+}
+
+.ant-form-panel--wide {
+	margin-top: 26px;
+}
+
+.ant-form-title {
+	margin: 0;
+	font-size: 22px;
+}
+
+.ant-form-hint {
+	margin: 8px 0 22px;
+	color: var(--ant-ink-3);
+	font-size: 14.5px;
+	line-height: 1.55;
+}
+
+/* Whatever form plugin is in use, its controls should look like ours. */
+.ant-form-body input[type="text"],
+.ant-form-body input[type="email"],
+.ant-form-body input[type="tel"],
+.ant-form-body input[type="url"],
+.ant-form-body input[type="number"],
+.ant-form-body select,
+.ant-form-body textarea {
+	width: 100%;
+	padding: 13px 16px;
+	background: #fff;
+	border: 1px solid var(--ant-line);
+	border-radius: var(--ant-r-sm);
+	color: var(--ant-ink);
+	font-family: inherit;
+	font-size: 15.5px;
+	transition: border-color var(--ant-t), box-shadow var(--ant-t);
+}
+
+.ant-form-body input:focus,
+.ant-form-body select:focus,
+.ant-form-body textarea:focus {
+	border-color: rgba(var(--ant-accent-rgb), .5);
+	box-shadow: 0 0 0 4px rgba(var(--ant-accent-rgb), .12);
+	outline: none;
+}
+
+.ant-form-body button[type="submit"],
+.ant-form-body input[type="submit"],
+.ant-form-body .forminator-button-submit {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 50px;
+	padding: 0 28px;
+	background: linear-gradient(160deg, var(--ant-accent), var(--ant-accent-deep));
+	border: 0;
+	border-radius: 999px;
+	box-shadow: var(--ant-sh-glow);
+	color: #fff;
+	font-family: inherit;
+	font-size: 15.5px;
+	font-weight: 700;
+	cursor: pointer;
+	transition: transform var(--ant-t), box-shadow var(--ant-t);
+}
+
+.ant-form-body button[type="submit"]:hover,
+.ant-form-body input[type="submit"]:hover,
+.ant-form-body .forminator-button-submit:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 20px 46px rgba(var(--ant-accent-rgb), .34);
+}
+
+.ant-welcome-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, .88fr);
+	gap: clamp(28px, 4vw, 56px);
+	align-items: center;
+}
+
+.ant-welcome-art {
+	margin-top: 30px;
+}
+
+.ant-welcome-panel {
+	position: sticky;
+	top: 100px;
+}
+
+.ant-steps {
+	margin-bottom: 8px;
+}
+
+.ant-step {
+	padding: 26px;
+	border-radius: var(--ant-r);
+}
+
+.ant-step-num {
+	display: inline-block;
+	margin-bottom: 12px;
+	background: linear-gradient(150deg, var(--ant-accent), var(--ant-accent-lift));
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+	font-size: 28px;
+	font-weight: 800;
+	letter-spacing: -.03em;
+}
+
+.ant-step b {
+	display: block;
+	font-size: 18px;
+}
+
+.ant-step > span:last-child {
+	display: block;
+	margin-top: 7px;
+	color: var(--ant-ink-2);
+	font-size: 15px;
+	line-height: 1.55;
+}
+
+.ant-showcase,
+.ant-docs-panel {
+	padding: clamp(24px, 3vw, 44px);
+	border-radius: var(--ant-r-xl);
+}
+
+.ant-groups .ant-group {
+	padding: clamp(24px, 2.6vw, 32px);
+	border-radius: var(--ant-r-lg);
+}
+
+.ant-group-head {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+}
+
+.ant-group-head .ant-group-ic {
+	margin-bottom: 0;
+	flex: 0 0 44px;
+}
+
+.ant-group-head h2 {
+	font-size: 21px;
+}
+
+.ant-docs-index ul {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+	gap: 10px;
+	padding: 0;
+	list-style: none;
+}
+
+.ant-docs-index li {
+	margin: 0;
+}
+
+.ant-docs-index li a {
+	display: block;
+	padding: 14px 18px;
+	background: rgba(255, 255, 255, .7);
+	border: 1px solid var(--ant-line-2);
+	border-radius: var(--ant-r-sm);
+	color: var(--ant-ink);
+	font-weight: 600;
+	text-decoration: none;
+	transition: border-color var(--ant-t), transform var(--ant-t);
+}
+
+.ant-docs-index li a:hover {
+	border-color: rgba(var(--ant-accent-rgb), .35);
+	transform: translateY(-2px);
+}
+
+/* =========================================================================
+ * 12. Responsive
+ * ====================================================================== */
+
+@media (max-width: 1080px) {
+	.ant-hero-grid,
+	.ant-geo-grid,
+	.ant-page-hero-grid,
+	.ant-welcome-grid,
+	.ant-contact-grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.ant-hero-chip--1 { top: 4%; left: 2%; }
+	.ant-hero-chip--2 { top: 22%; right: 2%; }
+	.ant-hero-chip--3 { bottom: 22%; left: 2%; }
+	.ant-hero-chip--4 { bottom: 4%; right: 4%; }
+	.ant-hero-chip--5 { display: none; }
+
+	.ant-reading-grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.ant-reading-rail {
+		position: static;
+	}
+
+	.ant-welcome-panel {
+		position: static;
+	}
+
+	.ant-compat {
+		/* Read by the flow script: stacked columns have no left-to-right. */
+		--ant-compat-flow: off;
+		grid-template-columns: minmax(0, 1fr);
+		gap: 26px;
+	}
+
+	.ant-compat-col--out .ant-compat-item {
+		flex-direction: row;
+		text-align: left;
+	}
+
+	.ant-compat-hub {
+		order: -1;
+	}
+}
+
+@media (max-width: 960px) {
+	.ant-plans--3,
+	.ant-plans--4 {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.ant-grid--3 {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.ant-footer-top {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+@media (max-width: 880px) {
+	.ant-header-inner {
+		height: 66px;
+	}
+
+	.ant-burger {
+		display: flex;
+	}
+
+	.ant-nav {
+		position: absolute;
+		top: 100%;
+		left: 0;
+		right: 0;
+		display: none;
+		padding: 14px clamp(20px, 4vw, 44px) 20px;
+		background: rgba(255, 255, 255, .97);
+		border-bottom: 1px solid var(--ant-line);
+		box-shadow: var(--ant-sh-2);
+		-webkit-backdrop-filter: blur(16px);
+		backdrop-filter: blur(16px);
+		max-height: calc(100vh - 66px);
+		overflow: auto;
+	}
+
+	.ant-header.nav-open .ant-nav {
+		display: block;
+	}
+
+	.ant-menu {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 2px;
+	}
+
+	.ant-menu a {
+		padding: 13px 14px;
+		border-radius: var(--ant-r-xs);
+		font-size: 16px;
+	}
+
+	.ant-menu .sub-menu {
+		position: static;
+		display: block;
+		opacity: 1;
+		visibility: visible;
+		transform: none;
+		margin: 0 0 4px 14px;
+		padding: 0;
+		background: none;
+		border: 0;
+		box-shadow: none;
+	}
+}
+
+@media (max-width: 760px) {
+	body.ant-site {
+		font-size: 16.5px;
+	}
+
+	.ant-grid--2,
+	.ant-grid--3,
+	.ant-plans--2,
+	.ant-plans--3,
+	.ant-plans--4 {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.ant-stat + .ant-stat {
+		border-left: 0;
+		border-top: 1px solid var(--ant-line-2);
+	}
+
+	.ant-toolbar {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.ant-search {
+		max-width: none;
+	}
+
+	.ant-chips {
+		justify-content: flex-start;
+	}
+
+	.ant-actions .ant-btn {
+		flex: 1 1 auto;
+	}
+
+	.ant-footer-cta-card,
+	.ant-sales,
+	.ant-post-cta {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.ant-hero-chip {
+		display: none;
+	}
+}
+
+@media (max-width: 560px) {
+	.ant-brand-name {
+		font-size: 16px;
+	}
+
+	.ant-header-actions .ant-btn {
+		padding: 0 15px;
+		font-size: 14px;
+	}
+}
+
+/*
+ * The narrowest phones still in use are 320px wide, and at that width the
+ * header ran out of room: the site name broke onto a second line and shoved
+ * itself into the button beside it. Nothing is hidden - the name, the button
+ * and the menu all still matter on a small screen - the row is just tightened
+ * until the four of them fit, and the name is told never to wrap.
+ */
+@media (max-width: 420px) {
+	.ant-header-inner {
+		gap: 10px;
+		padding: 0 14px;
+	}
+
+	.ant-brand {
+		gap: 8px;
+		min-width: 0;
+	}
+
+	.ant-brand-logo {
+		width: 30px;
+		height: 30px;
+		border-radius: 9px;
+	}
+
+	.ant-brand-name {
+		font-size: 15px;
+		white-space: nowrap;
+	}
+
+	.ant-header-actions {
+		gap: 8px;
+	}
+
+	.ant-header-actions .ant-btn {
+		padding: 0 12px;
+		font-size: 13.5px;
+	}
+
+	.ant-burger {
+		width: 40px;
+		height: 40px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ant-site *,
+	.ant-site *::before,
+	.ant-site *::after {
+		animation-duration: .01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: .01ms !important;
+		scroll-behavior: auto !important;
+	}
+}
+
+@media print {
+	.ant-header,
+	.ant-announce,
+	.ant-footer,
+	.ant-footer-cta,
+	.ant-reading-rail,
+	.ant-post-cta,
+	.ant-orb,
+	.ant-mesh {
+		display: none !important;
+	}
+
+	.ant-paper {
+		box-shadow: none;
+		border: 0;
+	}
+}
+
+/* =========================================================================
+ * 13. Language switch
+ * ====================================================================== */
+
+.ant-langs {
+	display: inline-flex;
+	align-items: center;
+	gap: 2px;
+	padding: 3px;
+	background: rgba(var(--ant-accent-rgb), .07);
+	border: 1px solid rgba(var(--ant-accent-rgb), .13);
+	border-radius: 999px;
+}
+
+.ant-langs .ant-lang {
+	display: inline-flex;
+	align-items: center;
+	padding: 6px 13px;
+	border-radius: 999px;
+	color: var(--ant-ink-2);
+	font-size: 13.5px;
+	font-weight: 700;
+	line-height: 1;
+	white-space: nowrap;
+	transition: background var(--ant-t), color var(--ant-t);
+}
+
+.ant-langs .ant-lang:hover {
+	color: var(--ant-accent-deep);
+}
+
+.ant-langs .ant-lang.is-current {
+	background: var(--ant-white);
+	color: var(--ant-ink);
+	box-shadow: var(--ant-sh-1);
+}
+
+/* The nav copy exists for the phone menu; the bar copy for everything else. */
+.ant-langs--nav {
+	display: none;
+	margin-top: 12px;
+}
+
+.ant-langs--footer {
+	background: none;
+	border-color: var(--ant-line);
+}
+
+/* =========================================================================
+ * 14. The trust bar
+ * ====================================================================== */
+
+/*
+ * These lines answer the last objection before somebody buys - "is it really
+ * mine", "can I get my money back". They used to be set as 13px grey text
+ * with a diamond between them, which is the typography of a disclaimer. A
+ * promise gets a tick, a card, and type you can read at a glance.
+ */
+.ant-trustbar {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 10px;
+	margin: 0 auto clamp(40px, 5vw, 70px);
+	padding: 0;
+	list-style: none;
+}
+
+.ant-trustbar-item {
+	display: inline-flex;
+	align-items: center;
+	gap: 9px;
+	padding: 11px 18px 11px 12px;
+	background: var(--ant-white);
+	border: 1px solid var(--ant-line);
+	border-radius: 999px;
+	box-shadow: var(--ant-sh-1);
+	color: var(--ant-ink);
+	font-size: 14.5px;
+	font-weight: 700;
+	letter-spacing: -.005em;
+}
+
+.ant-trustbar-mark {
+	display: grid;
+	place-items: center;
+	width: 24px;
+	height: 24px;
+	flex: 0 0 24px;
+	border-radius: 50%;
+	background: linear-gradient(150deg, var(--ant-accent), var(--ant-accent-deep));
+	color: #fff;
+	box-shadow: 0 4px 12px rgba(var(--ant-accent-rgb), .32);
+}
+
+/* The tick is a 24-unit glyph drawn at 14px; without this it thins out to
+   about one pixel and reads as an empty blue dot. */
+.ant-trustbar-mark .ant-ic path {
+	stroke-width: 3;
+}
+
+.ant-trustbar--strong .ant-trustbar-item {
+	padding: 13px 22px 13px 14px;
+	font-size: 15.5px;
+}
+
+/* In the footer the cards would fight the band, so it is a plain row. */
+.ant-trustbar--footer {
+	margin: clamp(30px, 4vw, 46px) 0 0;
+	padding: 24px 0 0;
+	border-top: 1px solid var(--ant-line-2);
+	gap: 10px 14px;
+}
+
+.ant-trustbar--footer .ant-trustbar-item {
+	padding: 0;
+	background: none;
+	border: 0;
+	box-shadow: none;
+	color: var(--ant-ink-2);
+	font-size: 14px;
+}
+
+.ant-trustbar--footer .ant-trustbar-mark {
+	width: 20px;
+	height: 20px;
+	flex: 0 0 20px;
+	box-shadow: none;
+}
+
+.ant-footer-base {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 14px;
+	margin-top: 18px;
+}
+
+.ant-footer-base .ant-footer-legal {
+	margin: 0;
+	text-align: start;
+}
+
+/* The hero reassurance line, given the same confidence. */
+.ant-proof {
+	font-weight: 600;
+}
+
+/* =========================================================================
+ * 15. The compatibility flow lines
+ * ====================================================================== */
+
+.ant-compat-flow {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+	overflow: visible;
+	z-index: 0;
+}
+
+/* The pills and the hub sit above the lines, so a line can tuck under them. */
+.ant-compat-col,
+.ant-compat-hub {
+	position: relative;
+	z-index: 1;
+}
+
+.ant-compat-line {
+	stroke: rgba(var(--ant-accent-rgb), .38);
+	stroke-width: 1.6;
+	stroke-linecap: round;
+}
+
+/* Outbound lines read as the result, so they are drawn a shade stronger. */
+.ant-compat-line--out {
+	stroke: rgba(var(--ant-accent-rgb), .55);
+	stroke-width: 1.8;
+}
+
+.ant-compat-line.is-drawing {
+	stroke-dasharray: 1200;
+	stroke-dashoffset: 1200;
+	animation: ant-flow-draw 1.1s cubic-bezier(.35, .8, .35, 1) forwards;
+	animation-delay: var(--ant-flow-delay, 0s);
+}
+
+@keyframes ant-flow-draw {
+	to {
+		stroke-dashoffset: 0;
+	}
+}
+
+/*
+ * The travelling light. Each path carries pathLength="100", so the dash maths
+ * is a percentage of the curve rather than its real length - the long lines to
+ * the far pills and the short ones beside the hub carry the same shape of
+ * light and take the same time to cross.
+ *
+ * Walking stroke-dashoffset from 100 to 0 moves the pattern one whole period
+ * along the path, which reads as travel from the start of the curve to its end.
+ * The period and the distance match, so the loop has no seam.
+ *
+ * What stops it looking like a dash: it is long and soft rather than short and
+ * hard. A 22-unit segment is nearly a quarter of the curve, `blur` melts its
+ * two ends into the line it is riding, and low opacity keeps it a brightening
+ * of the wire instead of an object sitting on top of one. The blur is on a
+ * duplicate path only - the crisp line underneath is untouched, so the diagram
+ * does not go soft.
+ */
+.ant-compat-pulse {
+	stroke: rgba(var(--ant-accent-rgb), .55);
+	stroke-width: 2.6;
+	stroke-linecap: round;
+	stroke-dasharray: 22 78;
+	stroke-dashoffset: 100;
+	filter: blur(2.5px);
+}
+
+.ant-compat-pulse--out {
+	stroke: rgba(var(--ant-accent-rgb), .7);
+	stroke-width: 3;
+}
+
+/*
+ * Only while the diagram is on screen. An infinite animation on a section
+ * somewhere below the fold costs battery for something nobody is looking at,
+ * and this one is decorative by definition.
+ */
+.ant-compat.is-live .ant-compat-pulse {
+	animation: ant-flow-pulse 4.6s linear infinite;
+	animation-delay: var(--ant-pulse-delay, 0s);
+}
+
+@keyframes ant-flow-pulse {
+	from {
+		stroke-dashoffset: 100;
+	}
+
+	to {
+		stroke-dashoffset: 0;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ant-compat-line.is-drawing {
+		animation: none;
+		stroke-dasharray: none;
+		stroke-dashoffset: 0;
+	}
+
+	/* The dot is motion and nothing else, so it has no still version. */
+	.ant-compat-pulse {
+		display: none;
+	}
+}
+
+/* =========================================================================
+ * 16. The documentation hub
+ * ====================================================================== */
+
+.ant-docs {
+	display: grid;
+	gap: clamp(22px, 3vw, 34px);
+}
+
+.ant-docs-search {
+	display: flex;
+	gap: 10px;
+	align-items: stretch;
+}
+
+.ant-docs-search-field {
+	position: relative;
+	display: flex;
+	align-items: center;
+	flex: 1;
+	min-width: 0;
+	background: var(--ant-white);
+	border: 1px solid var(--ant-line);
+	border-radius: 999px;
+	box-shadow: var(--ant-sh-2);
+	transition: border-color var(--ant-t), box-shadow var(--ant-t);
+}
+
+.ant-docs-search-field:focus-within {
+	border-color: rgba(var(--ant-accent-rgb), .45);
+	box-shadow: 0 0 0 4px rgba(var(--ant-accent-rgb), .12), var(--ant-sh-2);
+}
+
+.ant-docs-search-ic {
+	display: grid;
+	place-items: center;
+	padding-inline-start: 20px;
+	color: var(--ant-ink-4);
+	flex: 0 0 auto;
+}
+
+.ant-docs-search-field input[type="search"] {
+	flex: 1;
+	min-width: 0;
+	padding: 17px 16px;
+	background: none;
+	border: 0;
+	color: var(--ant-ink);
+	font-family: inherit;
+	font-size: 16.5px;
+	font-weight: 500;
+	appearance: none;
+	-webkit-appearance: none;
+}
+
+.ant-docs-search-field input[type="search"]::-webkit-search-cancel-button {
+	display: none;
+}
+
+.ant-docs-search-field input:focus {
+	outline: none;
+}
+
+.ant-docs-search-clear {
+	margin-inline-end: 12px;
+	width: 30px;
+	height: 30px;
+	flex: 0 0 30px;
+	background: var(--ant-tint);
+	border: 0;
+	border-radius: 50%;
+	color: var(--ant-ink-3);
+	font-size: 19px;
+	line-height: 1;
+	cursor: pointer;
+}
+
+.ant-docs-search-clear:hover {
+	background: var(--ant-tint-2);
+	color: var(--ant-ink);
+}
+
+/* Only reachable without JavaScript; typing filters the page otherwise. */
+.ant-docs-search-go {
+	flex: 0 0 auto;
+}
+
+.ant-docs-chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.ant-docs-chips .ant-chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 9px 16px;
+	background: var(--ant-white);
+	border: 1px solid var(--ant-line);
+	border-radius: 999px;
+	color: var(--ant-ink-2);
+	font-family: inherit;
+	font-size: 14px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: border-color var(--ant-t), color var(--ant-t), background var(--ant-t);
+}
+
+.ant-docs-chips .ant-chip span {
+	padding: 1px 7px;
+	background: var(--ant-tint);
+	border-radius: 999px;
+	color: var(--ant-ink-4);
+	font-size: 12px;
+	font-weight: 700;
+}
+
+.ant-docs-chips .ant-chip:hover {
+	border-color: rgba(var(--ant-accent-rgb), .35);
+	color: var(--ant-ink);
+}
+
+.ant-docs-chips .ant-chip.is-current {
+	background: var(--ant-accent);
+	border-color: var(--ant-accent);
+	color: #fff;
+}
+
+.ant-docs-chips .ant-chip.is-current span {
+	background: rgba(255, 255, 255, .22);
+	color: #fff;
+}
+
+.ant-docs-groups {
+	display: grid;
+	gap: clamp(26px, 3vw, 40px);
+}
+
+.ant-docs-group-title {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin: 0 0 16px;
+	font-size: clamp(19px, 1.6vw, 22px);
+	font-weight: 800;
+	letter-spacing: -.02em;
+}
+
+.ant-docs-group-title span {
+	padding: 2px 9px;
+	background: rgba(var(--ant-accent-rgb), .10);
+	border-radius: 999px;
+	color: var(--ant-accent-deep);
+	font-size: 12.5px;
+	font-weight: 700;
+}
+
+.ant-docs-cards {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+	gap: 12px;
+}
+
+.ant-doc-card {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr) auto;
+	align-items: start;
+	gap: 14px;
+	padding: 20px 22px;
+	background: var(--ant-white);
+	border: 1px solid var(--ant-line);
+	border-radius: var(--ant-r);
+	box-shadow: var(--ant-sh-1);
+	color: var(--ant-ink);
+	transition: transform var(--ant-t), box-shadow var(--ant-t), border-color var(--ant-t);
+}
+
+.ant-doc-card:hover {
+	transform: translateY(-3px);
+	border-color: rgba(var(--ant-accent-rgb), .32);
+	box-shadow: var(--ant-sh-2);
+	color: var(--ant-ink);
+}
+
+.ant-doc-card-ic {
+	display: grid;
+	place-items: center;
+	width: 38px;
+	height: 38px;
+	background: rgba(var(--ant-accent-rgb), .10);
+	border: 1px solid rgba(var(--ant-accent-rgb), .14);
+	border-radius: 12px;
+	color: var(--ant-accent);
+}
+
+.ant-doc-card-body {
+	display: block;
+	min-width: 0;
+}
+
+.ant-doc-card-title {
+	display: block;
+	font-size: 16.5px;
+	font-weight: 700;
+	line-height: 1.35;
+}
+
+.ant-doc-card-sub {
+	display: block;
+	margin-top: 5px;
+	color: var(--ant-ink-2);
+	font-size: 14.5px;
+	line-height: 1.5;
+}
+
+.ant-doc-card-go {
+	color: var(--ant-ink-4);
+	font-size: 18px;
+	transition: transform var(--ant-t), color var(--ant-t);
+}
+
+.ant-doc-card:hover .ant-doc-card-go {
+	transform: translateX(3px);
+	color: var(--ant-accent);
+}
+
+.ant-docs-empty {
+	margin: 0;
+	padding: 40px 24px;
+	background: var(--ant-tint);
+	border-radius: var(--ant-r);
+	color: var(--ant-ink-3);
+	font-size: 16px;
+	text-align: center;
+}
+
+/* ---- a single guide ---- */
+
+/*
+ * The plugin wraps a guide in .antradus-doc-layout with its own contents list
+ * down the left. The theme no longer puts a rail on the right of it, so the
+ * guide gets the whole measure: a contents list on one side, nothing on the
+ * other, and the words in between.
+ */
+.ant-reading-grid--solo {
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.ant-reading-grid--solo .ant-paper-inner {
+	max-width: none;
+}
+
+.antradus-doc-layout {
+	display: grid;
+	grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
+	gap: clamp(24px, 3vw, 46px);
+	align-items: start;
+}
+
+.antradus-doc-toc {
+	position: sticky;
+	top: 92px;
+	max-height: calc(100vh - 120px);
+	padding: 20px;
+	background: var(--ant-tint);
+	border: 1px solid var(--ant-line-2);
+	border-radius: var(--ant-r);
+	overflow: auto;
+	overscroll-behavior: contain;
+}
+
+.antradus-doc-toc-title {
+	margin: 0 0 12px;
+	color: var(--ant-ink-3);
+	font-size: 11.5px;
+	font-weight: 700;
+	letter-spacing: .12em;
+	text-transform: uppercase;
+}
+
+.antradus-doc-toc-cat h4 {
+	margin: 16px 0 6px;
+	font-size: 13.5px;
+	font-weight: 800;
+}
+
+.antradus-doc-toc-cat:first-of-type h4 {
+	margin-top: 0;
+}
+
+.antradus-doc-toc ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.antradus-doc-toc li a {
+	display: block;
+	padding: 7px 10px;
+	border-radius: var(--ant-r-xs);
+	color: var(--ant-ink-2);
+	font-size: 14.5px;
+	line-height: 1.4;
+	transition: background var(--ant-t), color var(--ant-t);
+}
+
+.antradus-doc-toc li a:hover {
+	background: rgba(var(--ant-accent-rgb), .08);
+	color: var(--ant-ink);
+}
+
+.antradus-doc-toc li a.is-current {
+	background: var(--ant-accent);
+	color: #fff;
+	font-weight: 700;
+}
+
+.antradus-doc-body {
+	min-width: 0;
+}
+
+@media (max-width: 900px) {
+	.antradus-doc-layout {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.antradus-doc-toc {
+		position: static;
+		max-height: none;
+	}
+}
+
+/* =========================================================================
+ * 17. Quotations
+ * ====================================================================== */
+
+/*
+ * A pull quote is the one moment an article raises its voice, so it is set
+ * like one: a serif at display size on a tinted sheet, with a drawn quote mark
+ * behind it and an accent rule down the side. The old version was a grey box
+ * with a 3px border and body-size text, which read as a warning notice.
+ */
+.ant-prose blockquote {
+	position: relative;
+	margin: 2.4em 0;
+	padding: clamp(28px, 3vw, 40px) clamp(26px, 3vw, 44px) clamp(26px, 3vw, 36px) clamp(34px, 4vw, 56px);
+	background: linear-gradient(152deg, var(--ant-tint), rgba(var(--ant-accent-rgb), .05));
+	border: 1px solid rgba(var(--ant-accent-rgb), .16);
+	border-left: 0;
+	border-radius: var(--ant-r-lg);
+	color: var(--ant-ink);
+	font-family: var(--ant-serif);
+	font-size: clamp(22px, 2.2vw, 29px);
+	font-style: italic;
+	font-weight: 400;
+	line-height: 1.42;
+	letter-spacing: -.015em;
+	overflow: hidden;
+}
+
+/* The accent rule: a gradient, not a flat 3px line. */
+.ant-prose blockquote::before {
+	content: "";
+	position: absolute;
+	inset-block: 0;
+	inset-inline-start: 0;
+	width: 5px;
+	background: linear-gradient(180deg, var(--ant-accent), var(--ant-accent-lift));
+}
+
+/*
+ * The quote mark sits behind the words rather than in front of them.
+ *
+ * Note the offsets are in em of the mark's OWN 7em size, not of the body text
+ * - so a value that looks like a nudge is about seventy pixels. The first
+ * version used -.28em and the whole glyph landed outside the box, where
+ * overflow: hidden ate it.
+ */
+.ant-prose blockquote::after {
+	content: "\201C";
+	position: absolute;
+	top: -.02em;
+	inset-inline-end: .08em;
+	color: rgba(var(--ant-accent-rgb), .14);
+	font-family: var(--ant-serif);
+	font-size: 7em;
+	line-height: 1;
+	pointer-events: none;
+	user-select: none;
+}
+
+.ant-prose blockquote p {
+	position: relative;
+	z-index: 1;
+	margin: 0 0 .6em;
+}
+
+.ant-prose blockquote p:last-child {
+	margin-bottom: 0;
+}
+
+/* An attribution line drops back to the sans face: small, quiet, factual. */
+.ant-prose blockquote cite,
+.ant-prose blockquote footer {
+	display: block;
+	margin-top: 1em;
+	color: var(--ant-ink-3);
+	font-family: var(--ant-sans);
+	font-size: 15px;
+	font-style: normal;
+	font-weight: 700;
+	letter-spacing: 0;
+}
+
+.ant-prose blockquote cite::before,
+.ant-prose blockquote footer::before {
+	content: "\2014\00a0";
+	color: var(--ant-accent);
+}
+
+/* WordPress's own pull-quote block, given the same treatment. */
+.ant-prose .wp-block-pullquote {
+	margin: 2.4em 0;
+	padding: 0;
+	border: 0;
+	background: none;
+	text-align: inherit;
+}
+
+.ant-prose .wp-block-pullquote blockquote {
+	margin: 0;
+}
+
+/* =========================================================================
+ * 18. Contact cards
+ * ====================================================================== */
+
+.ant-contact-head {
+	display: flex;
+	align-items: center;
+	gap: 13px;
+	margin-bottom: 10px;
+}
+
+.ant-contact-head .ant-contact-ic {
+	margin-bottom: 0;
+	flex: 0 0 44px;
+	color: var(--ant-accent);
+}
+
+.ant-contact-head b {
+	font-size: 17px;
+	font-weight: 700;
+	line-height: 1.3;
+}
+
+.ant-contact-link span {
+	display: inline-block;
+	margin-inline-start: 4px;
+	transition: transform var(--ant-t);
+}
+
+/* =========================================================================
+ * 19. Wider layouts
+ * ====================================================================== */
+
+/*
+ * With the measure opened up, a few grids that looked right at 1320px turn
+ * into a row of very tall, very narrow cards. These give the extra width
+ * somewhere useful to go instead of stretching what was already right.
+ */
+@media (min-width: 1500px) {
+	.ant-docs-cards {
+		grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+	}
+
+	.ant-compat {
+		gap: clamp(40px, 5vw, 90px);
+	}
+
+	.ant-reading-grid {
+		gap: clamp(34px, 4vw, 70px);
+	}
+}
+
+@media (max-width: 880px) {
+	.ant-langs--nav {
+		display: flex;
+		width: 100%;
+		justify-content: center;
+	}
+
+	.ant-langs--bar {
+		display: none;
+	}
+}
+
+@media (max-width: 760px) {
+	.ant-docs-search {
+		flex-direction: column;
+	}
+
+	.ant-docs-search-go {
+		width: 100%;
+	}
+
+	.ant-doc-card {
+		padding: 17px 18px;
+	}
+
+	.ant-footer-base {
+		justify-content: center;
+	}
+
+	.ant-footer-base .ant-footer-legal {
+		text-align: center;
+		width: 100%;
+	}
+}

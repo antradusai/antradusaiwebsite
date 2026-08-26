@@ -1,0 +1,271 @@
+/*
+ * Antradus theme - right to left.
+ *
+ * Loaded only when the page is Arabic, on top of theme.css.
+ *
+ * Most of the layout needs nothing here, because it is built from flexbox and
+ * grid, and both of those already flow from the writing direction: setting
+ * dir="rtl" on <html> mirrors a row without a line of CSS. What is left is the
+ * handful of places where the design used a physical direction that has no
+ * opinion about writing - a left border, a translateX, a text-align: left, a
+ * corner rounded on one side - plus the two things that genuinely differ in
+ * Arabic: the typeface, and what to do with an italic serif accent that has no
+ * Arabic italic to fall back on.
+ *
+ * Everything is scoped to [dir="rtl"] so this file can never affect an English
+ * page even if a cache serves it to the wrong one.
+ */
+
+/* =========================================================================
+ * 1. Type
+ * ====================================================================== */
+
+/*
+ * Plus Jakarta Sans has no Arabic glyphs at all, so an unstyled Arabic page
+ * falls back to whatever the operating system offers - which is Times on some
+ * machines and a placeholder box on others. IBM Plex Sans Arabic is the face
+ * that carries the same voice: geometric, quiet, and drawn to sit beside a
+ * Latin sans without either one looking borrowed.
+ *
+ * The Latin stack stays behind it, because product names, version numbers and
+ * prices are still Latin inside an Arabic sentence.
+ */
+[dir="rtl"] body.ant-site {
+	font-family: "IBM Plex Sans Arabic", "Plus Jakarta Sans", "Segoe UI", Tahoma, sans-serif;
+	/* Arabic sits taller in the line and needs the extra leading to breathe. */
+	line-height: 1.8;
+	letter-spacing: 0;
+}
+
+[dir="rtl"] .ant-h1,
+[dir="rtl"] .ant-h2,
+[dir="rtl"] .ant-h1-line,
+[dir="rtl"] .ant-paper-title,
+[dir="rtl"] .ant-docs-group-title,
+[dir="rtl"] .ant-plan-name {
+	/* Latin display type is tracked in tight. Arabic letterforms join, so the
+	   same negative tracking crowds them into each other. */
+	letter-spacing: 0;
+	line-height: 1.4;
+}
+
+/*
+ * The *accent* mark in a heading is a serif italic in English. Arabic has no
+ * italic - slanting Arabic type is a Latin habit applied to a script that does
+ * not use it, and Instrument Serif has no Arabic glyphs to slant in any case.
+ * The accent still has to read as the accent, so it becomes what emphasis
+ * actually is in Arabic display type: the same face, heavier, in the brand
+ * colour.
+ */
+[dir="rtl"] .ant-ital {
+	font-family: inherit;
+	font-style: normal;
+	font-weight: 700;
+	color: var(--ant-accent);
+}
+
+/* Numbers, prices and product names read left to right inside Arabic text. */
+[dir="rtl"] .ant-plan-figure,
+[dir="rtl"] .ant-stat-value,
+[dir="rtl"] .ant-paper-meta {
+	direction: ltr;
+	unicode-bidi: isolate;
+}
+
+/* =========================================================================
+ * 2. Things that were pinned to a physical side
+ * ====================================================================== */
+
+[dir="rtl"] .ant-skip {
+	right: -9999px;
+	left: auto;
+	border-radius: 0 0 0 var(--ant-r-sm);
+}
+
+[dir="rtl"] .ant-skip:focus {
+	right: 0;
+	left: auto;
+}
+
+[dir="rtl"] .ant-head--left,
+[dir="rtl"] .ant-geo-copy .ant-head {
+	text-align: right;
+}
+
+[dir="rtl"] .ant-footer-base .ant-footer-legal {
+	text-align: right;
+}
+
+/* The blog index and article furniture. */
+[dir="rtl"] .ant-back span,
+[dir="rtl"] .ant-contact-link span,
+[dir="rtl"] .ant-doc-card-go {
+	/* An arrow means "onward", and onward is the other way here. */
+	transform: scaleX(-1);
+	display: inline-block;
+}
+
+[dir="rtl"] .ant-doc-card:hover .ant-doc-card-go {
+	transform: scaleX(-1) translateX(3px);
+}
+
+[dir="rtl"] .ant-contact-link:hover span {
+	transform: scaleX(-1) translateX(3px);
+}
+
+[dir="rtl"] .ant-announce-link span {
+	transform: scaleX(-1);
+	display: inline-block;
+}
+
+/* =========================================================================
+ * 3. The compatibility diagram
+ * ====================================================================== */
+
+/*
+ * The grid mirrors itself - sources land on the right, destinations on the
+ * left - which is correct: in Arabic the reading eye starts on the right, so
+ * "what goes in" belongs there. The pill contents were flipped by hand in the
+ * original, so they have to be flipped back.
+ */
+[dir="rtl"] .ant-compat-col--out .ant-compat-item {
+	flex-direction: row-reverse;
+	text-align: left;
+}
+
+[dir="rtl"] .ant-compat-col--in .ant-compat-item {
+	flex-direction: row;
+	text-align: right;
+}
+
+/* =========================================================================
+ * 4. Quotations
+ * ====================================================================== */
+
+/*
+ * The accent rule and the quote mark are already on logical properties in
+ * theme.css, so they mirror on their own. What does not mirror is the glyph:
+ * U+201C is a left double quotation mark, and Arabic opens a quote with the
+ * mirrored one.
+ */
+[dir="rtl"] .ant-prose blockquote::after {
+	content: "\201D";
+}
+
+[dir="rtl"] .ant-prose blockquote {
+	font-family: inherit;
+	font-style: normal;
+	font-weight: 600;
+	font-size: clamp(19px, 1.8vw, 24px);
+	line-height: 1.7;
+	letter-spacing: 0;
+}
+
+[dir="rtl"] .ant-prose blockquote cite::before,
+[dir="rtl"] .ant-prose blockquote footer::before {
+	content: "\00a0\2014";
+}
+
+/* =========================================================================
+ * 5. Lists and prose
+ * ====================================================================== */
+
+[dir="rtl"] .ant-prose ul,
+[dir="rtl"] .ant-prose ol {
+	padding-right: 1.3em;
+	padding-left: 0;
+}
+
+[dir="rtl"] .ant-prose table th,
+[dir="rtl"] .ant-prose table td {
+	text-align: right;
+}
+
+/* Code stays left to right - it is not Arabic, whatever surrounds it. */
+[dir="rtl"] .ant-prose pre,
+[dir="rtl"] .ant-prose code {
+	direction: ltr;
+	text-align: left;
+	unicode-bidi: isolate;
+}
+
+/* =========================================================================
+ * 6. The comparison table
+ * ====================================================================== */
+
+[dir="rtl"] .ant-cmp th,
+[dir="rtl"] .ant-cmp td {
+	text-align: right;
+}
+
+[dir="rtl"] .ant-cmp .ant-cmp-c {
+	text-align: center;
+}
+
+/* =========================================================================
+ * 7. The documentation hub
+ * ====================================================================== */
+
+[dir="rtl"] .ant-docs-search-field input[type="search"] {
+	text-align: right;
+}
+
+[dir="rtl"] .antradus-doc-toc li a.is-current {
+	/* The current-guide marker was a left edge; here it is a right one. */
+	border-inline-start: 0;
+}
+
+/*
+ * The English wording under a translation field keeps its own direction.
+ */
+[dir="rtl"] [lang="en"] {
+	direction: ltr;
+	text-align: left;
+	unicode-bidi: isolate;
+}
+
+/* =========================================================================
+ * 8. Text that might not be Arabic
+ * ====================================================================== */
+
+/*
+ * Not everything on an Arabic page is Arabic. The guides are published by the
+ * plugin and are written in English; a plan can be called "Pro"; a source can
+ * be "Apple Podcasts". Dropping an English sentence into an RTL paragraph is
+ * the classic bidi failure - the full stop migrates to the front of the line
+ * and a trailing ellipsis appears at the wrong end, so the words are right and
+ * the punctuation is nonsense.
+ *
+ * unicode-bidi: plaintext is the CSS form of dir="auto": each paragraph takes
+ * its direction from its own first strong character. An Arabic guide title
+ * reads right to left, an English one reads left to right, and neither needs
+ * marking up by hand - which matters, because this text is not ours to mark up.
+ *
+ * text-align: start is the other half. Without it the alignment stays glued to
+ * the container's direction and an English title sits flush right.
+ */
+[dir="rtl"] .ant-doc-card-title,
+[dir="rtl"] .ant-doc-card-sub,
+[dir="rtl"] .ant-docs-group-title,
+[dir="rtl"] .antradus-doc-toc li a,
+[dir="rtl"] .antradus-doc-toc-cat h4,
+[dir="rtl"] .ant-compat-item span,
+[dir="rtl"] .ant-plan-name,
+[dir="rtl"] .ant-plan-sub,
+[dir="rtl"] .ant-cmp-f b,
+[dir="rtl"] .ant-cmp-f span,
+[dir="rtl"] .ant-rail-item-title,
+[dir="rtl"] .ant-card-title,
+[dir="rtl"] .ant-paper-title {
+	unicode-bidi: plaintext;
+	text-align: start;
+}
+
+/*
+ * The chips carry a category name from the plugin and a count. The count is a
+ * separate element, so only the name needs isolating - and the chip itself
+ * stays a row, whichever way its label happens to read.
+ */
+[dir="rtl"] .ant-docs-chips .ant-chip {
+	unicode-bidi: isolate;
+}

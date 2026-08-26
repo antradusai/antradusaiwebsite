@@ -1,0 +1,581 @@
+/*
+ * Antradus theme - the settings screen.
+ *
+ * Deliberately close to core's admin styling, with a little more air. A content
+ * screen someone edits weekly should feel like part of WordPress, not like a
+ * second product bolted onto it.
+ */
+
+.antradus-settings {
+	max-width: 1100px;
+}
+
+.antradus-title {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.antradus-title-mark {
+	display: inline-block;
+	width: 26px;
+	height: 26px;
+	border-radius: 8px;
+	background: linear-gradient(150deg, #1f6feb, #164fa9);
+	box-shadow: 0 4px 14px rgba(31, 111, 235, .32);
+}
+
+.antradus-lede {
+	max-width: 70ch;
+	margin: 6px 0 18px;
+	color: #50596b;
+	font-size: 14px;
+}
+
+.antradus-tabs {
+	margin-bottom: 0;
+}
+
+.antradus-blurb {
+	max-width: 82ch;
+	margin: 18px 0 6px;
+	padding: 12px 16px;
+	background: #f2f6ff;
+	border-left: 3px solid #1f6feb;
+	border-radius: 0 6px 6px 0;
+	color: #384252;
+	font-size: 13.5px;
+	line-height: 1.6;
+}
+
+.antradus-blurb code {
+	background: rgba(31, 111, 235, .09);
+	padding: 1px 6px;
+	border-radius: 4px;
+}
+
+.antradus-card {
+	margin: 18px 0;
+	padding: 8px 22px 18px;
+	background: #fff;
+	border: 1px solid #dcdfe6;
+	border-radius: 10px;
+	box-shadow: 0 1px 2px rgba(16, 24, 40, .04);
+}
+
+.antradus-card-title {
+	margin: 16px 0 4px;
+	padding-bottom: 12px;
+	border-bottom: 1px solid #eef0f4;
+	font-size: 15px;
+	font-weight: 600;
+}
+
+.antradus-card-blurb {
+	max-width: 84ch;
+	margin: 12px 0;
+	color: #5b6472;
+	font-size: 13px;
+	line-height: 1.6;
+}
+
+.antradus-table th {
+	width: 210px;
+	padding-top: 18px;
+	vertical-align: top;
+}
+
+.antradus-table td {
+	padding-top: 14px;
+}
+
+.antradus-wide {
+	width: 100%;
+	max-width: 520px;
+}
+
+.antradus-table textarea {
+	max-width: 640px;
+	font-size: 13.5px;
+	line-height: 1.6;
+}
+
+.antradus-check {
+	display: inline-flex;
+	align-items: center;
+	gap: 9px;
+	padding: 6px 12px 6px 8px;
+	background: #f6f7fa;
+	border: 1px solid #e2e5ec;
+	border-radius: 7px;
+	cursor: pointer;
+}
+
+.antradus-color {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.antradus-color input[type="color"] {
+	width: 46px;
+	height: 34px;
+	padding: 2px;
+	border: 1px solid #dcdfe6;
+	border-radius: 7px;
+	background: #fff;
+	cursor: pointer;
+}
+
+.antradus-color-text {
+	width: 110px;
+	font-family: ui-monospace, Menlo, Consolas, monospace;
+}
+
+.antradus-save {
+	position: sticky;
+	bottom: 0;
+	z-index: 5;
+	margin: 20px 0 0;
+	padding: 14px 0;
+	background: linear-gradient(180deg, rgba(241, 241, 241, 0), #f0f0f1 40%);
+}
+
+/* ------------------------------------------------------------------ media */
+
+.antradus-image {
+	display: flex;
+	align-items: flex-start;
+	gap: 14px;
+	flex-wrap: wrap;
+}
+
+.antradus-image-preview {
+	display: grid;
+	place-items: center;
+	width: 148px;
+	min-height: 92px;
+	padding: 6px;
+	background: #f6f7fa;
+	border: 1px dashed #c9cfda;
+	border-radius: 9px;
+	overflow: hidden;
+}
+
+.antradus-image-preview img {
+	display: block;
+	max-width: 100%;
+	max-height: 130px;
+	border-radius: 5px;
+}
+
+.antradus-image-empty {
+	padding: 4px 8px;
+	color: #7b8595;
+	font-size: 11.5px;
+	line-height: 1.45;
+	text-align: center;
+}
+
+.antradus-image-actions {
+	margin: 0;
+}
+
+.antradus-image-actions .button-link {
+	color: #a4362e;
+	text-decoration: none;
+}
+
+/* -------------------------------------------------------------- repeaters */
+
+.antradus-rep-rows {
+	display: grid;
+	gap: 8px;
+}
+
+.antradus-rep-row {
+	background: #fbfcfe;
+	border: 1px solid #e2e5ec;
+	border-radius: 9px;
+	overflow: hidden;
+}
+
+.antradus-rep-head {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 4px 10px 4px 4px;
+}
+
+.antradus-rep-toggle {
+	display: flex;
+	flex: 1;
+	align-items: center;
+	gap: 10px;
+	padding: 10px 8px;
+	background: none;
+	border: 0;
+	color: #1d2327;
+	font-size: 13.5px;
+	font-weight: 600;
+	text-align: left;
+	cursor: pointer;
+}
+
+.antradus-rep-handle {
+	position: relative;
+	width: 14px;
+	height: 14px;
+	flex: 0 0 14px;
+}
+
+.antradus-rep-handle::before {
+	content: "";
+	position: absolute;
+	left: 3px;
+	top: 3px;
+	width: 6px;
+	height: 6px;
+	border-right: 2px solid #7b8595;
+	border-bottom: 2px solid #7b8595;
+	transform: rotate(-45deg);
+	transition: transform 160ms ease;
+}
+
+.antradus-rep-row.is-open .antradus-rep-handle::before {
+	transform: rotate(45deg) translate(1px, -1px);
+}
+
+.antradus-rep-tools {
+	display: flex;
+	gap: 2px;
+}
+
+.antradus-rep-tools .button-link {
+	width: 28px;
+	height: 28px;
+	line-height: 26px;
+	text-align: center;
+	color: #6b7280;
+	text-decoration: none;
+	border-radius: 5px;
+}
+
+.antradus-rep-tools .button-link:hover {
+	background: #eef1f6;
+	color: #1d2327;
+}
+
+.antradus-rep-drop:hover {
+	background: #fbeaea !important;
+	color: #a4362e !important;
+}
+
+.antradus-rep-body {
+	display: none;
+	grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+	gap: 14px 18px;
+	padding: 4px 16px 18px;
+	border-top: 1px solid #eef0f4;
+}
+
+.antradus-rep-row.is-open .antradus-rep-body {
+	display: grid;
+}
+
+.antradus-rep-field label {
+	display: block;
+	margin-bottom: 5px;
+	color: #50596b;
+	font-size: 12px;
+	font-weight: 600;
+}
+
+.antradus-rep-field input[type="text"],
+.antradus-rep-field select,
+.antradus-rep-field textarea {
+	width: 100%;
+}
+
+.antradus-rep-field textarea {
+	font-size: 13px;
+	line-height: 1.55;
+}
+
+.antradus-rep-field--textarea {
+	grid-column: 1 / -1;
+}
+
+.antradus-rep-field .description {
+	margin-top: 4px;
+	font-size: 11.5px;
+}
+
+.antradus-rep-add {
+	margin: 12px 0 0;
+}
+
+.antradus-rep--wide .antradus-rep-body {
+	grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+}
+
+/* ------------------------------------------------------------ page status */
+
+.antradus-pages {
+	margin: 6px 0 14px;
+}
+
+.antradus-pages td,
+.antradus-pages th {
+	vertical-align: middle;
+}
+
+.antradus-pages code {
+	color: #6b7280;
+	font-size: 11.5px;
+}
+
+.antradus-pill {
+	display: inline-block;
+	padding: 3px 11px;
+	border-radius: 999px;
+	font-size: 12px;
+	font-weight: 600;
+}
+
+.antradus-pill--on {
+	background: rgba(16, 130, 106, .12);
+	color: #0d6b57;
+}
+
+.antradus-pill--off {
+	background: #f0f1f4;
+	color: #6b7280;
+}
+
+.antradus-inline-form {
+	margin: 14px 0 6px;
+	padding: 14px 16px;
+	background: #f7f9ff;
+	border: 1px solid #dbe4f7;
+	border-radius: 8px;
+}
+
+.antradus-inline-form .description {
+	display: inline-block;
+	margin-left: 8px;
+}
+
+@media (max-width: 782px) {
+	.antradus-table th {
+		width: auto;
+		padding-bottom: 4px;
+	}
+
+	.antradus-save {
+		position: static;
+	}
+}
+
+/* ------------------------------------------------------------- languages */
+
+.antradus-langbar {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 16px 0 14px;
+	padding: 8px;
+	background: #fff;
+	border: 1px solid #dcdfe6;
+	border-radius: 10px;
+}
+
+.antradus-langbar-label {
+	margin: 0 6px 0 8px;
+	color: #6b7280;
+	font-size: 12px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: .08em;
+}
+
+.antradus-langbtn {
+	display: inline-flex;
+	align-items: center;
+	gap: 9px;
+	padding: 8px 16px;
+	border-radius: 7px;
+	color: #3c434a;
+	font-size: 13.5px;
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.antradus-langbtn:hover {
+	background: #f2f6ff;
+	color: #1f6feb;
+}
+
+.antradus-langbtn.is-current {
+	background: #1f6feb;
+	color: #fff;
+}
+
+.antradus-langbtn.is-current:hover {
+	background: #1a5fcc;
+	color: #fff;
+}
+
+.antradus-langbtn-count {
+	padding: 1px 8px;
+	background: rgba(31, 111, 235, .12);
+	border-radius: 999px;
+	color: #1f6feb;
+	font-size: 11.5px;
+	font-weight: 700;
+}
+
+.antradus-langbtn.is-current .antradus-langbtn-count {
+	background: rgba(255, 255, 255, .24);
+	color: #fff;
+}
+
+.antradus-translating-note {
+	max-width: 96ch;
+	margin: 0 0 8px;
+	padding: 13px 16px;
+	background: #fff8e8;
+	border-left: 3px solid #d4a017;
+	border-radius: 0 6px 6px 0;
+	color: #4a3a12;
+	font-size: 13.5px;
+	line-height: 1.65;
+}
+
+.antradus-translating-note strong {
+	display: block;
+	margin-bottom: 2px;
+}
+
+/*
+ * The English original, shown under every translation field. It is set small
+ * and quiet because it is reference, not content - but it is always left to
+ * right and left-aligned, whatever the field above it contains.
+ */
+.antradus-source {
+	margin: 6px 0 0;
+	padding: 7px 10px;
+	background: #f6f7fa;
+	border-radius: 6px;
+	color: #50596b;
+	font-size: 12.5px;
+	line-height: 1.55;
+	direction: ltr;
+	text-align: left;
+}
+
+.antradus-source span {
+	display: inline-block;
+	margin-right: 7px;
+	padding: 0 6px;
+	background: #e4e8f0;
+	border-radius: 4px;
+	color: #6b7280;
+	font-size: 10.5px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: .06em;
+	vertical-align: 1px;
+}
+
+/* Arabic fields, in the admin, in a face that has Arabic glyphs. */
+.antradus-settings--translating .antradus-table input[type="text"],
+.antradus-settings--translating .antradus-table textarea,
+.antradus-settings--translating .antradus-rep-field input[type="text"],
+.antradus-settings--translating .antradus-rep-field textarea {
+	font-family: "Segoe UI", Tahoma, "Noto Sans Arabic", sans-serif;
+	font-size: 14.5px;
+	line-height: 1.8;
+}
+
+/* ------------------------------------------------------- pasted snippets */
+
+/*
+ * A pasted Freemius block. Monospace and wrapped, because the point of showing
+ * it back is that the person who pasted it recognises it.
+ */
+textarea.antradus-code {
+	width: 100%;
+	font-family: ui-monospace, Menlo, Consolas, "Courier New", monospace;
+	font-size: 12.5px;
+	line-height: 1.6;
+	background: #fbfcfe;
+	white-space: pre-wrap;
+	word-break: break-word;
+	direction: ltr;
+	text-align: left;
+}
+
+/* ---------------------------------------------------- repeaters, widened */
+
+/*
+ * A repeater's row now spans both table columns.
+ *
+ * It used to be given a <th> that this stylesheet then hid with display:none.
+ * Hiding a table cell removes it from the row, which moved the <td> that
+ * followed it into the FIRST column - the 210px label gutter - so every
+ * repeater rendered about 210px wide with its fields clipped. The comparison
+ * table and the footer link columns were unusable because of it.
+ *
+ * The row is now written as a single <td colspan="2">, so there is no hidden
+ * cell to collapse and no narrow column to fall into.
+ */
+.antradus-rep-label {
+	margin: 0 0 10px;
+	color: #1d2327;
+	font-size: 13.5px;
+	font-weight: 600;
+}
+
+.antradus-row--wide > td {
+	padding-left: 0;
+	padding-right: 0;
+}
+
+.antradus-rep-none {
+	margin: 0;
+	padding: 14px 16px;
+	background: #f6f7fa;
+	border-radius: 8px;
+	color: #6b7280;
+	font-size: 13px;
+}
+
+/* Wider cards get more room per field now that they have the full width. */
+.antradus-rep-body {
+	grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.antradus-rep--wide .antradus-rep-body {
+	grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+
+/* A pasted snippet always gets a row of its own. */
+.antradus-rep-field--code {
+	grid-column: 1 / -1;
+}
+
+/* While translating, the row list is read-only in shape. */
+.antradus-rep--locked .antradus-rep-row {
+	background: #fff;
+}
+
+.antradus-rep--locked .antradus-rep-toggle {
+	cursor: pointer;
+}
+
+@media (max-width: 782px) {
+	.antradus-langbar {
+		flex-wrap: wrap;
+	}
+}
