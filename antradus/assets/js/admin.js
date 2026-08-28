@@ -156,6 +156,32 @@
 		$name.text(value || $row.closest('.antradus-rep').data('single') || 'Item');
 	});
 
+	/* ----------------------------------------------------- section order */
+
+	/*
+	 * Moving a section is moving its row: the hidden input travels with it, and
+	 * the form posts the keys in the order they are left on screen. Only the
+	 * visible numbers have to be redrawn afterwards.
+	 */
+	function renumberOrder($list) {
+		$list.find('.antradus-order-num').each(function (i) {
+			this.textContent = String(i + 1);
+		});
+	}
+
+	$(document).on('click', '.antradus-order-up, .antradus-order-down', function (e) {
+		e.preventDefault();
+		var $row = $(this).closest('.antradus-order-row');
+		var $list = $row.closest('.antradus-order');
+
+		if ($(this).hasClass('antradus-order-up')) {
+			$row.prev('.antradus-order-row').before($row);
+		} else {
+			$row.next('.antradus-order-row').after($row);
+		}
+		renumberOrder($list);
+	});
+
 	/* ------------------------------------------------- unsaved-work guard */
 
 	var dirty = false;

@@ -13,7 +13,18 @@ Content** in wp-admin, in **English and Arabic**.
 
 ## Installing
 
-1. Zip the `antradus` folder (or use the zip supplied alongside it).
+1. Use the `antradus-theme.zip` supplied alongside the folder, or rebuild it
+   with `c:/xampp/php/php.exe build-zip.php`.
+
+   > **Do not zip it with PowerShell's `Compress-Archive`.** Windows PowerShell
+   > writes zip entries with backslashes (`antradus\style.css`), the zip format
+   > requires forward slashes, and PHP — which is what WordPress unpacks the
+   > upload with — then cannot find `antradus/style.css`. The upload fails with
+   > *"The theme is missing the style.css stylesheet"* even though the file is
+   > plainly there. The archive looks perfectly normal in Explorer, which is
+   > what makes it a trap. `build-zip.php` writes forward slashes and checks
+   > that entry exists before it reports success.
+
 2. **Appearance → Themes → Add New → Upload Theme**, choose the zip, install,
    activate.
 3. Go to **Appearance → Antradus Content**. The first tab, **Pages**, lists the
@@ -114,6 +125,13 @@ correcting one is editing a line.
   colour.
 - **Clearing a heading hides its whole section.** That is how you remove a
   section you do not want.
+- **Section order.** The Publishers and Studios tabs open with a *Section
+  order* list: the sections of that page, top to bottom, each with a pair of
+  arrows. The hero is always first and is not in the list. Reordering never
+  turns a section on — one with an empty heading still prints nothing — so this
+  decides arrangement only, and it is shared by both languages because an order
+  is structure rather than words. A section added to the theme later appears in
+  the list on its own, at the bottom, without anyone having to re-save.
 - **Images**: every image slot has a media picker. An empty slot renders a
   labelled dashed placeholder on the site naming the setting that fills it, so
   an unfinished page tells you what it needs instead of showing a broken frame.

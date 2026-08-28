@@ -276,7 +276,19 @@ function antradus_paths_section( $prefix, $title, $blurb, $icons, $link ) {
 function antradus_audience_sections( $prefix, $icons, $link ) {
 	return array(
 		array(
-			'title'  => __( '1. Hero', 'antradus' ),
+			'title'  => __( 'Section order', 'antradus' ),
+			'blurb'  => __( 'The order these sections appear on the page, top to bottom. The hero is always first and is not in the list. Reordering never turns a section on: one with an empty heading still prints nothing, so this decides arrangement only.', 'antradus' ),
+			'fields' => array(
+				array(
+					'key'     => $prefix . 'order',
+					'label'   => __( 'Order', 'antradus' ),
+					'type'    => 'order',
+					'choices' => antradus_audience_sections_list(),
+				),
+			),
+		),
+		array(
+			'title'  => __( 'Hero', 'antradus' ),
 			'fields' => array(
 				array(
 					'key'   => $prefix . 'eyebrow',
@@ -330,7 +342,7 @@ function antradus_audience_sections( $prefix, $icons, $link ) {
 			),
 		),
 		array(
-			'title'  => __( '2. Is this you?', 'antradus' ),
+			'title'  => __( 'Is this you?', 'antradus' ),
 			'blurb'  => __( 'The short panel that lets a reader recognise themselves before they read a feature list. Clear the list to remove the panel.', 'antradus' ),
 			'fields' => array(
 				array(
@@ -348,7 +360,7 @@ function antradus_audience_sections( $prefix, $icons, $link ) {
 			),
 		),
 		array(
-			'title'  => __( '3. What it does for them', 'antradus' ),
+			'title'  => __( 'What it does for them', 'antradus' ),
 			'blurb'  => __( 'The features that matter to this audience, grouped. This is the half of the plugin they came to read about - the other audience gets the other half on their own page.', 'antradus' ),
 			'fields' => array(
 				array(
@@ -404,12 +416,12 @@ function antradus_audience_sections( $prefix, $icons, $link ) {
 		),
 		antradus_trends_section(
 			$prefix . 'trends_',
-			__( '4. Writing from what is trending', 'antradus' ),
+			__( 'Writing from what is trending', 'antradus' ),
 			__( 'The Google Trends band. Leave the heading empty on a page this does not belong on - it is written for the audience that publishes against a news cycle. The selling point is the verification, not the trend list: say plainly that a trend is checked against a real article published today before it can be queued.', 'antradus' ),
 			$icons
 		),
 		array(
-			'title'  => __( '5. How it actually goes', 'antradus' ),
+			'title'  => __( 'How it actually goes', 'antradus' ),
 			'blurb'  => __( 'The numbered steps. They are numbered by position, so adding or reordering a step renumbers the rest on its own.', 'antradus' ),
 			'fields' => array(
 				array(
@@ -447,11 +459,11 @@ function antradus_audience_sections( $prefix, $icons, $link ) {
 		),
 		antradus_compat_section(
 			$prefix . 'compat_',
-			__( '6. What it plugs into', 'antradus' ),
+			__( 'What it plugs into', 'antradus' ),
 			__( 'The same in-and-out diagram the home page draws, in this audience\'s own vocabulary - so this page can list the sources and destinations they actually use and leave out the rest. Clear the heading to leave the diagram off this page entirely.', 'antradus' )
 		),
 		array(
-			'title'  => __( '7. The plan this maps to', 'antradus' ),
+			'title'  => __( 'The plan this maps to', 'antradus' ),
 			'blurb'  => __( 'This section does not hold a price. Name a plan from the <strong>Pricing</strong> tab and that plan\'s real card is rendered here - the same price, the same button, the same free trial. There is one place a price is written on this site, and it is not here.', 'antradus' ),
 			'fields' => array(
 				array(
@@ -493,7 +505,7 @@ function antradus_audience_sections( $prefix, $icons, $link ) {
 			),
 		),
 		array(
-			'title'  => __( '8. The way back out', 'antradus' ),
+			'title'  => __( 'The way back out', 'antradus' ),
 			'blurb'  => __( 'A page that asks somebody to identify themselves has to let the ones who guessed wrong leave without the back button. This is the card at the bottom that points at the other audience page.', 'antradus' ),
 			'fields' => array(
 				array(
@@ -705,7 +717,7 @@ function antradus_settings_schema() {
 			'blurb'    => __( 'The front page, section by section, in the order they appear. Mark one phrase in a heading with *asterisks* to set it in the italic serif accent.', 'antradus' ),
 			'sections' => array(
 				array(
-					'title'  => __( '1. Hero', 'antradus' ),
+					'title'  => __( 'Hero', 'antradus' ),
 					'fields' => array(
 						array(
 							'key'   => 'home_hero_badge',

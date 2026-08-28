@@ -441,6 +441,10 @@ function antradus_render_field( $field, $lang ) {
 			antradus_render_image_field( $id, $name, (string) $value );
 			break;
 
+		case 'order':
+			antradus_render_order_field( $name, (string) $value, $field );
+			break;
+
 		default:
 			printf(
 				'<input type="text" id="%1$s" name="%2$s" value="%3$s" class="regular-text antradus-wide">',
@@ -554,6 +558,61 @@ function antradus_render_image_field( $id, $name, $value ) {
 	echo '<button type="button" class="button-link antradus-image-clear">' . esc_html__( 'Remove', 'antradus' ) . '</button>';
 	echo '</p>';
 	echo '</div>';
+}
+
+/**
+ * Put a page's sections in the order the editor wants them.
+ *
+ * A list of every section with a pair of arrows, which is the same control the
+ * repeater rows already use - an editor who has reordered a feature group knows
+ * how to reorder a section. The stored value is a comma-separated list of keys.
+ *
+ * The list is rebuilt from antradus_audience_sections_list() every time rather
+ * than from what was saved, so a section added to the theme later turns up here
+ * on its own. Order is structure, not words, so this never appears on a
+ * translation tab.
+ *
+ * @param string $name   Field name attribute.
+ * @param string $value  Stored comma-separated order.
+ * @param array  $field  Field definition, including 'choices'.
+ */
+function antradus_render_order_field( $name, $value, $field ) {
+	$choices = isset( $field['choices'] ) && is_array( $field['choices'] ) ? $field['choices'] : array();
+	if ( ! $choices ) {
+		return;
+	}
+
+	// The same resolution the front end uses, so the screen cannot show an
+	// order the page would not actually render.
+	$order = array();
+	foreach ( array_filter( array_map( 'trim', explode( ',', $value ) ) ) as $key ) {
+		if ( isset( $choices[ $key ] ) && ! in_array( $key, $order, true ) ) {
+			$order[] = $key;
+		}
+	}
+	foreach ( array_keys( $choices ) as $key ) {
+		if ( ! in_array( $key, $order, true ) ) {
+			$order[] = $key;
+		}
+	}
+
+	echo '<ol class="antradus-order">';
+	foreach ( $order as $position => $key ) {
+		echo '<li class="antradus-order-row">';
+		echo '<span class="antradus-order-num" aria-hidden="true">' . esc_html( (string) ( $position + 1 ) ) . '</span>';
+		echo '<span class="antradus-order-name">' . esc_html( $choices[ $key ] ) . '</span>';
+		printf(
+			'<input type="hidden" class="antradus-order-key" name="%1$s[]" value="%2$s">',
+			esc_attr( $name ),
+			esc_attr( $key )
+		);
+		echo '<span class="antradus-order-tools">';
+		echo '<button type="button" class="button-link antradus-order-up" title="' . esc_attr__( 'Move up', 'antradus' ) . '">&uarr;</button>';
+		echo '<button type="button" class="button-link antradus-order-down" title="' . esc_attr__( 'Move down', 'antradus' ) . '">&darr;</button>';
+		echo '</span>';
+		echo '</li>';
+	}
+	echo '</ol>';
 }
 
 /* ===========================================================================
@@ -891,6 +950,29 @@ function antradus_sanitize_value( $field, $raw, $words_only = false ) {
 				return '';
 			}
 			return ctype_digit( $raw ) ? (string) absint( $raw ) : esc_url_raw( $raw );
+
+		case 'order':
+			/*
+			 * Arrives as the list of keys in the order they were left on
+			 * screen. Only keys this field actually offers are kept, and any it
+			 * offers that did not arrive are appended - so a posted order can
+			 * never drop a section off the page or smuggle one in.
+			 */
+			$choices = isset( $field['choices'] ) && is_array( $field['choices'] ) ? $field['choices'] : array();
+			$posted  = is_array( $raw ) ? $raw : explode( ',', (string) $raw );
+			$out     = array();
+			foreach ( $posted as $key ) {
+				$key = sanitize_key( (string) $key );
+				if ( isset( $choices[ $key ] ) && ! in_array( $key, $out, true ) ) {
+					$out[] = $key;
+				}
+			}
+			foreach ( array_keys( $choices ) as $key ) {
+				if ( ! in_array( $key, $out, true ) ) {
+					$out[] = $key;
+				}
+			}
+			return implode( ',', $out );
 
 		case 'repeater':
 			$rows = is_array( $raw ) ? $raw : array();

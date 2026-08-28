@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ANTRADUS_VERSION', '2.7.0' );
+define( 'ANTRADUS_VERSION', '2.8.0' );
 define( 'ANTRADUS_OPTION', 'antradus_theme_options' );
 
 /*

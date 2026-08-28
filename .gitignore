@@ -1,4 +1,6 @@
-# Build artifact - regenerate by zipping the antradus/ folder
+# Build artifact - regenerate with: c:/xampp/php/php.exe build-zip.php
+# Not with PowerShell's Compress-Archive: it writes backslashes into the zip
+# and WordPress then rejects the upload as missing style.css.
 antradus-theme.zip
 *.zip
 

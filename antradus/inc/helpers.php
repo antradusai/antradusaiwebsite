@@ -512,6 +512,61 @@ function antradus_lines( $text ) {
 }
 
 /**
+ * The audience pages' movable sections, in the order they ship in.
+ *
+ * One list, read by the template that renders them and by the settings screen
+ * that reorders them - so a section cannot appear in the chooser without
+ * appearing on the page, or the other way round. The hero is deliberately not
+ * here: it is the page's opening, and nothing good comes of moving it.
+ *
+ * @return array<string,string> Key => the name an editor sees.
+ */
+function antradus_audience_sections_list() {
+	return array(
+		'signals' => __( 'Is this you?', 'antradus' ),
+		'content' => __( 'Whatever the page itself holds', 'antradus' ),
+		'trends'  => __( 'Writing from what is trending', 'antradus' ),
+		'groups'  => __( 'What it does for them', 'antradus' ),
+		'flow'    => __( 'How it actually goes', 'antradus' ),
+		'compat'  => __( 'What it plugs into', 'antradus' ),
+		'plan'    => __( 'The plan this maps to', 'antradus' ),
+		'switch'  => __( 'The way back out', 'antradus' ),
+	);
+}
+
+/**
+ * The order a page's sections should be rendered in.
+ *
+ * The stored value is a comma-separated list of section keys. It is never
+ * trusted to be complete: a key that no longer exists is dropped and a section
+ * added to the theme after the order was saved is appended rather than
+ * silently disappearing from the page. That is the whole reason this is a
+ * function and not a bare explode - a new section must show up on every site
+ * that already saved an order, without anyone reopening the settings screen.
+ *
+ * @param string   $key   Option key holding the order.
+ * @param string[] $known Every section key, in their shipped order.
+ * @return string[]
+ */
+function antradus_section_order( $key, $known ) {
+	$stored = antradus_opt( $key, '' );
+	$wanted = array_filter( array_map( 'trim', explode( ',', (string) $stored ) ) );
+
+	$out = array();
+	foreach ( $wanted as $one ) {
+		if ( in_array( $one, $known, true ) && ! in_array( $one, $out, true ) ) {
+			$out[] = $one;
+		}
+	}
+	foreach ( $known as $one ) {
+		if ( ! in_array( $one, $out, true ) ) {
+			$out[] = $one;
+		}
+	}
+	return $out;
+}
+
+/**
  * Render a button, but only if its destination actually exists.
  *
  * @param string $label   Button text.

@@ -186,6 +186,69 @@
 	text-decoration: none;
 }
 
+/* ---------------------------------------------------------- section order */
+
+.antradus-order {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	max-width: 520px;
+	display: grid;
+	gap: 6px;
+	counter-reset: none;
+}
+
+.antradus-order-row {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin: 0;
+	padding: 9px 10px 9px 12px;
+	background: #fbfcfe;
+	border: 1px solid #e2e5ec;
+	border-radius: 8px;
+}
+
+.antradus-order-num {
+	flex: 0 0 22px;
+	width: 22px;
+	height: 22px;
+	line-height: 22px;
+	text-align: center;
+	background: #eef1f6;
+	border-radius: 6px;
+	color: #6b7280;
+	font-size: 11.5px;
+	font-weight: 700;
+}
+
+.antradus-order-name {
+	flex: 1;
+	color: #1d2327;
+	font-size: 13.5px;
+	font-weight: 600;
+}
+
+.antradus-order-tools {
+	display: flex;
+	gap: 2px;
+}
+
+.antradus-order-tools .button-link {
+	width: 28px;
+	height: 28px;
+	line-height: 26px;
+	text-align: center;
+	color: #6b7280;
+	text-decoration: none;
+	border-radius: 5px;
+}
+
+.antradus-order-tools .button-link:hover {
+	background: #eef1f6;
+	color: #1d2327;
+}
+
 /* -------------------------------------------------------------- repeaters */
 
 .antradus-rep-rows {
