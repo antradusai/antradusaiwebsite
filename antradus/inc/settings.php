@@ -121,6 +121,7 @@ function antradus_settings_assets( $hook ) {
 			'chooseImage' => __( 'Choose an image', 'antradus' ),
 			'useImage'    => __( 'Use this image', 'antradus' ),
 			'confirmDrop' => __( 'Remove this item?', 'antradus' ),
+			'noImage'     => __( 'No picture', 'antradus' ),
 		)
 	);
 }

@@ -567,6 +567,57 @@ function antradus_defaults_publisher() {
 			),
 		),
 
+		'pub_trends_eyebrow' => 'Google Trends',
+		'pub_trends_title'   => 'Write about it *while people are still searching for it*',
+		'pub_trends_sub'     => 'Antradus reads what is trending in your country right now, then does the part a trend list never does: it opens the news behind each one and checks the story was actually published today before it will write a word about it.',
+		'pub_trends_points'  => array(
+			array(
+				'icon'  => 'chart',
+				'title' => 'Today\'s searches, by country',
+				'text'  => 'What is rising right now where your readers are, not a global list you have to translate into your own market.',
+			),
+			array(
+				'icon'  => 'shield',
+				'title' => 'Verified before it is written',
+				'text'  => 'Each trend is traced back to a real article and rejected unless it was published today. A rejection tells you which trend and why, rather than quietly writing from nothing.',
+			),
+			array(
+				'icon'  => 'clock',
+				'title' => 'Today means today where you are',
+				'text'  => 'Freshness is judged in your site\'s own timezone, so an article filed late in the evening is not counted as yesterday\'s news.',
+			),
+			array(
+				'icon'  => 'link',
+				'title' => 'The sources travel with the post',
+				'text'  => 'Every article it writes this way carries the sources it was written from, one per publication, listed at the end.',
+			),
+			array(
+				'icon'  => 'stack',
+				'title' => 'Straight into the same queue',
+				'text'  => 'Tick the trends worth covering and send them all at once. They drip out on the schedule you already use - nothing new to learn.',
+			),
+		),
+		'pub_trends_steps'   => array(
+			array(
+				'title' => 'Pick the country',
+				'text'  => 'Antradus lists what is being searched there right now, refreshed through the day.',
+			),
+			array(
+				'title' => 'See what is behind it',
+				'text'  => 'It opens the news for a trend and shows you the verdict on each source - published today, or refused and why.',
+			),
+			array(
+				'title' => 'Tick the ones worth writing',
+				'text'  => 'A trend with nothing solid behind it is left out. You are choosing from what already passed the check.',
+			),
+			array(
+				'title' => 'Send them to the queue',
+				'text'  => 'One click queues the lot as ordinary articles - drafts, drip-scheduling, SEO fill and internal links, exactly as usual.',
+			),
+		),
+		'pub_trends_image'   => '',
+		'pub_trends_note'    => 'Trending data comes from your own SerpApi key, on their free or paid tier. Antradus resells you nothing.',
+
 		'pub_flow_title' => 'A publishing week, *on Publisher*',
 		'pub_flow_sub'   => 'The same four moves every week, whether it is four articles or forty.',
 		'pub_flow'       => array(

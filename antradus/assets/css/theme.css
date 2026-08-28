@@ -2979,35 +2979,27 @@ td.ant-cost-us .ant-ic {
 }
 
 /*
- * A feature that brought a picture of itself.
+ * A group card's picture, across the top.
  *
- * The tick row is a 20px / 1fr grid, so the image goes in a third grid row
- * under the words and starts in the text column - lined up with the sentence
- * it illustrates rather than with the tick. Features without a picture are
- * untouched, so a half-filled list still reads as one list.
- */
-.ant-group-items li.has-shot {
-	margin-bottom: 4px;
-}
-
-/*
- * Fixed height, not a fixed width. These pictures are whatever the editor
- * uploaded - a square logo, a 16:9 grab - and letting each one keep its own
- * height is what turns a tidy list into a column of wildly different blocks
- * that shoves the card beside it out of step. One height and object-fit means
- * six unrelated images still read as one row of illustrations.
+ * A fixed height rather than a ratio: these are whatever the editor uploaded -
+ * a square logo, a 16:9 screen grab - and letting each keep its own height
+ * leaves the two columns of cards permanently out of step. One height plus
+ * object-fit means six unrelated pictures still read as one set.
+ *
+ * The card's padding is cancelled so the picture reaches the card's edges and
+ * takes its top corners, rather than sitting inside as a pasted-in frame.
  */
 .ant-group-shot {
-	grid-column: 2;
-	width: 100%;
-	max-width: 280px;
-	height: 104px;
-	margin-top: 9px;
+	display: block;
+	width: calc(100% + 2 * clamp(24px, 2.6vw, 32px));
+	height: 172px;
+	margin: calc(-1 * clamp(24px, 2.6vw, 32px)) 0 clamp(20px, 2vw, 26px);
+	margin-inline-start: calc(-1 * clamp(24px, 2.6vw, 32px));
 	object-fit: cover;
-	border: 1px solid var(--ant-line);
-	border-radius: var(--ant-r-xs);
+	border-bottom: 1px solid var(--ant-line);
+	border-start-start-radius: var(--ant-r-lg);
+	border-start-end-radius: var(--ant-r-lg);
 	background: var(--ant-tint);
-	box-shadow: var(--ant-sh-1);
 }
 
 .ant-docs-index ul {
@@ -4338,6 +4330,21 @@ td.ant-cost-us .ant-ic {
 .ant-flow > li {
 	margin: 0;
 	list-style: none;
+}
+
+/*
+ * The trends band's numbered strip sits under its own two-column block rather
+ * than starting a section, so it needs the gap the section head would have
+ * given it.
+ */
+.ant-trend-steps {
+	margin-top: clamp(34px, 4vw, 56px);
+}
+
+.ant-trend-note {
+	max-width: 62ch;
+	margin-inline: auto;
+	margin-top: 24px;
 }
 
 .ant-aud-plan-note {

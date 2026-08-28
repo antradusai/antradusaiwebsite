@@ -147,37 +147,22 @@ if ( have_posts() ) {
 			?>
 			<div class="ant-grid ant-grid--2 ant-groups">
 				<?php foreach ( $antradus_groups as $antradus_group ) : ?>
-					<article class="ant-glass ant-group">
+					<?php $antradus_shot = antradus_image_url( antradus_cell( $antradus_group, 'image' ), 'large' ); ?>
+					<article class="ant-glass ant-group<?php echo $antradus_shot ? ' has-shot' : ''; // phpcs:ignore WordPress.Security.EscapeOutput -- static markup. ?>">
+						<?php if ( $antradus_shot ) : ?>
+							<img class="ant-group-shot" src="<?php echo esc_url( $antradus_shot ); ?>" alt="" loading="lazy" decoding="async">
+						<?php endif; ?>
 						<header class="ant-group-head">
 							<span class="ant-group-ic">
 								<?php echo antradus_icon( antradus_cell( $antradus_group, 'icon', 'spark' ), 20 ); // phpcs:ignore WordPress.Security.EscapeOutput -- static markup. ?>
 							</span>
 							<h2><?php echo esc_html( antradus_cell( $antradus_group, 'title' ) ); ?></h2>
 						</header>
-						<?php
-						/*
-						 * Each feature may carry a picture of itself, taken
-						 * from the line at the same position in this group's
-						 * image list. The ones with a picture get the wider
-						 * row; a group where nobody filled any in still reads
-						 * as the plain ticked list it was before.
-						 */
-						$antradus_items = antradus_lines_paired(
-							antradus_cell( $antradus_group, 'items' ),
-							antradus_cell( $antradus_group, 'item_images' )
-						);
-						?>
-						<ul class="ant-ticks ant-group-items">
-							<?php
-							foreach ( $antradus_items as $antradus_item ) :
-								$antradus_shot = antradus_image_url( $antradus_item['extra'], 'medium' );
-								?>
-								<li<?php echo $antradus_shot ? ' class="has-shot"' : ''; // phpcs:ignore WordPress.Security.EscapeOutput -- static markup. ?>>
+						<ul class="ant-ticks">
+							<?php foreach ( antradus_lines( antradus_cell( $antradus_group, 'items' ) ) as $antradus_item ) : ?>
+								<li>
 									<?php echo antradus_icon( 'check', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput -- static markup. ?>
-									<span><?php echo esc_html( $antradus_item['text'] ); ?></span>
-									<?php if ( $antradus_shot ) : ?>
-										<img class="ant-group-shot" src="<?php echo esc_url( $antradus_shot ); ?>" alt="" loading="lazy" decoding="async">
-									<?php endif; ?>
+									<span><?php echo esc_html( $antradus_item ); ?></span>
 								</li>
 							<?php endforeach; ?>
 						</ul>
@@ -187,6 +172,15 @@ if ( have_posts() ) {
 		</div>
 	</section>
 <?php endif; ?>
+
+<?php
+/*
+ * The trends band, between what the plugin does and how a week runs on it -
+ * finding the subject is the step before the flow below. Like the diagram, it
+ * renders nothing unless this page's own `*_trends_*` keys are filled in.
+ */
+get_template_part( 'template-parts/section', 'trends', array( 'prefix' => $antradus_p ) );
+?>
 
 <?php if ( $antradus_flow && $antradus_f( 'flow_title' ) ) : ?>
 	<section class="ant-section">

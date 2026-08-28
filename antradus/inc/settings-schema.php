@@ -34,6 +34,100 @@ function antradus_link_help() {
 }
 
 /**
+ * The trends band, as a schema section.
+ *
+ * Two lists, because the feature has two halves worth selling: what it finds,
+ * and the check it runs before any of it reaches the queue. Both are repeaters
+ * so the wording can be reordered without touching a template.
+ *
+ * @param string $key_prefix Option key prefix, e.g. 'pub_trends_'.
+ * @param string $title      Section title in the admin screen.
+ * @param string $blurb      Section blurb.
+ * @param array  $icons      Icon choices.
+ * @return array
+ */
+function antradus_trends_section( $key_prefix, $title, $blurb, $icons ) {
+	return array(
+		'title'  => $title,
+		'blurb'  => $blurb,
+		'fields' => array(
+			array(
+				'key'   => $key_prefix . 'eyebrow',
+				'label' => __( 'Eyebrow', 'antradus' ),
+				'type'  => 'text',
+			),
+			array(
+				'key'   => $key_prefix . 'title',
+				'label' => __( 'Heading', 'antradus' ),
+				'type'  => 'text',
+				'help'  => __( 'Clear this to remove the whole section.', 'antradus' ),
+			),
+			array(
+				'key'   => $key_prefix . 'sub',
+				'label' => __( 'Supporting paragraph', 'antradus' ),
+				'type'  => 'textarea',
+				'rows'  => 3,
+			),
+			array(
+				'key'    => $key_prefix . 'points',
+				'label'  => __( 'What it does', 'antradus' ),
+				'type'   => 'repeater',
+				'single' => __( 'Point', 'antradus' ),
+				'fields' => array(
+					array(
+						'key'     => 'icon',
+						'label'   => __( 'Icon', 'antradus' ),
+						'type'    => 'select',
+						'options' => $icons,
+					),
+					array(
+						'key'   => 'title',
+						'label' => __( 'Point title', 'antradus' ),
+						'type'  => 'text',
+					),
+					array(
+						'key'   => 'text',
+						'label' => __( 'One sentence', 'antradus' ),
+						'type'  => 'textarea',
+						'rows'  => 2,
+					),
+				),
+			),
+			array(
+				'key'    => $key_prefix . 'steps',
+				'label'  => __( 'How it goes', 'antradus' ),
+				'type'   => 'repeater',
+				'single' => __( 'Step', 'antradus' ),
+				'fields' => array(
+					array(
+						'key'   => 'title',
+						'label' => __( 'Step title', 'antradus' ),
+						'type'  => 'text',
+					),
+					array(
+						'key'   => 'text',
+						'label' => __( 'What happens', 'antradus' ),
+						'type'  => 'textarea',
+						'rows'  => 3,
+					),
+				),
+			),
+			array(
+				'key'   => $key_prefix . 'image',
+				'label' => __( 'Illustration', 'antradus' ),
+				'type'  => 'image',
+			),
+			array(
+				'key'   => $key_prefix . 'note',
+				'label' => __( 'Small note underneath', 'antradus' ),
+				'type'  => 'textarea',
+				'rows'  => 2,
+			),
+		),
+	);
+}
+
+/**
  * The compatibility diagram, as a schema section.
  *
  * The home page draws one of these and each audience page may draw its own, in
@@ -299,19 +393,23 @@ function antradus_audience_sections( $prefix, $icons, $link ) {
 							'help'  => __( 'One per line.', 'antradus' ),
 						),
 						array(
-							'key'   => 'item_images',
-							'label' => __( 'A picture for each feature', 'antradus' ),
-							'type'  => 'textarea',
-							'rows'  => 7,
-							'i18n'  => false,
-							'help'  => __( 'Optional, and matched to the list above line by line: the first line here is the picture for the first feature, the second for the second, and so on. Paste an image URL or a media-library ID on each line, and leave a line blank to give that feature no picture. Shared by both languages - a screenshot is not translated.', 'antradus' ),
+							'key'   => 'image',
+							'label' => __( 'Picture', 'antradus' ),
+							'type'  => 'image',
+							'help'  => __( 'Optional, and shown across the top of this card. Shared by both languages, because a screenshot is not translated.', 'antradus' ),
 						),
 					),
 				),
 			),
 		),
+		antradus_trends_section(
+			$prefix . 'trends_',
+			__( '4. Writing from what is trending', 'antradus' ),
+			__( 'The Google Trends band. Leave the heading empty on a page this does not belong on - it is written for the audience that publishes against a news cycle. The selling point is the verification, not the trend list: say plainly that a trend is checked against a real article published today before it can be queued.', 'antradus' ),
+			$icons
+		),
 		array(
-			'title'  => __( '4. How it actually goes', 'antradus' ),
+			'title'  => __( '5. How it actually goes', 'antradus' ),
 			'blurb'  => __( 'The numbered steps. They are numbered by position, so adding or reordering a step renumbers the rest on its own.', 'antradus' ),
 			'fields' => array(
 				array(
@@ -349,11 +447,11 @@ function antradus_audience_sections( $prefix, $icons, $link ) {
 		),
 		antradus_compat_section(
 			$prefix . 'compat_',
-			__( '5. What it plugs into', 'antradus' ),
+			__( '6. What it plugs into', 'antradus' ),
 			__( 'The same in-and-out diagram the home page draws, in this audience\'s own vocabulary - so this page can list the sources and destinations they actually use and leave out the rest. Clear the heading to leave the diagram off this page entirely.', 'antradus' )
 		),
 		array(
-			'title'  => __( '6. The plan this maps to', 'antradus' ),
+			'title'  => __( '7. The plan this maps to', 'antradus' ),
 			'blurb'  => __( 'This section does not hold a price. Name a plan from the <strong>Pricing</strong> tab and that plan\'s real card is rendered here - the same price, the same button, the same free trial. There is one place a price is written on this site, and it is not here.', 'antradus' ),
 			'fields' => array(
 				array(
@@ -395,7 +493,7 @@ function antradus_audience_sections( $prefix, $icons, $link ) {
 			),
 		),
 		array(
-			'title'  => __( '7. The way back out', 'antradus' ),
+			'title'  => __( '8. The way back out', 'antradus' ),
 			'blurb'  => __( 'A page that asks somebody to identify themselves has to let the ones who guessed wrong leave without the back button. This is the card at the bottom that points at the other audience page.', 'antradus' ),
 			'fields' => array(
 				array(

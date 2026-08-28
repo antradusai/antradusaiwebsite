@@ -52,7 +52,7 @@
 		$wrap.find('.antradus-image-preview').html(
 			$('<span>', {
 				'class': 'antradus-image-empty',
-				text: 'No image yet.'
+				text: strings.noImage || 'No image yet.'
 			})
 		);
 	});
