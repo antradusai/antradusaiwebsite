@@ -30,7 +30,314 @@ function antradus_icon_choices() {
  * @return string
  */
 function antradus_link_help() {
-	return __( 'A full URL, an in-page #anchor, or <code>page:pricing</code> / <code>page:contact</code> / <code>page:blog</code> / <code>page:docs</code> / <code>page:features</code> / <code>page:welcome</code> / <code>page:home</code>. A <code>page:</code> link disappears from the site while that page is a draft.', 'antradus' );
+	return __( 'A full URL, an in-page #anchor, or <code>page:pricing</code> / <code>page:publisher</code> / <code>page:studio</code> / <code>page:contact</code> / <code>page:blog</code> / <code>page:docs</code> / <code>page:features</code> / <code>page:welcome</code> / <code>page:home</code>. A <code>page:</code> link disappears from the site while that page is a draft.', 'antradus' );
+}
+
+/**
+ * The "which one are you?" chooser, as a schema section.
+ *
+ * The same two links are offered in the home hero and under the pricing cards,
+ * so the fields that describe them are written once and asked for twice. Only
+ * the key prefix differs, which is why this takes one.
+ *
+ * @param string $prefix Option key prefix, e.g. 'home_hero_' or 'price_'.
+ * @param string $title  Section heading in wp-admin.
+ * @param string $blurb  Section explanation.
+ * @param array  $icons  Icon choices.
+ * @param string $link   Link-target help text.
+ * @return array
+ */
+function antradus_paths_section( $prefix, $title, $blurb, $icons, $link ) {
+	return array(
+		'title'  => $title,
+		'blurb'  => $blurb,
+		'fields' => array(
+			array(
+				'key'   => $prefix . 'paths_label',
+				'label' => __( 'Line above the links', 'antradus' ),
+				'type'  => 'text',
+				'help'  => __( 'Clear the links below to remove the whole block.', 'antradus' ),
+			),
+			array(
+				'key'    => $prefix . 'paths',
+				'label'  => __( 'The choices', 'antradus' ),
+				'type'   => 'repeater',
+				'single' => __( 'Choice', 'antradus' ),
+				'fields' => array(
+					array(
+						'key'     => 'icon',
+						'label'   => __( 'Icon', 'antradus' ),
+						'type'    => 'select',
+						'options' => $icons,
+					),
+					array(
+						'key'   => 'label',
+						'label' => __( 'Label', 'antradus' ),
+						'type'  => 'text',
+					),
+					array(
+						'key'   => 'text',
+						'label' => __( 'One line under it', 'antradus' ),
+						'type'  => 'text',
+					),
+					array(
+						'key'   => 'cta_url',
+						'label' => __( 'Where it goes', 'antradus' ),
+						'type'  => 'text',
+						'help'  => $link,
+					),
+				),
+			),
+		),
+	);
+}
+
+/**
+ * One of the two audience pages, as a schema tab.
+ *
+ * "For publishers" and "For studios" are the same page told twice: same hero,
+ * same panel of signals, same feature groups, same numbered flow, same plan
+ * card, same way back out. Only the words differ, and the words live in the
+ * settings - so the two tabs are generated from one description rather than
+ * kept in step by hand.
+ *
+ * @param string $prefix Option key prefix: 'pub_' or 'std_'.
+ * @param array  $icons  Icon choices.
+ * @param string $link   Link-target help text.
+ * @return array
+ */
+function antradus_audience_sections( $prefix, $icons, $link ) {
+	return array(
+		array(
+			'title'  => __( '1. Hero', 'antradus' ),
+			'fields' => array(
+				array(
+					'key'   => $prefix . 'eyebrow',
+					'label' => __( 'Eyebrow', 'antradus' ),
+					'type'  => 'text',
+				),
+				array(
+					'key'   => $prefix . 'title',
+					'label' => __( 'Heading', 'antradus' ),
+					'type'  => 'text',
+					'help'  => __( 'Wrap a phrase in *asterisks* for the serif italic accent.', 'antradus' ),
+				),
+				array(
+					'key'   => $prefix . 'sub',
+					'label' => __( 'Supporting paragraph', 'antradus' ),
+					'type'  => 'textarea',
+					'rows'  => 4,
+				),
+				array(
+					'key'   => $prefix . 'cta1',
+					'label' => __( 'Primary button text', 'antradus' ),
+					'type'  => 'text',
+				),
+				array(
+					'key'   => $prefix . 'cta1_url',
+					'label' => __( 'Primary button link', 'antradus' ),
+					'type'  => 'text',
+					'help'  => $link . ' ' . __( 'Use <code>#plan</code> to jump to the plan section further down this page.', 'antradus' ),
+				),
+				array(
+					'key'   => $prefix . 'cta2',
+					'label' => __( 'Secondary button text', 'antradus' ),
+					'type'  => 'text',
+				),
+				array(
+					'key'   => $prefix . 'cta2_url',
+					'label' => __( 'Secondary button link', 'antradus' ),
+					'type'  => 'text',
+					'help'  => $link,
+				),
+				array(
+					'key'   => $prefix . 'note',
+					'label' => __( 'Small note under the buttons', 'antradus' ),
+					'type'  => 'text',
+				),
+				array(
+					'key'   => $prefix . 'hero_image',
+					'label' => __( 'Hero image', 'antradus' ),
+					'type'  => 'image',
+				),
+			),
+		),
+		array(
+			'title'  => __( '2. Is this you?', 'antradus' ),
+			'blurb'  => __( 'The short panel that lets a reader recognise themselves before they read a feature list. Clear the list to remove the panel.', 'antradus' ),
+			'fields' => array(
+				array(
+					'key'   => $prefix . 'signals_title',
+					'label' => __( 'Panel heading', 'antradus' ),
+					'type'  => 'text',
+				),
+				array(
+					'key'   => $prefix . 'signals',
+					'label' => __( 'The signs', 'antradus' ),
+					'type'  => 'textarea',
+					'rows'  => 6,
+					'help'  => __( 'One per line.', 'antradus' ),
+				),
+			),
+		),
+		array(
+			'title'  => __( '3. What it does for them', 'antradus' ),
+			'blurb'  => __( 'The features that matter to this audience, grouped. This is the half of the plugin they came to read about - the other audience gets the other half on their own page.', 'antradus' ),
+			'fields' => array(
+				array(
+					'key'   => $prefix . 'groups_eyebrow',
+					'label' => __( 'Eyebrow', 'antradus' ),
+					'type'  => 'text',
+				),
+				array(
+					'key'   => $prefix . 'groups_title',
+					'label' => __( 'Heading', 'antradus' ),
+					'type'  => 'text',
+					'help'  => __( 'Clear this to remove the whole section.', 'antradus' ),
+				),
+				array(
+					'key'   => $prefix . 'groups_sub',
+					'label' => __( 'Supporting line', 'antradus' ),
+					'type'  => 'textarea',
+					'rows'  => 2,
+				),
+				array(
+					'key'    => $prefix . 'groups',
+					'label'  => __( 'Feature groups', 'antradus' ),
+					'type'   => 'repeater',
+					'single' => __( 'Group', 'antradus' ),
+					'fields' => array(
+						array(
+							'key'     => 'icon',
+							'label'   => __( 'Icon', 'antradus' ),
+							'type'    => 'select',
+							'options' => $icons,
+						),
+						array(
+							'key'   => 'title',
+							'label' => __( 'Group title', 'antradus' ),
+							'type'  => 'text',
+						),
+						array(
+							'key'   => 'items',
+							'label' => __( 'Features', 'antradus' ),
+							'type'  => 'textarea',
+							'rows'  => 7,
+							'help'  => __( 'One per line.', 'antradus' ),
+						),
+					),
+				),
+			),
+		),
+		array(
+			'title'  => __( '4. How it actually goes', 'antradus' ),
+			'blurb'  => __( 'The numbered steps. They are numbered by position, so adding or reordering a step renumbers the rest on its own.', 'antradus' ),
+			'fields' => array(
+				array(
+					'key'   => $prefix . 'flow_title',
+					'label' => __( 'Heading', 'antradus' ),
+					'type'  => 'text',
+					'help'  => __( 'Clear this to remove the whole section.', 'antradus' ),
+				),
+				array(
+					'key'   => $prefix . 'flow_sub',
+					'label' => __( 'Supporting line', 'antradus' ),
+					'type'  => 'textarea',
+					'rows'  => 2,
+				),
+				array(
+					'key'    => $prefix . 'flow',
+					'label'  => __( 'Steps', 'antradus' ),
+					'type'   => 'repeater',
+					'single' => __( 'Step', 'antradus' ),
+					'fields' => array(
+						array(
+							'key'   => 'title',
+							'label' => __( 'Step title', 'antradus' ),
+							'type'  => 'text',
+						),
+						array(
+							'key'   => 'text',
+							'label' => __( 'What happens', 'antradus' ),
+							'type'  => 'textarea',
+							'rows'  => 3,
+						),
+					),
+				),
+			),
+		),
+		array(
+			'title'  => __( '5. The plan this maps to', 'antradus' ),
+			'blurb'  => __( 'This section does not hold a price. Name a plan from the <strong>Pricing</strong> tab and that plan\'s real card is rendered here - the same price, the same button, the same free trial. There is one place a price is written on this site, and it is not here.', 'antradus' ),
+			'fields' => array(
+				array(
+					'key'   => $prefix . 'plan_eyebrow',
+					'label' => __( 'Eyebrow', 'antradus' ),
+					'type'  => 'text',
+				),
+				array(
+					'key'   => $prefix . 'plan_title',
+					'label' => __( 'Heading', 'antradus' ),
+					'type'  => 'text',
+					'help'  => __( 'Clear this to remove the whole section.', 'antradus' ),
+				),
+				array(
+					'key'   => $prefix . 'plan_sub',
+					'label' => __( 'Supporting line', 'antradus' ),
+					'type'  => 'textarea',
+					'rows'  => 2,
+				),
+				array(
+					'key'   => $prefix . 'plan_names',
+					'label' => __( 'Which plans to show', 'antradus' ),
+					'type'  => 'text',
+					'i18n'  => false,
+					'help'  => __( 'Plan names from the Pricing tab, separated by commas - for example <code>Publisher</code> or <code>Studio, Managed</code>. Written once for both languages: a plan is matched by its English name as well as its translated one, so the Arabic page finds the same card. A name that matches no plan is simply left out.', 'antradus' ),
+				),
+				array(
+					'key'   => $prefix . 'plan_note',
+					'label' => __( 'Note under the card', 'antradus' ),
+					'type'  => 'textarea',
+					'rows'  => 2,
+				),
+				array(
+					'key'   => $prefix . 'plan_more',
+					'label' => __( 'Link to the full pricing page', 'antradus' ),
+					'type'  => 'text',
+					'help'  => __( 'The words only - it always points at your Pricing page, and disappears while that page is a draft.', 'antradus' ),
+				),
+			),
+		),
+		array(
+			'title'  => __( '6. The way back out', 'antradus' ),
+			'blurb'  => __( 'A page that asks somebody to identify themselves has to let the ones who guessed wrong leave without the back button. This is the card at the bottom that points at the other audience page.', 'antradus' ),
+			'fields' => array(
+				array(
+					'key'   => $prefix . 'switch_title',
+					'label' => __( 'Heading', 'antradus' ),
+					'type'  => 'text',
+					'help'  => __( 'Clear this to remove the card.', 'antradus' ),
+				),
+				array(
+					'key'   => $prefix . 'switch_text',
+					'label' => __( 'Supporting line', 'antradus' ),
+					'type'  => 'textarea',
+					'rows'  => 2,
+				),
+				array(
+					'key'   => $prefix . 'switch_btn',
+					'label' => __( 'Button text', 'antradus' ),
+					'type'  => 'text',
+				),
+				array(
+					'key'   => $prefix . 'switch_btn_url',
+					'label' => __( 'Button link', 'antradus' ),
+					'type'  => 'text',
+					'help'  => $link,
+				),
+			),
+		),
+	);
 }
 
 /**
@@ -49,7 +356,7 @@ function antradus_settings_schema() {
 		 * ============================================================== */
 		'pages'    => array(
 			'label'    => __( 'Pages', 'antradus' ),
-			'blurb'    => __( 'The seven pages this theme designs. A page only appears in the menu, the footer and any button pointing at it once it is <strong>published</strong> - leave it as a draft and the whole site simply stops linking to it.', 'antradus' ),
+			'blurb'    => __( 'The nine pages this theme designs. A page only appears in the menu, the footer and any button pointing at it once it is <strong>published</strong> - leave it as a draft and the whole site simply stops linking to it.', 'antradus' ),
 			'sections' => array(
 				array(
 					'title'  => __( 'Page status', 'antradus' ),
@@ -63,6 +370,16 @@ function antradus_settings_schema() {
 						array(
 							'key'   => 'slug_home',
 							'label' => __( 'Home', 'antradus' ),
+							'type'  => 'text',
+						),
+						array(
+							'key'   => 'slug_publisher',
+							'label' => __( 'For publishers', 'antradus' ),
+							'type'  => 'text',
+						),
+						array(
+							'key'   => 'slug_studio',
+							'label' => __( 'For studios', 'antradus' ),
 							'type'  => 'text',
 						),
 						array(
@@ -271,6 +588,13 @@ function antradus_settings_schema() {
 						),
 					),
 				),
+				antradus_paths_section(
+					'home_hero_',
+					__( '1b. Which one are you?', 'antradus' ),
+					__( 'Two links in the hero, one per audience. This is what tells somebody in the first screenful that the site is for both a website and a show - and sends them to the page written for whichever they are.', 'antradus' ),
+					$icons,
+					$link
+				),
 				array(
 					'title'  => __( '2. Numbers', 'antradus' ),
 					'fields' => array(
@@ -295,7 +619,100 @@ function antradus_settings_schema() {
 					),
 				),
 				array(
-					'title'  => __( '3. Logo strip', 'antradus' ),
+					'title'  => __( '3. Publisher or studio', 'antradus' ),
+					'blurb'  => __( 'The fork, in full: one card per audience, with what that audience gets, what it costs and a button to the page written for them. It is a repeater, so a third audience would be a card rather than a code change.', 'antradus' ),
+					'fields' => array(
+						array(
+							'key'   => 'home_fork_eyebrow',
+							'label' => __( 'Eyebrow', 'antradus' ),
+							'type'  => 'text',
+						),
+						array(
+							'key'   => 'home_fork_title',
+							'label' => __( 'Heading', 'antradus' ),
+							'type'  => 'text',
+							'help'  => __( 'Clear this to remove the whole section.', 'antradus' ),
+						),
+						array(
+							'key'   => 'home_fork_sub',
+							'label' => __( 'Supporting line', 'antradus' ),
+							'type'  => 'textarea',
+							'rows'  => 3,
+						),
+						array(
+							'key'    => 'home_fork_cards',
+							'label'  => __( 'The audiences', 'antradus' ),
+							'type'   => 'repeater',
+							'single' => __( 'Audience', 'antradus' ),
+							'fields' => array(
+								array(
+									'key'     => 'icon',
+									'label'   => __( 'Icon', 'antradus' ),
+									'type'    => 'select',
+									'options' => $icons,
+								),
+								array(
+									'key'   => 'name',
+									'label' => __( 'Plan chip', 'antradus' ),
+									'type'  => 'text',
+									'help'  => __( 'The plan this audience ends up on, e.g. Publisher.', 'antradus' ),
+								),
+								array(
+									'key'   => 'title',
+									'label' => __( 'Card heading', 'antradus' ),
+									'type'  => 'text',
+								),
+								array(
+									'key'   => 'text',
+									'label' => __( 'One or two sentences', 'antradus' ),
+									'type'  => 'textarea',
+									'rows'  => 3,
+								),
+								array(
+									'key'   => 'items',
+									'label' => __( 'What they get', 'antradus' ),
+									'type'  => 'textarea',
+									'rows'  => 5,
+									'help'  => __( 'One per line. Four reads best.', 'antradus' ),
+								),
+								array(
+									'key'   => 'price',
+									'label' => __( 'Price line', 'antradus' ),
+									'type'  => 'text',
+								),
+								array(
+									'key'   => 'cta',
+									'label' => __( 'Button text', 'antradus' ),
+									'type'  => 'text',
+								),
+								array(
+									'key'   => 'cta_url',
+									'label' => __( 'Button link', 'antradus' ),
+									'type'  => 'text',
+									'help'  => $link,
+								),
+								array(
+									'key'   => 'alt',
+									'label' => __( 'Quiet link beside it', 'antradus' ),
+									'type'  => 'text',
+								),
+								array(
+									'key'   => 'alt_url',
+									'label' => __( 'Where the quiet link goes', 'antradus' ),
+									'type'  => 'text',
+									'help'  => $link,
+								),
+							),
+						),
+						array(
+							'key'   => 'home_fork_note',
+							'label' => __( 'Note under the cards', 'antradus' ),
+							'type'  => 'text',
+						),
+					),
+				),
+				array(
+					'title'  => __( '4. Logo strip', 'antradus' ),
 					'fields' => array(
 						array(
 							'key'   => 'home_logos_title',
@@ -325,7 +742,7 @@ function antradus_settings_schema() {
 					),
 				),
 				array(
-					'title'  => __( '4. Product demo', 'antradus' ),
+					'title'  => __( '5. Product demo', 'antradus' ),
 					'fields' => array(
 						array(
 							'key'   => 'home_demo_eyebrow',
@@ -382,7 +799,7 @@ function antradus_settings_schema() {
 					),
 				),
 				array(
-					'title'  => __( '5. Core features', 'antradus' ),
+					'title'  => __( '6. Core features', 'antradus' ),
 					'fields' => array(
 						array(
 							'key'   => 'home_feat_eyebrow',
@@ -434,7 +851,7 @@ function antradus_settings_schema() {
 					),
 				),
 				array(
-					'title'  => __( '6. Where it runs', 'antradus' ),
+					'title'  => __( '7. Where it runs', 'antradus' ),
 					'fields' => array(
 						array(
 							'key'   => 'home_run_eyebrow',
@@ -481,7 +898,7 @@ function antradus_settings_schema() {
 					),
 				),
 				array(
-					'title'  => __( '7. Compatibility', 'antradus' ),
+					'title'  => __( '8. Compatibility', 'antradus' ),
 					'fields' => array(
 						array(
 							'key'   => 'home_compat_eyebrow',
@@ -544,7 +961,7 @@ function antradus_settings_schema() {
 					),
 				),
 				array(
-					'title'  => __( '8. GEO / SEO / AIO', 'antradus' ),
+					'title'  => __( '9. GEO / SEO / AIO', 'antradus' ),
 					'fields' => array(
 						array(
 							'key'   => 'home_geo_eyebrow',
@@ -595,7 +1012,7 @@ function antradus_settings_schema() {
 					),
 				),
 				array(
-					'title'  => __( '9. Use cases', 'antradus' ),
+					'title'  => __( '10. Use cases', 'antradus' ),
 					'fields' => array(
 						array(
 							'key'   => 'home_use_eyebrow',
@@ -641,7 +1058,7 @@ function antradus_settings_schema() {
 					),
 				),
 				array(
-					'title'  => __( '10. The economics', 'antradus' ),
+					'title'  => __( '11. The economics', 'antradus' ),
 					'fields' => array(
 						array(
 							'key'   => 'home_cost_eyebrow',
@@ -691,7 +1108,7 @@ function antradus_settings_schema() {
 					),
 				),
 				array(
-					'title'  => __( '11. Pricing preview', 'antradus' ),
+					'title'  => __( '12. Pricing preview', 'antradus' ),
 					'fields' => array(
 						array(
 							'key'   => 'home_price_show',
@@ -719,7 +1136,7 @@ function antradus_settings_schema() {
 					),
 				),
 				array(
-					'title'  => __( '12. Questions', 'antradus' ),
+					'title'  => __( '13. Questions', 'antradus' ),
 					'fields' => array(
 						array(
 							'key'   => 'home_faq_eyebrow',
@@ -759,7 +1176,7 @@ function antradus_settings_schema() {
 					),
 				),
 				array(
-					'title'  => __( '13. Closing call to action', 'antradus' ),
+					'title'  => __( '14. Closing call to action', 'antradus' ),
 					'fields' => array(
 						array(
 							'key'   => 'home_cta_title',
@@ -802,6 +1219,25 @@ function antradus_settings_schema() {
 					),
 				),
 			),
+		),
+
+		/* =================================================================
+		 * The two audience pages
+		 *
+		 * Both tabs are built from one description, because the pages are one
+		 * design with two vocabularies. Everything that differs between them
+		 * is a word, and every word is here.
+		 * ============================================================== */
+		'publisher' => array(
+			'label'    => __( 'Publishers', 'antradus' ),
+			'blurb'    => __( 'The page for somebody who runs a <strong>website</strong>: keywords, clusters, bulk queues and internal links. It ends on the plan that covers all of it, which is the card from the Pricing tab rather than a second copy of the price.', 'antradus' ),
+			'sections' => antradus_audience_sections( 'pub_', $icons, $link ),
+		),
+
+		'studio'    => array(
+			'label'    => __( 'Studios', 'antradus' ),
+			'blurb'    => __( 'The page for somebody who runs a <strong>show</strong>: an episode becomes an article, show notes, chapters, quote cards and a newsletter. Same shape as the Publishers tab, different half of the plugin.', 'antradus' ),
+			'sections' => antradus_audience_sections( 'std_', $icons, $link ),
 		),
 
 		/* =================================================================
@@ -948,6 +1384,13 @@ function antradus_settings_schema() {
 							'rows'  => 2,
 						),
 					),
+				),
+				antradus_paths_section(
+					'price_',
+					__( 'Which one are you?', 'antradus' ),
+					__( 'The same two links the home hero offers, printed under the cards. Somebody looking at four prices is usually asking which of them is meant for them, and that question is answered in features rather than in money - so this points at the two pages that answer it.', 'antradus' ),
+					$icons,
+					$link
 				),
 				array(
 					'title'  => __( 'The plans', 'antradus' ),

@@ -40,6 +40,10 @@ function antradus_strings_ar() {
 
 		/* ---- navigation and chrome ---- */
 		'Home'                     => 'الرئيسية',
+		'Publishers'               => 'أصحاب المواقع',
+		'Studios'                  => 'أصحاب البودكاست',
+		'For publishers'           => 'لأصحاب المواقع',
+		'For studios'              => 'لأصحاب البودكاست',
 		'Features'                 => 'المزايا',
 		'Plugin features'          => 'مزايا الإضافة',
 		'Pricing'                  => 'الأسعار',

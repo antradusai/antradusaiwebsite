@@ -52,6 +52,16 @@ $antradus_chips = array_slice( antradus_lines( antradus_opt( 'home_hero_chips', 
 					<p class="ant-note"><?php echo esc_html( antradus_opt( 'home_hero_note', '' ) ); ?></p>
 				<?php endif; ?>
 
+				<?php
+				/*
+				 * The fork, stated in the first screenful. Antradus is sold to
+				 * two audiences with two plans, and a visitor who cannot tell
+				 * within the hero which of the two they are reads the whole
+				 * page wondering whether it is for them. Two links settle it.
+				 */
+				antradus_render_paths( 'home_hero_paths', 'home_hero_paths_label', 'ant-paths--hero' );
+				?>
+
 				<?php if ( antradus_opt( 'home_hero_proof', '' ) ) : ?>
 					<p class="ant-proof">
 						<span class="ant-proof-mark" aria-hidden="true">

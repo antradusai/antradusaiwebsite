@@ -26,6 +26,7 @@
  *   17. Quotations
  *   18. Contact cards
  *   19. Wider layouts
+ *   20. The two audiences: the chooser, the fork, the audience pages
  *
  * Right-to-left lives in rtl.css, loaded only on Arabic pages.
  */
@@ -325,6 +326,10 @@ body.ant-site {
 
 .ant-grid--3 {
 	grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.ant-grid--4 {
+	grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .ant-grid--cards {
@@ -3006,6 +3011,24 @@ td.ant-cost-us .ant-ic {
  * 12. Responsive
  * ====================================================================== */
 
+/*
+ * The menu builds itself from the published pages, and the two audience pages
+ * took it from six items to eight. Eight fit at the full measure and run into
+ * the language switch on a laptop, so between the burger and the wide layout
+ * the row is tightened rather than anything being dropped - every one of those
+ * links is somebody's way in.
+ */
+@media (max-width: 1240px) {
+	.ant-header-inner {
+		gap: 14px;
+	}
+
+	.ant-menu a {
+		padding: 9px 10px;
+		font-size: 14.5px;
+	}
+}
+
 @media (max-width: 1080px) {
 	.ant-hero-grid,
 	.ant-geo-grid,
@@ -3056,7 +3079,8 @@ td.ant-cost-us .ant-ic {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 
-	.ant-grid--3 {
+	.ant-grid--3,
+	.ant-grid--4 {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 
@@ -3127,6 +3151,7 @@ td.ant-cost-us .ant-ic {
 
 	.ant-grid--2,
 	.ant-grid--3,
+	.ant-grid--4,
 	.ant-plans--2,
 	.ant-plans--3,
 	.ant-plans--4 {
@@ -4028,5 +4053,331 @@ td.ant-cost-us .ant-ic {
 	.ant-footer-base .ant-footer-legal {
 		text-align: center;
 		width: 100%;
+	}
+}
+
+/* =========================================================================
+ * 20. The two audiences
+ * ====================================================================== */
+
+/*
+ * Antradus is one product sold to two people who share almost no problem: one
+ * has a content calendar to fill, the other has a back catalogue nobody has
+ * written up. Everything in this section exists to let a visitor say which one
+ * they are as early as possible and then read a page that only talks to them.
+ *
+ * Three pieces, in the order a reader meets them: the chooser (two links, in
+ * the hero and again under the pricing cards), the fork (two full cards on the
+ * home page), and the furniture of the audience pages themselves.
+ */
+
+/* ---- the chooser ---- */
+
+.ant-paths {
+	margin-top: 26px;
+}
+
+.ant-paths-label {
+	margin: 0 0 10px;
+	color: var(--ant-ink-3);
+	font-size: 13.5px;
+	font-weight: 700;
+	letter-spacing: .04em;
+}
+
+.ant-paths-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.ant-paths-list li {
+	margin: 0;
+	list-style: none;
+}
+
+.ant-path {
+	display: inline-flex;
+	align-items: center;
+	gap: 12px;
+	padding: 11px 16px;
+	background: rgba(255, 255, 255, .74);
+	border: 1px solid var(--ant-line);
+	border-radius: 999px;
+	color: var(--ant-ink);
+	transition: border-color var(--ant-t), background var(--ant-t), transform var(--ant-t), box-shadow var(--ant-t);
+}
+
+.ant-path:hover {
+	background: var(--ant-white);
+	border-color: rgba(var(--ant-accent-rgb), .38);
+	color: var(--ant-ink);
+	transform: translateY(-2px);
+	box-shadow: var(--ant-sh-2);
+}
+
+.ant-path-ic {
+	display: grid;
+	place-items: center;
+	flex: 0 0 34px;
+	width: 34px;
+	height: 34px;
+	background: rgba(var(--ant-accent-rgb), .10);
+	border-radius: 50%;
+	color: var(--ant-accent);
+}
+
+.ant-path-copy b {
+	display: block;
+	font-size: 15px;
+	font-weight: 700;
+	line-height: 1.3;
+}
+
+.ant-path-copy span {
+	display: block;
+	margin-top: 1px;
+	color: var(--ant-ink-3);
+	font-size: 13px;
+	line-height: 1.4;
+}
+
+/*
+ * The arrow is the only physical direction in the block, and it means
+ * "onward" rather than "right" - rtl.css turns it around.
+ */
+.ant-path-go {
+	color: var(--ant-accent);
+	font-size: 17px;
+	font-weight: 700;
+	transition: transform var(--ant-t);
+}
+
+.ant-path:hover .ant-path-go {
+	transform: translateX(3px);
+}
+
+.ant-paths--center {
+	margin-top: 40px;
+	text-align: center;
+}
+
+.ant-paths--center .ant-paths-list {
+	justify-content: center;
+}
+
+/* ---- the fork on the home page ---- */
+
+.ant-forks {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: clamp(18px, 2vw, 26px);
+	align-items: stretch;
+}
+
+/*
+ * Both cards are the same height whatever the two lists weigh, and the list
+ * takes the slack - so the two buttons sit on one line and neither audience
+ * gets the card that looks like the afterthought.
+ */
+.ant-fork {
+	display: flex;
+	flex-direction: column;
+	padding: clamp(26px, 2.8vw, 38px);
+	border-radius: var(--ant-r-lg);
+	transition: transform var(--ant-t), box-shadow var(--ant-t);
+}
+
+.ant-fork:hover {
+	transform: translateY(-4px);
+	box-shadow: var(--ant-sh-3);
+}
+
+.ant-fork-head {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+}
+
+.ant-fork-ic {
+	display: grid;
+	place-items: center;
+	flex: 0 0 52px;
+	width: 52px;
+	height: 52px;
+	background: rgba(var(--ant-accent-rgb), .10);
+	border: 1px solid rgba(var(--ant-accent-rgb), .14);
+	border-radius: 15px;
+	color: var(--ant-accent);
+}
+
+.ant-fork-plan {
+	padding: 6px 13px;
+	background: rgba(var(--ant-accent-rgb), .09);
+	border-radius: 999px;
+	color: var(--ant-accent-deep);
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: .02em;
+}
+
+.ant-fork-title {
+	margin: 20px 0 0;
+	font-size: clamp(22px, 2vw, 28px);
+}
+
+.ant-fork-text {
+	margin: 10px 0 0;
+	color: var(--ant-ink-2);
+	font-size: 16px;
+	line-height: 1.6;
+}
+
+.ant-fork-list {
+	flex: 1 1 auto;
+	margin-top: 20px;
+	padding-top: 18px;
+	border-top: 1px solid var(--ant-line-2);
+}
+
+.ant-fork-price {
+	margin: 20px 0 0;
+	color: var(--ant-ink);
+	font-size: 15px;
+	font-weight: 700;
+}
+
+.ant-fork-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px 18px;
+	margin-top: 18px;
+}
+
+.ant-fork-alt {
+	font-size: 14.5px;
+	font-weight: 700;
+}
+
+.ant-fork-alt span {
+	display: inline-block;
+	margin-inline-start: 4px;
+	transition: transform var(--ant-t);
+}
+
+.ant-fork-alt:hover span {
+	transform: translateX(3px);
+}
+
+.ant-fork-note {
+	margin-top: 26px;
+}
+
+/* ---- the audience pages ---- */
+
+.ant-aud-hero {
+	padding-top: clamp(44px, 5vw, 76px);
+}
+
+/*
+ * "This is you if" - a short panel of ticks, wide rather than tall, so it
+ * reads as a checklist somebody scans rather than another feature list.
+ */
+.ant-signals {
+	padding: clamp(24px, 2.6vw, 34px) clamp(24px, 3vw, 40px);
+	border-radius: var(--ant-r-lg);
+}
+
+.ant-signals-title {
+	margin: 0 0 16px;
+	color: var(--ant-accent);
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: .14em;
+	text-transform: uppercase;
+}
+
+.ant-signals-list {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 10px clamp(20px, 3vw, 44px);
+}
+
+/* The numbered flow reuses the step cards; it only needs the list reset. */
+.ant-flow {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	counter-reset: none;
+}
+
+.ant-flow > li {
+	margin: 0;
+	list-style: none;
+}
+
+.ant-aud-plan-note {
+	max-width: 62ch;
+	margin-inline: auto;
+	margin-top: 26px;
+}
+
+/*
+ * The way back out. A row, not a card stack: it is an aside, and giving it the
+ * weight of a section would make a reader think they had reached the wrong
+ * page rather than the end of the right one.
+ */
+.ant-switchcard {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 18px 30px;
+	padding: clamp(24px, 2.8vw, 36px) clamp(26px, 3vw, 44px);
+	border-radius: var(--ant-r-lg);
+}
+
+.ant-switchcard-copy h2 {
+	font-size: clamp(21px, 2vw, 27px);
+}
+
+.ant-switchcard-copy p {
+	margin: 8px 0 0;
+	max-width: 62ch;
+	color: var(--ant-ink-2);
+	font-size: 15.5px;
+	line-height: 1.6;
+}
+
+@media (max-width: 960px) {
+	.ant-forks {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+@media (max-width: 760px) {
+	.ant-signals-list {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.ant-switchcard {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+}
+
+@media (max-width: 560px) {
+	/* Two pills side by side become two rows rather than two half-words. */
+	.ant-paths-list {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.ant-path {
+		justify-content: flex-start;
 	}
 }

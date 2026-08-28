@@ -12,6 +12,7 @@ defined( 'ABSPATH' ) || exit;
 
 get_template_part( 'template-parts/section', 'hero' );
 get_template_part( 'template-parts/section', 'stats' );
+get_template_part( 'template-parts/section', 'fork' );
 get_template_part( 'template-parts/section', 'logos' );
 get_template_part( 'template-parts/section', 'demo' );
 get_template_part( 'template-parts/section', 'compat' );

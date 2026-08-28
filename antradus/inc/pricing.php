@@ -24,6 +24,74 @@ function antradus_plans() {
 	return antradus_rows( 'price_plans' );
 }
 
+/**
+ * The plans named in a list, in the order the list names them.
+ *
+ * This is how the two audience pages map onto the pricing without owning a
+ * second copy of it: they name the plan they are about, and the card that
+ * appears is the card from the Pricing tab - same price, same button, same
+ * Freemius wiring, same free trial. Change the price in one place and every
+ * page that shows it changes with it.
+ *
+ * Matching is by the plan's name, case-insensitively, because the name is what
+ * the editor can see. A name that matches nothing is skipped rather than
+ * rendered as an empty card, so renaming a plan quietly drops it from those
+ * pages instead of breaking them.
+ *
+ * The field that holds these names is shared by both languages - it is wiring,
+ * not words - but a plan's name is translated, so on the Arabic site "Studio"
+ * has become something else and a match on the rendered name alone would find
+ * nothing. Each plan therefore answers to both its translated name and its
+ * English one, and an editor writes the list once.
+ *
+ * @param string $names Plan names, one per line or comma separated.
+ * @return array
+ */
+function antradus_plans_named( $names ) {
+	$names = trim( (string) $names );
+	if ( '' === $names ) {
+		return array();
+	}
+
+	$fold = static function ( $text ) {
+		$text = trim( (string) $text );
+		return function_exists( 'mb_strtolower' ) ? mb_strtolower( $text, 'UTF-8' ) : strtolower( $text );
+	};
+
+	$wanted = array();
+	foreach ( preg_split( '/[\r\n,]+/', $names ) as $name ) {
+		$name = $fold( $name );
+		if ( '' !== $name ) {
+			$wanted[] = $name;
+		}
+	}
+
+	$plans   = antradus_plans();
+	$english = antradus_rows( 'price_plans', antradus_default_lang() );
+
+	$by_name = array();
+	foreach ( $plans as $index => $plan ) {
+		$aliases = array( antradus_cell( $plan, 'name' ) );
+		if ( isset( $english[ $index ] ) ) {
+			$aliases[] = antradus_cell( $english[ $index ], 'name' );
+		}
+		foreach ( $aliases as $alias ) {
+			$alias = $fold( $alias );
+			if ( '' !== $alias && ! isset( $by_name[ $alias ] ) ) {
+				$by_name[ $alias ] = $plan;
+			}
+		}
+	}
+
+	$out = array();
+	foreach ( $wanted as $name ) {
+		if ( isset( $by_name[ $name ] ) ) {
+			$out[] = $by_name[ $name ];
+		}
+	}
+	return $out;
+}
+
 /* ===========================================================================
  * Reading a pasted Freemius snippet
  * ========================================================================= */
@@ -211,6 +279,19 @@ function antradus_shows_plans() {
 	if ( 'home' === $key && antradus_on( 'home_price_show', true ) ) {
 		return true;
 	}
+	/*
+	 * The audience pages carry the real plan card, buy button and all, so the
+	 * checkout library has to be loaded there too. Forgetting this would not
+	 * break the button - it stays a link to the hosted checkout - but it would
+	 * send every reader out of the site instead of opening the overlay.
+	 */
+	$prefixes = array(
+		'publisher' => 'pub_',
+		'studio'    => 'std_',
+	);
+	if ( isset( $prefixes[ $key ] ) ) {
+		return (bool) antradus_plans_named( antradus_opt( $prefixes[ $key ] . 'plan_names', '' ) );
+	}
 	return false;
 }
 
@@ -298,14 +379,26 @@ function antradus_checkout_attrs( $checkout, $name, $trial ) {
 /**
  * Render the plan cards.
  *
- * @param array $args compact => bool, to drop the long feature lists.
+ * @param array $args compact => drop the long feature lists.
+ *                    only    => plan names to show, one per line or comma
+ *                               separated; everything else is left out.
  */
 function antradus_render_plans( $args = array() ) {
-	$plans = antradus_plans();
+	$args = wp_parse_args(
+		$args,
+		array(
+			'compact' => false,
+			'only'    => '',
+		)
+	);
+
+	$plans = ( '' !== trim( (string) $args['only'] ) )
+		? antradus_plans_named( $args['only'] )
+		: antradus_plans();
+
 	if ( ! $plans ) {
 		return;
 	}
-	$args    = wp_parse_args( $args, array( 'compact' => false ) );
 	$columns = min( 4, max( 1, count( $plans ) ) );
 
 	printf( '<div class="ant-plans ant-plans--%d">', (int) $columns );

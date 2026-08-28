@@ -118,6 +118,18 @@
 	display: inline-block;
 }
 
+/* The chooser and the fork card both end in an "onward" arrow. */
+[dir="rtl"] .ant-path-go,
+[dir="rtl"] .ant-fork-alt span {
+	transform: scaleX(-1);
+	display: inline-block;
+}
+
+[dir="rtl"] .ant-path:hover .ant-path-go,
+[dir="rtl"] .ant-fork-alt:hover span {
+	transform: scaleX(-1) translateX(3px);
+}
+
 /* =========================================================================
  * 3. The compatibility diagram
  * ====================================================================== */
@@ -256,6 +268,8 @@
 [dir="rtl"] .ant-cmp-f span,
 [dir="rtl"] .ant-rail-item-title,
 [dir="rtl"] .ant-card-title,
+[dir="rtl"] .ant-fork-plan,
+[dir="rtl"] .ant-fork-price,
 [dir="rtl"] .ant-paper-title {
 	unicode-bidi: plaintext;
 	text-align: start;

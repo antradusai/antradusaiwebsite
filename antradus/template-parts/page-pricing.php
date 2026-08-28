@@ -28,6 +28,16 @@ $antradus_sales = antradus_link( antradus_opt( 'price_sales_url', '' ) );
 		<?php endif; ?>
 
 		<?php antradus_render_plans(); ?>
+
+		<?php
+		/*
+		 * The same fork the home hero asks, asked again at the moment somebody
+		 * is looking at four prices and wondering which two of them apply to
+		 * them. The pages it points at answer that in features rather than in
+		 * money, which is the question actually being asked here.
+		 */
+		antradus_render_paths( 'price_paths', 'price_paths_label', 'ant-paths--center' );
+		?>
 	</div>
 </section>
 

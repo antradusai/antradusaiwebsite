@@ -45,11 +45,22 @@ function antradus_opt( $key, $default = '' ) {
  * Rows the editor blanked out entirely are dropped, so clearing every field in
  * a row is how you delete it even without touching the Remove button.
  *
- * @param string $key Field key.
+ * A language can be named to read the rows as that language has them, rather
+ * than as the page is being rendered. Only one caller wants that - matching a
+ * plan by the English name an editor typed into a field both languages share -
+ * and it is the reason this takes a second argument at all.
+ *
+ * @param string      $key  Field key.
+ * @param string|null $lang Language, or null for the one being rendered.
  * @return array
  */
-function antradus_rows( $key ) {
-	$val = antradus_opt( $key, array() );
+function antradus_rows( $key, $lang = null ) {
+	if ( null === $lang ) {
+		$val = antradus_opt( $key, array() );
+	} else {
+		$all = antradus_options( $lang );
+		$val = array_key_exists( $key, $all ) ? $all[ $key ] : array();
+	}
 	if ( ! is_array( $val ) ) {
 		return array();
 	}
@@ -108,48 +119,64 @@ function antradus_on( $key, $default = true ) {
  * ========================================================================= */
 
 /**
- * The seven pages this theme designs.
+ * The nine pages this theme designs.
  *
  * A page is "live" only when a published page with that slug exists. Every
  * navigation link, footer link and in-page CTA runs through antradus_page_url(),
  * so a page left in Draft never appears anywhere on the site - which is exactly
  * what you want while one is still being written.
  *
+ * The two audience pages sit directly after Home on purpose. They are the fork
+ * the site turns on - somebody who runs a website and somebody who runs a show
+ * want different feature lists and end up on different plans - so they come
+ * before the pages that answer "what does it do" and "what does it cost". The
+ * order of this array is the order of the menu.
+ *
  * @return array<string,array<string,string>>
  */
 function antradus_pages() {
 	return array(
-		'home'     => array(
+		'home'      => array(
 			'label' => __( 'Home', 'antradus' ),
 			'slug'  => 'home',
 			'nav'   => __( 'Home', 'antradus' ),
 		),
-		'features' => array(
+		'publisher' => array(
+			'label' => __( 'For publishers', 'antradus' ),
+			'slug'  => 'for-publishers',
+			'nav'   => __( 'Publishers', 'antradus' ),
+		),
+		'studio'    => array(
+			'label' => __( 'For studios', 'antradus' ),
+			'slug'  => 'for-studios',
+			'nav'   => __( 'Studios', 'antradus' ),
+		),
+		'features'  => array(
 			'label' => __( 'Plugin features', 'antradus' ),
 			'slug'  => 'plugin-features',
 			'nav'   => __( 'Features', 'antradus' ),
 		),
-		'pricing'  => array(
+		'pricing'   => array(
 			'label' => __( 'Pricing', 'antradus' ),
 			'slug'  => 'pricing',
 			'nav'   => __( 'Pricing', 'antradus' ),
 		),
-		'docs'     => array(
+		'docs'      => array(
 			'label' => __( 'Docs', 'antradus' ),
 			'slug'  => 'docs',
 			'nav'   => __( 'Docs', 'antradus' ),
 		),
-		'blog'     => array(
+		'blog'      => array(
 			'label' => __( 'Blog', 'antradus' ),
 			'slug'  => 'blog',
 			'nav'   => __( 'Blog', 'antradus' ),
 		),
-		'contact'  => array(
+		'contact'   => array(
 			'label' => __( 'Contact', 'antradus' ),
 			'slug'  => 'contact',
 			'nav'   => __( 'Contact', 'antradus' ),
 		),
-		'welcome'  => array(
+		'welcome'   => array(
 			'label' => __( 'Welcome', 'antradus' ),
 			'slug'  => 'welcome',
 			'nav'   => __( 'Newsletter', 'antradus' ),
@@ -509,6 +536,65 @@ function antradus_button( $label, $target, $variant = 'primary', $attrs = array(
 		$extra, // phpcs:ignore WordPress.Security.EscapeOutput -- assembled from esc_attr() above.
 		esc_html( $label )
 	);
+}
+
+/**
+ * The "which one are you?" chooser.
+ *
+ * Two links that send a reader to the page written for them. It is printed in
+ * the home hero and again under the pricing cards, which is the whole reason
+ * it is a function: the same fork asked in the two places a visitor is most
+ * likely to be undecided, worded once.
+ *
+ * A row whose destination is a draft page resolves to '' and is skipped, and
+ * if that leaves nothing the block is not printed at all - the same rule every
+ * other link in the theme follows.
+ *
+ * @param string $rows_key  Repeater option key: icon, label, text, cta_url.
+ * @param string $label_key Option key of the small line above the links.
+ * @param string $class     Extra classes on the wrapper.
+ */
+function antradus_render_paths( $rows_key, $label_key = '', $class = '' ) {
+	$rows  = antradus_rows( $rows_key );
+	$links = array();
+
+	foreach ( $rows as $row ) {
+		$url   = antradus_link( antradus_cell( $row, 'cta_url' ) );
+		$label = antradus_cell( $row, 'label' );
+		if ( '' === $url || '' === $label ) {
+			continue;
+		}
+		$links[] = array(
+			'url'   => $url,
+			'label' => $label,
+			'text'  => antradus_cell( $row, 'text' ),
+			'icon'  => antradus_cell( $row, 'icon', 'spark' ),
+		);
+	}
+
+	if ( ! $links ) {
+		return;
+	}
+
+	$label = $label_key ? trim( (string) antradus_opt( $label_key, '' ) ) : '';
+
+	echo '<div class="ant-paths ' . esc_attr( $class ) . '">';
+	if ( '' !== $label ) {
+		echo '<p class="ant-paths-label">' . esc_html( $label ) . '</p>';
+	}
+	echo '<ul class="ant-paths-list">';
+	foreach ( $links as $link ) {
+		echo '<li><a class="ant-path" href="' . esc_url( $link['url'] ) . '">';
+		echo '<span class="ant-path-ic">' . antradus_icon( $link['icon'], 19 ) . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput -- static markup.
+		echo '<span class="ant-path-copy"><b>' . esc_html( $link['label'] ) . '</b>';
+		if ( '' !== $link['text'] ) {
+			echo '<span>' . esc_html( $link['text'] ) . '</span>';
+		}
+		echo '</span>';
+		echo '<span class="ant-path-go" aria-hidden="true">&rarr;</span>';
+		echo '</a></li>';
+	}
+	echo '</ul></div>';
 }
 
 /**

@@ -17,7 +17,7 @@ Content** in wp-admin, in **English and Arabic**.
 2. **Appearance → Themes → Add New → Upload Theme**, choose the zip, install,
    activate.
 3. Go to **Appearance → Antradus Content**. The first tab, **Pages**, lists the
-   seven pages the theme designs and tells you which of them exist. If any are
+   nine pages the theme designs and tells you which of them exist. If any are
    missing, one button creates them as drafts.
 4. **Settings → Reading**: set the front page to your Home page.
 
@@ -48,15 +48,15 @@ Freemius details, your form shortcodes and your page addresses are not touched.
 
 **A page only appears on the site once it is published.**
 
-The theme knows seven pages: Home, Plugin features, Pricing, Docs, Blog,
-Contact and Welcome. Every menu item, footer link and call-to-action button that
+The theme knows nine pages: Home, Plugin features, Pricing, Docs, Blog,
+Contact, Welcome, For publishers and For studios. Every menu item, footer link and call-to-action button that
 points at one of them is resolved through a single function. While a page is a
 draft that function returns nothing, and the link is not rendered at all — not
 greyed out, not broken, simply absent.
 
 So you can write the Pricing page over three days without a half-finished page
 being reachable, and publishing it puts every link back on its own. The **Pages**
-tab shows the live status of all seven at a glance.
+tab shows the live status of all nine at a glance.
 
 Buttons you configure yourself take part in this too: write a link target as
 `page:pricing` rather than a full URL and it inherits the same behaviour.
@@ -340,7 +340,7 @@ inc/defaults.php         every shipped string in English - the content
 inc/defaults-ar.php      the same keys, in Arabic. Edit the two side by side
 inc/i18n.php             which language, which fields translate, how they merge
 inc/strings-ar.php       the theme's own interface words in Arabic
-inc/helpers.php          options, the seven pages, images, render helpers
+inc/helpers.php          options, the nine pages, images, render helpers
 inc/settings-schema.php  what the settings screen contains
 inc/settings.php         rendering and sanitizing that schema
 inc/security.php         the hardening, and the one capability check

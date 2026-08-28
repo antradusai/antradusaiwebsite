@@ -21,6 +21,8 @@ function antradus_default_options() {
 	return array_merge(
 		antradus_defaults_brand(),
 		antradus_defaults_home(),
+		antradus_defaults_publisher(),
+		antradus_defaults_studio(),
 		antradus_defaults_features(),
 		antradus_defaults_pricing(),
 		antradus_defaults_blog(),
@@ -55,6 +57,8 @@ function antradus_defaults_brand() {
 
 		// Slug overrides for the seven designed pages.
 		'slug_home'         => 'home',
+		'slug_publisher'    => 'for-publishers',
+		'slug_studio'       => 'for-studios',
 		'slug_features'     => 'plugin-features',
 		'slug_pricing'      => 'pricing',
 		'slug_docs'         => 'docs',
@@ -74,19 +78,44 @@ function antradus_defaults_brand() {
 function antradus_defaults_home() {
 	return array(
 		/* ---- hero ---- */
-		'home_hero_badge'    => 'The first B2B podcast-to-article system for WordPress',
-		'home_hero_title'    => "One episode in.\n*A publishing week out.*",
-		'home_hero_sub'      => 'Antradus AI turns a single podcast episode into a finished, human-sounding article - plus show notes, chapters, quote cards, a newsletter draft and social posts. All inside WordPress, on your own API keys.',
-		'home_hero_cta1'     => 'See pricing',
-		'home_hero_cta1_url' => 'page:pricing',
+		'home_hero_badge'       => 'The first B2B podcast-to-article system for WordPress',
+		// Named both sources on purpose. "One episode in" was the strongest
+		// line on the page and also the reason somebody without a podcast
+		// stopped reading it - which is half the people the site now sells to.
+		'home_hero_title'       => "An episode, or a keyword.\n*A publishing week out.*",
+		'home_hero_sub'         => 'Antradus AI writes for two kinds of team: publishers filling a website from keywords and clusters, and studios turning every episode into an article, show notes, quote cards and a newsletter. One desk, inside WordPress, on your own API keys.',
+		'home_hero_cta1'        => 'See pricing',
+		'home_hero_cta1_url'    => 'page:pricing',
 		// Cleared: the hero carries one call to action. Fill this in and the
 		// second button comes back - an empty label renders nothing at all.
-		'home_hero_cta2'     => '',
-		'home_hero_cta2_url' => 'https://wordpress.org/plugins/antradus-ai-lite/',
-		'home_hero_note'     => 'Bring your own API keys - no markup, no per-word fees, no monthly seat.',
-		'home_hero_image'    => '',
-		'home_hero_chips'    => "Episode to article\nShow notes and chapters\nQuote cards\nNewsletter draft\nSEO and GEO ready",
-		'home_hero_proof'    => 'Built on the Antradus AI plugin - Classic and Block editors, five AI providers, your own API keys.',
+		'home_hero_cta2'        => '',
+		'home_hero_cta2_url'    => 'https://wordpress.org/plugins/antradus-ai-lite/',
+		'home_hero_note'        => 'Bring your own API keys - no markup, no per-word fees, no monthly seat.',
+		'home_hero_image'       => '',
+		'home_hero_chips'       => "Episode to article\nShow notes and chapters\nQuote cards\nNewsletter draft\nSEO and GEO ready",
+		'home_hero_proof'       => 'Built on the Antradus AI plugin - Classic and Block editors, five AI providers, your own API keys.',
+
+		/*
+		 * The fork, in the first screenful. A visitor who cannot tell whether
+		 * a site is for them stops reading, and Antradus is sold to two people
+		 * whose problems have nothing in common - a content calendar and a
+		 * back catalogue. Two links, and each of them stops guessing.
+		 */
+		'home_hero_paths_label' => 'Which one are you?',
+		'home_hero_paths'       => array(
+			array(
+				'icon'    => 'pen',
+				'label'   => "I'm a publisher",
+				'text'    => 'A website to fill',
+				'cta_url' => 'page:publisher',
+			),
+			array(
+				'icon'    => 'mic',
+				'label'   => "I'm a studio",
+				'text'    => 'A show to write up',
+				'cta_url' => 'page:studio',
+			),
+		),
 
 		/* ---- stats ---- */
 		'home_stats'         => array(
@@ -107,6 +136,38 @@ function antradus_defaults_home() {
 				'label' => 'Languages',
 			),
 		),
+
+		/* ---- publisher or studio ---- */
+		'home_fork_eyebrow'  => 'Two ways in',
+		'home_fork_title'    => 'One desk. *Two kinds of publisher.*',
+		'home_fork_sub'      => 'The job is the same either way - a finished, human-sounding article inside WordPress. What differs is where the material comes from, and that is what decides your plan.',
+		'home_fork_cards'    => array(
+			array(
+				'icon'     => 'pen',
+				'name'     => 'Publisher',
+				'title'    => "I'm a publisher",
+				'text'     => 'You run a website, and the content calendar is always further ahead than the writing.',
+				'items'    => "Bulk publishing - 200 keywords or a CSV\nSEO clusters and automatic internal linking\nHuman Voice and the offline Human Check\nGEO structure, schema and AI-referral counting",
+				'price'    => '$275 a month - up to 5 sites - 7 days free',
+				'cta'      => 'See what Publisher does',
+				'cta_url'  => 'page:publisher',
+				'alt'      => 'Compare every plan',
+				'alt_url'  => 'page:pricing',
+			),
+			array(
+				'icon'     => 'mic',
+				'name'     => 'Studio',
+				'title'    => "I'm a studio",
+				'text'     => 'You run a podcast or a video show, and every episode should be a week of content instead of an invoice.',
+				'items'    => "Episode to article, with every quote verified\nShow notes, timestamped chapters and quote cards\nNewsletter drafts and Instagram carousels\nEverything Publisher does, on top",
+				'price'    => '$1,500 a month - starts with a demo',
+				'cta'      => 'See what Studio does',
+				'cta_url'  => 'page:studio',
+				'alt'      => 'Compare every plan',
+				'alt_url'  => 'page:pricing',
+			),
+		),
+		'home_fork_note'     => 'Both run on the same plugin, in the same WordPress, on your own API keys. Lite is free either way.',
 
 		/* ---- logo strip ---- */
 		'home_logos_title'   => 'Built for the publishers, networks and agencies who ship on a schedule',
@@ -447,6 +508,200 @@ function antradus_defaults_home() {
 }
 
 /* ===========================================================================
+ * The "for publishers" page
+ *
+ * The half of the plugin somebody with a website cares about: volume, plan,
+ * links, reporting. Not one word about episodes until the card at the bottom
+ * that sends a reader to the other page.
+ * ========================================================================= */
+
+/**
+ * @return array
+ */
+function antradus_defaults_publisher() {
+	return array(
+		'pub_eyebrow'       => 'For publishers',
+		'pub_title'         => 'You run the website. *We run the desk.*',
+		'pub_sub'           => 'Publisher is Antradus for a site that has to keep publishing: keywords, clusters, bulk queues, internal links and the reporting that shows what it cost. No podcast required, and nothing to log into but WordPress.',
+		'pub_cta1'          => 'See the plan',
+		'pub_cta1_url'      => '#plan',
+		'pub_cta2'          => 'Every feature, in full',
+		'pub_cta2_url'      => 'page:features',
+		'pub_note'          => '$275 a month for up to five sites, with seven days free. Your own API keys, billed by the provider at their rates.',
+		'pub_hero_image'    => '',
+
+		'pub_signals_title' => 'This is you if',
+		'pub_signals'       => "The content calendar is always further ahead than the writing\nYou have a keyword list, a plan, or two hundred pages of gaps\nYou care about ranking - and now about being quoted by AI assistants too\nYour writers cost more than your software, and both are going up\nYou do not have a podcast, or you do and the website still comes first",
+
+		'pub_groups_eyebrow' => 'What you get',
+		'pub_groups_title'   => 'Everything a site needs *to keep publishing*',
+		'pub_groups_sub'     => 'Six groups, and every one of them is in Publisher. Lite covers the writing; this is what covers the schedule.',
+		'pub_groups'         => array(
+			array(
+				'icon'  => 'stack',
+				'title' => 'Publishing at volume',
+				'items' => "Bulk publishing - 200 keywords at once, or a CSV import\nDrip-scheduling across days or weeks\nA queue that survives a closed browser, on WP-Cron\nDraft review, retries and per-job error reporting\nAutomatic categorisation into the categories you already have",
+			),
+			array(
+				'icon'  => 'merge',
+				'title' => 'Planning the site, not the post',
+				'items' => "SEO clusters - a pillar and its spokes, planned together\nAutomatic internal linking as each piece is written\nInbound link suggestions for the posts nobody points at\nAI topic ideas drawn from your own niche\nSaved plans you can correct and re-run",
+			),
+			array(
+				'icon'  => 'brain',
+				'title' => 'Sounding like your own writers',
+				'items' => "The Human Voice prompt layer - off, natural or strong\nAn offline Human Check for rhythm, hedging and stock phrases\nAn editable banned-phrase list\nA brand voice profile learned from your published posts\nHumanize a post you already published, in place\nYour own system prompt, applied to every article",
+			),
+			array(
+				'icon'  => 'search',
+				'title' => 'Found by search, and by AI',
+				'items' => "Focus keyphrase, meta title and description into Yoast or Rank Math\nSEO metadata for posts you published years ago\nAnswer-first structure, which is the shape assistants quote\nArticle and FAQ schema written into your SEO plugin, never over it\nAn AI-crawler audit of robots.txt with a copy-paste fix\nA daily count of readers arriving from AI assistants",
+			),
+			array(
+				'icon'  => 'globe',
+				'title' => 'Written from anything',
+				'items' => "A single keyword\nAny article URL, with an honest refusal when the page could not be read\nTwo sources merged into one original piece\nLive web search first, for news from hours ago\nA YouTube video, via the companion extension\nWooCommerce products written from a product photo",
+			),
+			array(
+				'icon'  => 'chart',
+				'title' => 'Knowing what it cost',
+				'items' => "Words, images and tokens logged per post\nEstimated cost per post, with editable model prices\nAttribution back to the post that spent it\nUsage history you can purge whenever you like",
+			),
+		),
+
+		'pub_flow_title' => 'A publishing week, *on Publisher*',
+		'pub_flow_sub'   => 'The same four moves every week, whether it is four articles or forty.',
+		'pub_flow'       => array(
+			array(
+				'title' => 'Plan the cluster',
+				'text'  => 'Give it a pillar keyword. It comes back with the pillar, its spokes and how they should link to each other.',
+			),
+			array(
+				'title' => 'Send it to the queue',
+				'text'  => 'Queue the whole cluster and drip it across the fortnight. Close the browser - WP-Cron carries on without you.',
+			),
+			array(
+				'title' => 'Edit what arrives',
+				'text'  => 'Drafts land in your editor. The Human Check names the paragraphs that read like a machine, before a reader does.',
+			),
+			array(
+				'title' => 'Publish and count',
+				'text'  => 'Yoast or Rank Math is already filled in, the internal links are already made, and Reporting shows what each post cost.',
+			),
+		),
+
+		'pub_plan_eyebrow' => 'The plan',
+		'pub_plan_title'   => 'All of that is *Publisher*',
+		'pub_plan_sub'     => 'One plan, up to five sites, seven days free. Lite stays free underneath it, and Studio adds the show on top.',
+		'pub_plan_names'   => 'Publisher',
+		'pub_plan_note'    => 'You pay OpenAI, Anthropic, Google, OpenRouter or DeepSeek directly for the writing itself. We resell you nothing, so there are no credits and no per-word fees.',
+		'pub_plan_more'    => 'Compare every plan, feature by feature',
+
+		'pub_switch_title'   => 'Actually, you run a *show*?',
+		'pub_switch_text'    => 'If your material is episodes rather than keywords, Studio is the page you want - it adds the whole podcast pipeline on top of everything here.',
+		'pub_switch_btn'     => 'See what Studio does',
+		'pub_switch_btn_url' => 'page:studio',
+	);
+}
+
+/* ===========================================================================
+ * The "for studios" page
+ *
+ * The other half: an episode in, a week of content out. It says plainly that
+ * it contains Publisher, because it does and because that is the reason for
+ * the price difference.
+ * ========================================================================= */
+
+/**
+ * @return array
+ */
+function antradus_defaults_studio() {
+	return array(
+		'std_eyebrow'       => 'For studios',
+		'std_title'         => 'You run a show. *Antradus writes the week around it.*',
+		'std_sub'           => 'Studio is everything Publisher does, plus the podcast pipeline: one episode becomes an article, show notes, chapters, quote cards, a newsletter draft and a fortnight of social - with every quotation checked against the recording.',
+		'std_cta1'          => 'See the plan',
+		'std_cta1_url'      => '#plan',
+		'std_cta2'          => 'Book a demo',
+		'std_cta2_url'      => 'page:contact',
+		'std_note'          => '$1,500 a month. It starts with a demo, because your back catalogue is the interesting part of the conversation.',
+		'std_hero_image'    => '',
+
+		'std_signals_title' => 'This is you if',
+		'std_signals'       => "You publish episodes, and the write-up is always the thing that slips\nThere is a back catalogue nobody has turned into pages\nAn episode write-up costs you a freelancer invoice, every week\nShow notes, chapters and quote cards are three separate jobs\nYou run more than one show - or more than one client's show",
+
+		'std_groups_eyebrow' => 'What you get',
+		'std_groups_title'   => 'One episode in. *A week of content out.*',
+		'std_groups_sub'     => 'Everything below comes out of the same transcript, and nothing is invented on top of it.',
+		'std_groups'         => array(
+			array(
+				'icon'  => 'mic',
+				'title' => 'The episode goes in',
+				'items' => "YouTube, Spotify, Apple Podcasts or an RSS feed\nA whole back catalogue, published on a schedule\nSaved Plans - every correction kept, and re-running costs nothing extra\nOne show or twenty, each with its own voice and style",
+			),
+			array(
+				'icon'  => 'pen',
+				'title' => 'The article comes out',
+				'items' => "A finished piece in your house style, not a tidied transcript\nEvery direct quotation checked word-for-word, or dropped\nAnswer-first structure, so assistants quote it rather than skip it\nThe angle and the outline shown to you before a word is written",
+			),
+			array(
+				'icon'  => 'calendar',
+				'title' => 'The show furniture',
+				'items' => "Timestamped chapters\nA description ready to paste into your podcast host\nAn episode summary for the feed\nGuest names and topics picked out of the recording",
+			),
+			array(
+				'icon'  => 'image',
+				'title' => 'The week around it',
+				'items' => "Quote cards drawn with real type, never an image model\nNewsletter drafts for Kit, Mailchimp and beehiiv - never sent for you\nInstagram carousels, behind an explicit confirmation\nA ZIP of every asset, for whatever we do not publish to",
+			),
+			array(
+				'icon'  => 'lang',
+				'title' => 'Every market you sell into',
+				'items' => "Seventeen languages, in the voice you already use there\nThe same episode published once per market\nRight-to-left handled properly, not bolted on\nTranslate an existing article without rewriting it",
+			),
+			array(
+				'icon'  => 'stack',
+				'title' => 'And all of Publisher',
+				'items' => "Bulk publishing, SEO clusters and internal linking\nHuman Voice and the offline Human Check\nGEO structure, the crawler audit and AI-referral counting\nYoast and Rank Math auto-fill in both editors\nCost reporting per post\nA success manager",
+			),
+		),
+
+		'std_flow_title' => 'What happens to *one episode*',
+		'std_flow_sub'   => 'From a link to a week of scheduled content, with a stop for you in the middle.',
+		'std_flow'       => array(
+			array(
+				'title' => 'Paste the link',
+				'text'  => 'A YouTube or Spotify URL, an RSS feed or a file. Antradus transcribes it and reads it - it does not paste it.',
+			),
+			array(
+				'title' => 'Approve the plan',
+				'text'  => 'You see the angle, the outline and the quotations it intends to use. Correct it, and the correction is saved for good.',
+			),
+			array(
+				'title' => 'Collect the week',
+				'text'  => 'The article, show notes, chapters, quote cards, a newsletter draft and the social posts - all from that one transcript.',
+			),
+			array(
+				'title' => 'Publish on your schedule',
+				'text'  => 'Drafts for review, dripped across the week, in as many languages as you sell in. Nothing goes out unasked.',
+			),
+		),
+
+		'std_plan_eyebrow' => 'The plan',
+		'std_plan_title'   => 'All of that is *Studio*',
+		'std_plan_sub'     => 'Sold after a demo rather than a checkout, because a show and its back catalogue are worth looking at first. Managed is the same thing with us doing the work.',
+		'std_plan_names'   => 'Studio, Managed',
+		'std_plan_note'    => 'Studio contains Publisher in full. The writing itself is billed to you by your own AI provider, at their published rates.',
+		'std_plan_more'    => 'Compare every plan, feature by feature',
+
+		'std_switch_title'   => 'No podcast, just a *website*?',
+		'std_switch_text'    => 'If your material is keywords and pages rather than episodes, Publisher is the page you want - and it is a third of the price.',
+		'std_switch_btn'     => 'See what Publisher does',
+		'std_switch_btn_url' => 'page:publisher',
+	);
+}
+
+/* ===========================================================================
  * Plugin features page
  * ========================================================================= */
 
@@ -523,6 +778,28 @@ function antradus_defaults_pricing() {
 		'price_title'        => 'Start free. *Scale when it pays.*',
 		'price_sub'          => 'Lite writes articles and always will, for nothing. Publisher runs a website at scale. Studio runs a whole show. Your API keys, your sites, your control.',
 		'price_note'         => 'Lite is free forever - no account, no card. Publisher is $275 a month for up to five sites, with a 7-day free trial. Studio is $1,500 a month and starts with a demo.',
+
+		/*
+		 * Four prices is the moment somebody stops comparing and starts
+		 * wondering which two of them are even meant for them. That is a
+		 * question about features, not about money, so it is answered by the
+		 * two pages that talk about features.
+		 */
+		'price_paths_label'  => 'Not sure which of these is yours?',
+		'price_paths'        => array(
+			array(
+				'icon'    => 'pen',
+				'label'   => "I'm a publisher",
+				'text'    => 'A website to fill',
+				'cta_url' => 'page:publisher',
+			),
+			array(
+				'icon'    => 'mic',
+				'label'   => "I'm a studio",
+				'text'    => 'A show to write up',
+				'cta_url' => 'page:studio',
+			),
+		),
 
 		// Freemius wiring. Only the plans that opt into checkout use it.
 		'fs_product_id'      => '34895',
@@ -1026,13 +1303,13 @@ function antradus_defaults_security() {
 function antradus_defaults_footer() {
 	return array(
 		'footer_tagline'   => 'The first B2B podcast-to-article system for WordPress. One episode in, a publishing week out - on your own API keys.',
-		'footer_cta_title' => 'Ready to stop paying for episode write-ups?',
+		'footer_cta_title' => 'Ready to stop paying for every piece you publish?',
 		'footer_cta_btn'   => 'See pricing',
 		'footer_cta_url'   => 'page:pricing',
 		'footer_cols'      => array(
 			array(
 				'title' => 'Product',
-				'links' => "Features | page:features\nPricing | page:pricing\nDocs | page:docs\nDownload Lite | https://wordpress.org/plugins/antradus-ai-lite/",
+				'links' => "For publishers | page:publisher\nFor studios | page:studio\nFeatures | page:features\nPricing | page:pricing\nDocs | page:docs\nDownload Lite | https://wordpress.org/plugins/antradus-ai-lite/",
 			),
 			array(
 				'title' => 'Company',
