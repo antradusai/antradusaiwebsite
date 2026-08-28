@@ -154,11 +154,30 @@ if ( have_posts() ) {
 							</span>
 							<h2><?php echo esc_html( antradus_cell( $antradus_group, 'title' ) ); ?></h2>
 						</header>
-						<ul class="ant-ticks">
-							<?php foreach ( antradus_lines( antradus_cell( $antradus_group, 'items' ) ) as $antradus_item ) : ?>
-								<li>
+						<?php
+						/*
+						 * Each feature may carry a picture of itself, taken
+						 * from the line at the same position in this group's
+						 * image list. The ones with a picture get the wider
+						 * row; a group where nobody filled any in still reads
+						 * as the plain ticked list it was before.
+						 */
+						$antradus_items = antradus_lines_paired(
+							antradus_cell( $antradus_group, 'items' ),
+							antradus_cell( $antradus_group, 'item_images' )
+						);
+						?>
+						<ul class="ant-ticks ant-group-items">
+							<?php
+							foreach ( $antradus_items as $antradus_item ) :
+								$antradus_shot = antradus_image_url( $antradus_item['extra'], 'medium' );
+								?>
+								<li<?php echo $antradus_shot ? ' class="has-shot"' : ''; // phpcs:ignore WordPress.Security.EscapeOutput -- static markup. ?>>
 									<?php echo antradus_icon( 'check', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput -- static markup. ?>
-									<span><?php echo esc_html( $antradus_item ); ?></span>
+									<span><?php echo esc_html( $antradus_item['text'] ); ?></span>
+									<?php if ( $antradus_shot ) : ?>
+										<img class="ant-group-shot" src="<?php echo esc_url( $antradus_shot ); ?>" alt="" loading="lazy" decoding="async">
+									<?php endif; ?>
 								</li>
 							<?php endforeach; ?>
 						</ul>
@@ -199,6 +218,15 @@ if ( have_posts() ) {
 		</div>
 	</section>
 <?php endif; ?>
+
+<?php
+/*
+ * The compatibility diagram, in this audience's own vocabulary. It renders
+ * nothing unless this page's `*_compat_*` keys are filled in, so a page that
+ * has no use for it simply leaves them empty.
+ */
+get_template_part( 'template-parts/section', 'compat', array( 'prefix' => $antradus_p ) );
+?>
 
 <?php if ( $antradus_plans && $antradus_f( 'plan_title' ) ) : ?>
 	<section class="ant-section ant-band ant-band--deep" id="plan">

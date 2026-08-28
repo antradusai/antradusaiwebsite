@@ -108,11 +108,12 @@
 	 * towards the middle. That is what makes the line leave the pill flat,
 	 * bend once, and arrive at the hub flat, instead of turning a corner.
 	 */
-	(function () {
-		var diagram = document.querySelector('[data-compat]');
-		if (!diagram) {
-			return;
-		}
+	/*
+	 * There can be more than one on a site - the home page draws the whole
+	 * picture, an audience page draws its own subset - and each one measures
+	 * itself, so every diagram gets its own state rather than sharing one.
+	 */
+	Array.prototype.forEach.call(document.querySelectorAll('[data-compat]'), function (diagram) {
 		var svg = diagram.querySelector('[data-compat-flow]');
 		var hub = diagram.querySelector('.ant-compat-mark');
 		if (!svg || !hub) {
@@ -283,7 +284,7 @@
 		if ('ResizeObserver' in window) {
 			new ResizeObserver(schedule).observe(diagram);
 		}
-	})();
+	});
 
 	/* -------------------------------------------------------- docs search */
 

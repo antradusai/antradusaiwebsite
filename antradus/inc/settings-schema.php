@@ -34,6 +34,79 @@ function antradus_link_help() {
 }
 
 /**
+ * The compatibility diagram, as a schema section.
+ *
+ * The home page draws one of these and each audience page may draw its own, in
+ * its own vocabulary: the studio diagram lists podcast hosts, the home one
+ * lists everything. Same three headings and same two columns every time, so
+ * the description is written once and asked for per prefix.
+ *
+ * @param string $key_prefix Option key prefix: 'home_compat_' or 'std_compat_'.
+ * @param string $title      Section title in the admin screen.
+ * @param string $blurb      Section blurb, or ''.
+ * @return array
+ */
+function antradus_compat_section( $key_prefix, $title, $blurb = '' ) {
+	$column = static function ( $key, $label, $single ) {
+		return array(
+			'key'    => $key,
+			'label'  => $label,
+			'type'   => 'repeater',
+			'single' => $single,
+			'fields' => array(
+				array(
+					'key'   => 'name',
+					'label' => __( 'Name', 'antradus' ),
+					'type'  => 'text',
+				),
+				array(
+					'key'   => 'image',
+					'label' => __( 'Icon image', 'antradus' ),
+					'type'  => 'image',
+				),
+			),
+		);
+	};
+
+	$section = array(
+		'title'  => $title,
+		'fields' => array(
+			array(
+				'key'   => $key_prefix . 'eyebrow',
+				'label' => __( 'Eyebrow', 'antradus' ),
+				'type'  => 'text',
+			),
+			array(
+				'key'   => $key_prefix . 'title',
+				'label' => __( 'Heading', 'antradus' ),
+				'type'  => 'text',
+				'help'  => __( 'Clear this to remove the whole diagram.', 'antradus' ),
+			),
+			array(
+				'key'   => $key_prefix . 'sub',
+				'label' => __( 'Supporting paragraph', 'antradus' ),
+				'type'  => 'textarea',
+				'rows'  => 3,
+			),
+			array(
+				'key'   => $key_prefix . 'center',
+				'label' => __( 'Centre image', 'antradus' ),
+				'type'  => 'image',
+				'help'  => __( 'The mark in the middle of the diagram. Your logo is used when this is empty.', 'antradus' ),
+			),
+			$column( $key_prefix . 'in', __( 'Sources - the left column', 'antradus' ), __( 'Source', 'antradus' ) ),
+			$column( $key_prefix . 'out', __( 'Destinations - the right column', 'antradus' ), __( 'Destination', 'antradus' ) ),
+		),
+	);
+
+	if ( '' !== $blurb ) {
+		$section['blurb'] = $blurb;
+	}
+
+	return $section;
+}
+
+/**
  * The "which one are you?" chooser, as a schema section.
  *
  * The same two links are offered in the home hero and under the pricing cards,
@@ -225,6 +298,14 @@ function antradus_audience_sections( $prefix, $icons, $link ) {
 							'rows'  => 7,
 							'help'  => __( 'One per line.', 'antradus' ),
 						),
+						array(
+							'key'   => 'item_images',
+							'label' => __( 'A picture for each feature', 'antradus' ),
+							'type'  => 'textarea',
+							'rows'  => 7,
+							'i18n'  => false,
+							'help'  => __( 'Optional, and matched to the list above line by line: the first line here is the picture for the first feature, the second for the second, and so on. Paste an image URL or a media-library ID on each line, and leave a line blank to give that feature no picture. Shared by both languages - a screenshot is not translated.', 'antradus' ),
+						),
 					),
 				),
 			),
@@ -266,8 +347,13 @@ function antradus_audience_sections( $prefix, $icons, $link ) {
 				),
 			),
 		),
+		antradus_compat_section(
+			$prefix . 'compat_',
+			__( '5. What it plugs into', 'antradus' ),
+			__( 'The same in-and-out diagram the home page draws, in this audience\'s own vocabulary - so this page can list the sources and destinations they actually use and leave out the rest. Clear the heading to leave the diagram off this page entirely.', 'antradus' )
+		),
 		array(
-			'title'  => __( '5. The plan this maps to', 'antradus' ),
+			'title'  => __( '6. The plan this maps to', 'antradus' ),
 			'blurb'  => __( 'This section does not hold a price. Name a plan from the <strong>Pricing</strong> tab and that plan\'s real card is rendered here - the same price, the same button, the same free trial. There is one place a price is written on this site, and it is not here.', 'antradus' ),
 			'fields' => array(
 				array(
@@ -309,7 +395,7 @@ function antradus_audience_sections( $prefix, $icons, $link ) {
 			),
 		),
 		array(
-			'title'  => __( '6. The way back out', 'antradus' ),
+			'title'  => __( '7. The way back out', 'antradus' ),
 			'blurb'  => __( 'A page that asks somebody to identify themselves has to let the ones who guessed wrong leave without the back button. This is the card at the bottom that points at the other audience page.', 'antradus' ),
 			'fields' => array(
 				array(
@@ -646,12 +732,6 @@ function antradus_settings_schema() {
 							'single' => __( 'Audience', 'antradus' ),
 							'fields' => array(
 								array(
-									'key'     => 'icon',
-									'label'   => __( 'Icon', 'antradus' ),
-									'type'    => 'select',
-									'options' => $icons,
-								),
-								array(
 									'key'   => 'name',
 									'label' => __( 'Plan chip', 'antradus' ),
 									'type'  => 'text',
@@ -897,69 +977,7 @@ function antradus_settings_schema() {
 						),
 					),
 				),
-				array(
-					'title'  => __( '8. Compatibility', 'antradus' ),
-					'fields' => array(
-						array(
-							'key'   => 'home_compat_eyebrow',
-							'label' => __( 'Eyebrow', 'antradus' ),
-							'type'  => 'text',
-						),
-						array(
-							'key'   => 'home_compat_title',
-							'label' => __( 'Heading', 'antradus' ),
-							'type'  => 'text',
-						),
-						array(
-							'key'   => 'home_compat_sub',
-							'label' => __( 'Supporting paragraph', 'antradus' ),
-							'type'  => 'textarea',
-							'rows'  => 3,
-						),
-						array(
-							'key'   => 'home_compat_center',
-							'label' => __( 'Centre image', 'antradus' ),
-							'type'  => 'image',
-							'help'  => __( 'The mark in the middle of the diagram. Your logo is used when this is empty.', 'antradus' ),
-						),
-						array(
-							'key'    => 'home_compat_in',
-							'label'  => __( 'Sources - the left column', 'antradus' ),
-							'type'   => 'repeater',
-							'single' => __( 'Source', 'antradus' ),
-							'fields' => array(
-								array(
-									'key'   => 'name',
-									'label' => __( 'Name', 'antradus' ),
-									'type'  => 'text',
-								),
-								array(
-									'key'   => 'image',
-									'label' => __( 'Icon image', 'antradus' ),
-									'type'  => 'image',
-								),
-							),
-						),
-						array(
-							'key'    => 'home_compat_out',
-							'label'  => __( 'Destinations - the right column', 'antradus' ),
-							'type'   => 'repeater',
-							'single' => __( 'Destination', 'antradus' ),
-							'fields' => array(
-								array(
-									'key'   => 'name',
-									'label' => __( 'Name', 'antradus' ),
-									'type'  => 'text',
-								),
-								array(
-									'key'   => 'image',
-									'label' => __( 'Icon image', 'antradus' ),
-									'type'  => 'image',
-								),
-							),
-						),
-					),
-				),
+				antradus_compat_section( 'home_compat_', __( '8. Compatibility', 'antradus' ) ),
 				array(
 					'title'  => __( '9. GEO / SEO / AIO', 'antradus' ),
 					'fields' => array(

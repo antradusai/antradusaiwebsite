@@ -41,9 +41,6 @@ if ( '' === trim( $antradus_title ) || ! $antradus_cards ) {
 				?>
 				<article class="ant-glass ant-fork">
 					<header class="ant-fork-head">
-						<span class="ant-fork-ic">
-							<?php echo antradus_icon( antradus_cell( $antradus_card, 'icon', 'spark' ), 24 ); // phpcs:ignore WordPress.Security.EscapeOutput -- static markup. ?>
-						</span>
 						<?php if ( antradus_cell( $antradus_card, 'name' ) ) : ?>
 							<span class="ant-fork-plan"><?php echo esc_html( antradus_cell( $antradus_card, 'name' ) ); ?></span>
 						<?php endif; ?>

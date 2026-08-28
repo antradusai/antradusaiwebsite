@@ -119,6 +119,20 @@ correcting one is editing a line.
   an unfinished page tells you what it needs instead of showing a broken frame.
 - **Lists** (feature bullets, trust lines, footer links) are one item per line.
   Footer and menu links are `Label | target`.
+- **A picture beside a single feature.** On the Publishers and Studios tabs,
+  every group under *What it does for them* has a second box, **A picture for
+  each feature**, that runs alongside its list line for line: the first line
+  there is the picture for the first feature, the second for the second. Put an
+  image URL or a media-library ID on a line, and leave a line **blank** to give
+  that feature no picture — a blank holds its place, so the pictures below it
+  stay against the right words. Only the features you fill in get one; a group
+  where you fill in none looks exactly as it did before. These are shared by
+  both languages, so you add them once on the English tab and the Arabic page
+  shows the same pictures — a screenshot is not translated.
+- **The in-and-out diagram** on an audience page works like the home page's,
+  under that page's own *What it plugs into* section, so the studio page can
+  list the podcast hosts and leave out the keyword sources. Clear its heading
+  to leave the diagram off that page.
 - **Forms** are a shortcode you paste, and **each language has its own**. An
   Arabic form has Arabic labels, Arabic error messages and an Arabic
   confirmation email — it is a different form, not a translation of one, so the

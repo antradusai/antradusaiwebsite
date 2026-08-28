@@ -512,6 +512,42 @@ function antradus_lines( $text ) {
 }
 
 /**
+ * Pair a list of lines with a second list that runs alongside it.
+ *
+ * Used where every feature may have a picture: the words are one textarea and
+ * the images another, matched line for line. The two are kept apart rather
+ * than interleaved into one field because only the words are translated - the
+ * Arabic page inherits the same pictures without being asked for them again.
+ *
+ * Blank lines matter here and are NOT dropped the way antradus_lines() drops
+ * them: a feature with no picture is a blank line holding its place, and
+ * closing that gap would slide every picture below it up by one.
+ *
+ * @param string $text  The visible lines. Blank ones are skipped.
+ * @param string $extra The parallel lines. Blank ones are kept as ''.
+ * @return array<int,array{text:string,extra:string}>
+ */
+function antradus_lines_paired( $text, $extra ) {
+	$raw   = preg_split( '/\r\n|\r|\n/', (string) $extra );
+	$raw   = is_array( $raw ) ? $raw : array();
+	$lines = preg_split( '/\r\n|\r|\n/', (string) $text );
+	$out   = array();
+
+	foreach ( (array) $lines as $index => $line ) {
+		$line = trim( $line );
+		if ( '' === $line ) {
+			continue;
+		}
+		$out[] = array(
+			'text'  => $line,
+			'extra' => isset( $raw[ $index ] ) ? trim( (string) $raw[ $index ] ) : '',
+		);
+	}
+
+	return $out;
+}
+
+/**
  * Render a button, but only if its destination actually exists.
  *
  * @param string $label   Button text.

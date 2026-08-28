@@ -528,6 +528,27 @@ function antradus_defaults_ar_studio() {
 			),
 		),
 
+		'std_compat_eyebrow' => 'التوافق',
+		'std_compat_title'   => 'من حيث يُنشر برنامجك، *إلى حيث يذهب الأسبوع*',
+		'std_compat_sub'     => 'وجّه أنترادوس إلى الحلقة في مكانها، وسيكتب مباشرة إلى الأدوات التي تنشر بها أصلاً.',
+		'std_compat_in'      => array(
+			array( 'name' => 'يوتيوب' ),
+			array( 'name' => 'سبوتيفاي' ),
+			array( 'name' => 'Apple Podcasts' ),
+			array( 'name' => 'خلاصة RSS' ),
+			array( 'name' => 'ملف صوتي أو مرئي' ),
+		),
+		'std_compat_out'     => array(
+			array( 'name' => 'مقالات ووردبريس' ),
+			array( 'name' => 'ملاحظات الحلقة وفصولها' ),
+			array( 'name' => 'بطاقات الاقتباس' ),
+			array( 'name' => 'Mailchimp' ),
+			array( 'name' => 'Kit' ),
+			array( 'name' => 'beehiiv' ),
+			array( 'name' => 'إنستغرام' ),
+			array( 'name' => 'ملف ZIP' ),
+		),
+
 		'std_plan_eyebrow'   => 'الباقة',
 		'std_plan_title'     => 'كل ما سبق هو *Studio*',
 		'std_plan_sub'       => 'تُباع بعد عرض توضيحي لا عبر سلة شراء، لأن البرنامج وأرشيفه يستحقان نظرة أولى. وباقة Managed هي الشيء نفسه لكن ننفّذه نحن.',

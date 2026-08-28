@@ -2978,6 +2978,38 @@ td.ant-cost-us .ant-ic {
 	font-size: 21px;
 }
 
+/*
+ * A feature that brought a picture of itself.
+ *
+ * The tick row is a 20px / 1fr grid, so the image goes in a third grid row
+ * under the words and starts in the text column - lined up with the sentence
+ * it illustrates rather than with the tick. Features without a picture are
+ * untouched, so a half-filled list still reads as one list.
+ */
+.ant-group-items li.has-shot {
+	margin-bottom: 4px;
+}
+
+/*
+ * Fixed height, not a fixed width. These pictures are whatever the editor
+ * uploaded - a square logo, a 16:9 grab - and letting each one keep its own
+ * height is what turns a tidy list into a column of wildly different blocks
+ * that shoves the card beside it out of step. One height and object-fit means
+ * six unrelated images still read as one row of illustrations.
+ */
+.ant-group-shot {
+	grid-column: 2;
+	width: 100%;
+	max-width: 280px;
+	height: 104px;
+	margin-top: 9px;
+	object-fit: cover;
+	border: 1px solid var(--ant-line);
+	border-radius: var(--ant-r-xs);
+	background: var(--ant-tint);
+	box-shadow: var(--ant-sh-1);
+}
+
 .ant-docs-index ul {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -4200,18 +4232,6 @@ td.ant-cost-us .ant-ic {
 	display: flex;
 	align-items: center;
 	gap: 14px;
-}
-
-.ant-fork-ic {
-	display: grid;
-	place-items: center;
-	flex: 0 0 52px;
-	width: 52px;
-	height: 52px;
-	background: rgba(var(--ant-accent-rgb), .10);
-	border: 1px solid rgba(var(--ant-accent-rgb), .14);
-	border-radius: 15px;
-	color: var(--ant-accent);
 }
 
 .ant-fork-plan {

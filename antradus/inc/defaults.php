@@ -143,7 +143,6 @@ function antradus_defaults_home() {
 		'home_fork_sub'      => 'The job is the same either way - a finished, human-sounding article inside WordPress. What differs is where the material comes from, and that is what decides your plan.',
 		'home_fork_cards'    => array(
 			array(
-				'icon'     => 'pen',
 				'name'     => 'Publisher',
 				'title'    => "I'm a publisher",
 				'text'     => 'You run a website, and the content calendar is always further ahead than the writing.',
@@ -155,7 +154,6 @@ function antradus_defaults_home() {
 				'alt_url'  => 'page:pricing',
 			),
 			array(
-				'icon'     => 'mic',
 				'name'     => 'Studio',
 				'title'    => "I'm a studio",
 				'text'     => 'You run a podcast or a video show, and every episode should be a week of content instead of an invoice.',
@@ -684,6 +682,67 @@ function antradus_defaults_studio() {
 			array(
 				'title' => 'Publish on your schedule',
 				'text'  => 'Drafts for review, dripped across the week, in as many languages as you sell in. Nothing goes out unasked.',
+			),
+		),
+
+		'std_compat_eyebrow' => 'Compatibility',
+		'std_compat_title'   => 'Wherever the show lives, *and wherever the week goes*',
+		'std_compat_sub'     => 'Point Antradus at the episode where it already is, and it writes into the tools you already publish with.',
+		'std_compat_center'  => '',
+		'std_compat_in'      => array(
+			array(
+				'name'  => 'YouTube',
+				'image' => '',
+			),
+			array(
+				'name'  => 'Spotify',
+				'image' => '',
+			),
+			array(
+				'name'  => 'Apple Podcasts',
+				'image' => '',
+			),
+			array(
+				'name'  => 'An RSS feed',
+				'image' => '',
+			),
+			array(
+				'name'  => 'An audio or video file',
+				'image' => '',
+			),
+		),
+		'std_compat_out'     => array(
+			array(
+				'name'  => 'WordPress posts',
+				'image' => '',
+			),
+			array(
+				'name'  => 'Show notes and chapters',
+				'image' => '',
+			),
+			array(
+				'name'  => 'Quote cards',
+				'image' => '',
+			),
+			array(
+				'name'  => 'Mailchimp',
+				'image' => '',
+			),
+			array(
+				'name'  => 'Kit',
+				'image' => '',
+			),
+			array(
+				'name'  => 'beehiiv',
+				'image' => '',
+			),
+			array(
+				'name'  => 'Instagram',
+				'image' => '',
+			),
+			array(
+				'name'  => 'ZIP export',
+				'image' => '',
 			),
 		),
 
