@@ -47,8 +47,11 @@ rejected. It prints the size and a sha256 of what it built:
 antradus-theme.zip
   Antradus 2.11.0
   60 files, 212,461 bytes
-  sha256 7aecbeb6…
+  sha256 110f9ac0…
   verified: unpacks to one folder 'antradus' with a readable style.css
+
+  UPLOAD THIS FILE:
+  C:\Users\E-S-A\Desktop\Antradus\website\antradus-theme.zip
 ```
 
 If an upload ever fails again, compare that byte count against the file the

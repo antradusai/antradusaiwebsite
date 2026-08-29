@@ -154,18 +154,27 @@ if ( '' === $name || '' === $version ) {
 antradus_rmdir( $temp );
 
 /*
- * The fingerprint is printed so there is never a question about which file was
- * uploaded. If an install fails, compare the size against the file being
- * picked in the browser: they have to match.
+ * The absolute path is printed because "which file do I upload" is the
+ * question that actually goes wrong. The built theme is deliberately not in
+ * git, so GitHub has no copy of it - and GitHub's green Code -> Download ZIP
+ * button hands you the whole repository, which unpacks to a folder holding
+ * antradus/, build-zip.php and README.md side by side. WordPress needs exactly
+ * one directory at the top, finds three entries, and rejects it with "The theme
+ * is missing the style.css stylesheet" - the same sentence as every other
+ * failure, which is what makes it so hard to tell apart.
+ *
+ * Upload the path below, and check the byte count against the file the browser
+ * is about to send.
  */
 printf(
-	"%s\n  %s %s\n  %d files, %s bytes\n  sha256 %s\n  verified: unpacks to one folder '%s' with a readable style.css\n",
+	"%s\n  %s %s\n  %d files, %s bytes\n  sha256 %s\n  verified: unpacks to one folder '%s' with a readable style.css\n\n  UPLOAD THIS FILE:\n  %s\n",
 	basename( $out ),
 	$name,
 	$version,
 	$count,
 	number_format( (int) filesize( $out ) ),
 	hash_file( 'sha256', $out ),
-	$top[0]
+	$top[0],
+	str_replace( '/', DIRECTORY_SEPARATOR, $out )
 );
 exit( 0 );
