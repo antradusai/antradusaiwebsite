@@ -283,3 +283,24 @@
 [dir="rtl"] .ant-docs-chips .ant-chip {
 	unicode-bidi: isolate;
 }
+
+/*
+ * The slider mirrors itself: the arrows are positioned with inset-inline and
+ * the slides cross-fade, which has no direction at all. The only thing left is
+ * the chevrons drawn inside the buttons - a "<" points back in English and
+ * forward in Arabic - so the glyph is flipped, not the button.
+ */
+[dir="rtl"] .ant-slider-nav svg {
+	transform: scaleX(-1);
+}
+
+/*
+ * A slide caption is the picture's own, written once in the media library, so
+ * an Arabic page can be showing a caption written in English. Left alone that
+ * is the classic bidi failure - the full stop jumps to the front of the line.
+ * plaintext lets each caption take its direction from its own first letter.
+ * The alignment stays centred, which has no direction to get wrong.
+ */
+[dir="rtl"] .ant-slide-caption {
+	unicode-bidi: plaintext;
+}

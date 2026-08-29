@@ -336,8 +336,9 @@ function antradus_audience_sections( $prefix, $icons, $link ) {
 				),
 				array(
 					'key'   => $prefix . 'hero_image',
-					'label' => __( 'Hero image', 'antradus' ),
-					'type'  => 'image',
+					'label' => __( 'Hero pictures', 'antradus' ),
+					'type'  => 'images',
+					'help'  => __( 'Add one and it is a still picture, as before. Add more and the frame becomes a slider that fades between them in the order shown here. Widescreen reads best - around 1600 x 900.', 'antradus' ),
 				),
 			),
 		),
@@ -766,9 +767,9 @@ function antradus_settings_schema() {
 						),
 						array(
 							'key'   => 'home_hero_image',
-							'label' => __( 'Hero image', 'antradus' ),
-							'type'  => 'image',
-							'help'  => __( 'A screenshot of the plugin at work reads best here. Around 1200 x 900.', 'antradus' ),
+							'label' => __( 'Hero pictures', 'antradus' ),
+							'type'  => 'images',
+							'help'  => __( 'Screenshots of the plugin at work read best here. Around 1600 x 900. Add one and it is a still picture, as before; add more and the frame becomes a slider that fades between them in the order shown here.', 'antradus' ),
 						),
 						array(
 							'key'   => 'home_hero_chips',

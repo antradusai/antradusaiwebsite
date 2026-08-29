@@ -186,6 +186,80 @@
 	text-decoration: none;
 }
 
+/* ---- a slot that holds several pictures ---- */
+
+/*
+ * The thumbnails are the field. They read left to right in the order the site
+ * will show them, and each carries its own arrows and cross, so reordering is
+ * done where the pictures are rather than in a list of filenames somewhere
+ * else.
+ */
+.antradus-images-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	margin: 0 0 8px;
+	padding: 0;
+	list-style: none;
+}
+
+.antradus-images-item {
+	position: relative;
+	width: 136px;
+	margin: 0;
+	background: #f6f7fa;
+	border: 1px solid #c9cfda;
+	border-radius: 9px;
+	overflow: hidden;
+}
+
+.antradus-images-item img {
+	display: block;
+	width: 100%;
+	height: 88px;
+	object-fit: cover;
+}
+
+.antradus-images-tools {
+	position: absolute;
+	inset: auto 0 0 0;
+	display: flex;
+	justify-content: center;
+	gap: 2px;
+	padding: 3px;
+	background: rgba(255, 255, 255, .92);
+	border-top: 1px solid #dfe3ea;
+}
+
+.antradus-images-tools button {
+	width: 26px;
+	height: 22px;
+	padding: 0;
+	background: none;
+	border: 1px solid transparent;
+	border-radius: 4px;
+	color: #3c434a;
+	font-size: 13px;
+	line-height: 1;
+	cursor: pointer;
+}
+
+.antradus-images-tools button:hover {
+	background: #fff;
+	border-color: #c9cfda;
+	color: #1f6feb;
+}
+
+.antradus-images-drop:hover {
+	color: #a4362e !important;
+}
+
+.antradus-images-empty {
+	margin: 0 0 8px;
+	color: #7b8595;
+	font-size: 11.5px;
+}
+
 /* ---------------------------------------------------------- section order */
 
 .antradus-order {

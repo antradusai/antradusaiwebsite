@@ -118,10 +118,16 @@ function antradus_settings_assets( $hook ) {
 		'antradus-admin',
 		'antradusAdmin',
 		array(
-			'chooseImage' => __( 'Choose an image', 'antradus' ),
-			'useImage'    => __( 'Use this image', 'antradus' ),
-			'confirmDrop' => __( 'Remove this item?', 'antradus' ),
-			'noImage'     => __( 'No picture', 'antradus' ),
+			'chooseImage'  => __( 'Choose an image', 'antradus' ),
+			'useImage'     => __( 'Use this image', 'antradus' ),
+			'chooseImages' => __( 'Add pictures', 'antradus' ),
+			'useImages'    => __( 'Add these pictures', 'antradus' ),
+			'moveEarlier'  => __( 'Move earlier', 'antradus' ),
+			'moveLater'    => __( 'Move later', 'antradus' ),
+			'dropImage'    => __( 'Remove this picture', 'antradus' ),
+			'confirmClear' => __( 'Remove every picture from this slot?', 'antradus' ),
+			'confirmDrop'  => __( 'Remove this item?', 'antradus' ),
+			'noImage'      => __( 'No picture', 'antradus' ),
 		)
 	);
 }
@@ -441,6 +447,10 @@ function antradus_render_field( $field, $lang ) {
 			antradus_render_image_field( $id, $name, (string) $value );
 			break;
 
+		case 'images':
+			antradus_render_images_field( $id, $name, (string) $value );
+			break;
+
 		case 'order':
 			antradus_render_order_field( $name, (string) $value, $field );
 			break;
@@ -556,6 +566,73 @@ function antradus_render_image_field( $id, $name, $value ) {
 	echo '<p class="antradus-image-actions">';
 	echo '<button type="button" class="button antradus-image-pick">' . esc_html__( 'Choose image', 'antradus' ) . '</button> ';
 	echo '<button type="button" class="button-link antradus-image-clear">' . esc_html__( 'Remove', 'antradus' ) . '</button>';
+	echo '</p>';
+	echo '</div>';
+}
+
+/**
+ * The media picker that takes more than one picture.
+ *
+ * The list is the field: the thumbnails on screen, left to right, are the
+ * slides the page will show, in that order. Each one carries its own value in a
+ * data attribute and the hidden input is rewritten from the row on every
+ * change, so reordering is moving a thumbnail rather than retyping anything -
+ * the same arrows the repeater rows and the section order already use.
+ *
+ * This is a top-level field only. A repeater sub-field stays a single image:
+ * the export would have to describe a list inside a row inside a language, and
+ * nothing on the site needs it.
+ *
+ * @param string $id    Field id.
+ * @param string $name  Field name.
+ * @param string $value Stored comma-separated list.
+ */
+function antradus_render_images_field( $id, $name, $value ) {
+	$items = antradus_image_list( $value );
+
+	echo '<div class="antradus-images">';
+	echo '<ul class="antradus-images-list">';
+
+	foreach ( $items as $item ) {
+		$url = antradus_image_url( $item, 'medium' );
+		if ( '' === $url ) {
+			continue;
+		}
+		printf(
+			'<li class="antradus-images-item" data-value="%1$s">'
+			. '<img src="%2$s" alt="">'
+			. '<span class="antradus-images-tools">'
+			. '<button type="button" class="antradus-images-move" data-dir="up" aria-label="%3$s">&#8592;</button>'
+			. '<button type="button" class="antradus-images-move" data-dir="down" aria-label="%4$s">&#8594;</button>'
+			. '<button type="button" class="antradus-images-drop" aria-label="%5$s">&times;</button>'
+			. '</span></li>',
+			esc_attr( $item ),
+			esc_url( $url ),
+			esc_attr__( 'Move earlier', 'antradus' ),
+			esc_attr__( 'Move later', 'antradus' ),
+			esc_attr__( 'Remove this picture', 'antradus' )
+		);
+	}
+
+	echo '</ul>';
+
+	printf(
+		'<p class="antradus-images-empty"%1$s>%2$s</p>',
+		$items ? ' hidden' : '',
+		esc_html__( 'No pictures yet - a labelled placeholder is shown on the site.', 'antradus' )
+	);
+
+	printf(
+		'<input type="hidden" class="antradus-images-value" id="%1$s" name="%2$s" value="%3$s" data-max="%4$d">',
+		esc_attr( $id ),
+		esc_attr( $name ),
+		esc_attr( implode( ',', $items ) ),
+		(int) ANTRADUS_MAX_SLIDES
+	);
+
+	echo '<p class="antradus-image-actions">';
+	echo '<button type="button" class="button antradus-images-pick">' . esc_html__( 'Add pictures', 'antradus' ) . '</button> ';
+	echo '<button type="button" class="button-link antradus-images-clear">' . esc_html__( 'Remove all', 'antradus' ) . '</button>';
 	echo '</p>';
 	echo '</div>';
 }
@@ -950,6 +1027,33 @@ function antradus_sanitize_value( $field, $raw, $words_only = false ) {
 				return '';
 			}
 			return ctype_digit( $raw ) ? (string) absint( $raw ) : esc_url_raw( $raw );
+
+		case 'images':
+			/*
+			 * Stored as one comma-separated list, which is also why a comma can
+			 * never be part of a value: it is the separator. Every entry is
+			 * sanitized exactly as a single image would be, the same picture
+			 * twice is a mistake rather than a slide, and the count is capped -
+			 * a slider is a handful of pictures, and a posted list of a thousand
+			 * is not an editor's doing.
+			 */
+			$items = is_array( $raw ) ? $raw : explode( ',', (string) $raw );
+			$out   = array();
+			foreach ( $items as $one ) {
+				$one = trim( (string) $one );
+				if ( '' === $one ) {
+					continue;
+				}
+				$one = ctype_digit( $one ) ? (string) absint( $one ) : esc_url_raw( str_replace( ',', '', $one ) );
+				if ( '' === $one || in_array( $one, $out, true ) ) {
+					continue;
+				}
+				$out[] = $one;
+				if ( count( $out ) >= ANTRADUS_MAX_SLIDES ) {
+					break;
+				}
+			}
+			return implode( ',', $out );
 
 		case 'order':
 			/*

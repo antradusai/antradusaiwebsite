@@ -648,6 +648,199 @@ body.ant-site {
 	font-size: 12.5px;
 }
 
+/* -------------------------------------------------------------- sliders */
+
+/*
+ * An image slot holding more than one picture. Every slide is stacked in the
+ * same box and only the current one is opaque, so the frame never changes
+ * height between slides and the layout around it cannot move - which is the
+ * whole reason this is a fade and not a track that slides.
+ *
+ * Nothing here is directional, so there is nothing for rtl.css to mirror
+ * except the two arrow glyphs.
+ */
+.ant-slider {
+	position: relative;
+}
+
+.ant-slider-stage {
+	position: relative;
+	overflow: hidden;
+	border-radius: var(--ant-r);
+	background: var(--ant-tint);
+}
+
+.ant-slider-track {
+	position: absolute;
+	inset: 0;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.ant-slide {
+	position: absolute;
+	inset: 0;
+	opacity: 0;
+	transition: opacity 600ms ease;
+}
+
+.ant-slide.is-current {
+	opacity: 1;
+}
+
+/*
+ * Specific enough to beat the frame rules further down the file, which round
+ * the corners of a lone hero picture. Inside a slider the stage is what has
+ * the corners, so a slide rounded again would show the stage's tint in four
+ * little arcs.
+ */
+.ant-slider .ant-slide .ant-media {
+	width: 100%;
+	height: 100%;
+	border-radius: 0;
+	object-fit: cover;
+}
+
+.ant-slider-nav {
+	position: absolute;
+	top: 50%;
+	z-index: 2;
+	display: grid;
+	place-items: center;
+	width: 42px;
+	height: 42px;
+	padding: 0;
+	background: rgba(255, 255, 255, .86);
+	border: 1px solid var(--ant-glass-edge);
+	border-radius: 50%;
+	box-shadow: var(--ant-sh-2);
+	color: var(--ant-ink);
+	cursor: pointer;
+	opacity: 0;
+	transform: translateY(-50%);
+	transition: opacity 200ms ease, background 200ms ease, transform 200ms ease;
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
+}
+
+/*
+ * The arrows are for the reader who wants to go back, so they stay out of the
+ * picture until there is a pointer on it - but they are never hidden from the
+ * keyboard, which has no other way to reach them.
+ */
+.ant-slider:hover .ant-slider-nav,
+.ant-slider-nav:focus-visible {
+	opacity: 1;
+}
+
+.ant-slider-nav:hover {
+	background: #fff;
+	color: var(--ant-accent-deep);
+	transform: translateY(-50%) scale(1.06);
+}
+
+.ant-slider-prev {
+	inset-inline-start: 12px;
+}
+
+.ant-slider-next {
+	inset-inline-end: 12px;
+}
+
+.ant-slider-dots {
+	position: absolute;
+	inset-inline: 0;
+	bottom: 12px;
+	z-index: 2;
+	display: flex;
+	justify-content: center;
+	gap: 7px;
+	padding: 6px 10px;
+	margin: 0 auto;
+	width: -moz-fit-content;
+	width: fit-content;
+	background: rgba(255, 255, 255, .74);
+	border: 1px solid var(--ant-glass-edge);
+	border-radius: 999px;
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
+}
+
+.ant-slider-dot {
+	display: grid;
+	place-items: center;
+	width: 20px;
+	height: 20px;
+	padding: 0;
+	background: none;
+	border: 0;
+	cursor: pointer;
+}
+
+.ant-slider-dot span {
+	display: block;
+	width: 7px;
+	height: 7px;
+	border-radius: 999px;
+	background: rgba(var(--ant-accent-rgb), .3);
+	transition: width 220ms ease, background 220ms ease;
+}
+
+.ant-slider-dot:hover span {
+	background: rgba(var(--ant-accent-rgb), .55);
+}
+
+.ant-slider-dot.is-current span {
+	width: 18px;
+	background: var(--ant-accent);
+}
+
+/*
+ * The captions, stacked in one grid cell. All of them are laid out, so the row
+ * is as tall as the longest one from the first frame and never resizes between
+ * slides - a hero that grew a line every six seconds would push the whole page
+ * down with it.
+ */
+.ant-slider-captions {
+	display: grid;
+	padding-top: 12px;
+}
+
+.ant-slide-caption {
+	grid-area: 1 / 1;
+	margin: 0;
+	color: var(--ant-ink-3);
+	font-size: 13.5px;
+	line-height: 1.55;
+	text-align: center;
+	text-wrap: balance;
+	opacity: 0;
+	transition: opacity 600ms ease;
+}
+
+.ant-slide-caption.is-current {
+	opacity: 1;
+}
+
+/* No pointer to hover with, so the arrows have to be there already. */
+@media (hover: none) {
+	.ant-slider-nav {
+		width: 36px;
+		height: 36px;
+		opacity: .92;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ant-slide,
+	.ant-slide-caption,
+	.ant-slider-nav,
+	.ant-slider-dot span {
+		transition: none;
+	}
+}
+
 /* =========================================================================
  * 6. Header, announcement, footer
  * ====================================================================== */

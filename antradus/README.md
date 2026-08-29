@@ -135,6 +135,20 @@ correcting one is editing a line.
 - **Images**: every image slot has a media picker. An empty slot renders a
   labelled dashed placeholder on the site naming the setting that fills it, so
   an unfinished page tells you what it needs instead of showing a broken frame.
+- **The hero picture on Home, Publishers and Studios is a slider.** The slot is
+  called *Hero pictures* and takes up to eight: add one and it is the still
+  picture it always was, add a second and the frame starts fading between them
+  every six seconds, with arrows, dots, swipe and the arrow keys. The
+  thumbnails in wp-admin are the slide order — move one with its arrows and the
+  page follows. It stops advancing whenever nobody is watching: the pointer is
+  on it, something in it has focus, the tab is in the background, it has been
+  scrolled past, or the reader asked their system for less motion.
+- **A caption under a slide** is the picture's own caption, written in the media
+  library rather than in a settings field, so it travels with the file. Slides
+  without one show nothing and the row keeps its height, so the page never
+  jumps between slides. Because it belongs to the file and not to the page, it
+  is the *same* caption in both languages — an Arabic page shows the caption as
+  it was written, which is worth knowing before you write one in English.
 - **Lists** (feature bullets, trust lines, footer links) are one item per line.
   Footer and menu links are `Label | target`.
 - **A picture on a feature group.** On the Publishers and Studios tabs, every
@@ -387,8 +401,8 @@ inc/gallery.php          galleries to carousel
 template-parts/          one file per home section, one per designed page
 assets/css/theme.css     the design system
 assets/css/rtl.css       right-to-left, loaded only on Arabic pages
-assets/js/theme.js       menu, anchors, the diagram's flow lines, docs
-                         search, checkout
+assets/js/theme.js       menu, anchors, the hero slider, the diagram's flow
+                         lines, docs search, checkout
 ```
 
 Adding a field is three edits: a default in `inc/defaults.php`, its Arabic twin
@@ -399,3 +413,10 @@ schema — a field that is not in it cannot be saved.
 Whether a field is translated or shared is decided in one place,
 `antradus_global_field_keys()` in `inc/i18n.php`: anything ending in `_url`,
 `_target` or `_link`, anything starting with `slug_`, and a short named list.
+
+A field of type `images` holds several pictures in one setting, stored as one
+comma-separated list of attachment IDs so it travels through the same option
+row, sanitizer and export as every other field. `antradus_slider()` renders it,
+and it renders a slider only from the second picture onwards — one picture is
+still one picture, with no arrows and no script. The comma is the separator, so
+it can never be part of a value.

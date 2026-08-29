@@ -7,8 +7,12 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ANTRADUS_VERSION', '2.8.0' );
+define( 'ANTRADUS_VERSION', '2.9.0' );
 define( 'ANTRADUS_OPTION', 'antradus_theme_options' );
+
+// How many pictures one slider slot will keep. A hero that needs a tenth slide
+// needs a shorter hero.
+define( 'ANTRADUS_MAX_SLIDES', 8 );
 
 /*
  * No one edits theme or plugin files from inside wp-admin on this site. The

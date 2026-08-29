@@ -93,6 +93,173 @@
 		}
 	});
 
+	/* ----------------------------------------------------------- sliders */
+
+	/*
+	 * The hero picture, when the slot holds more than one.
+	 *
+	 * Slides cross-fade in place - PHP has already stacked them - so there is no
+	 * track to translate and nothing to mirror in Arabic. All this file decides
+	 * is which slide is current.
+	 *
+	 * It advances on its own, and stops doing so the moment it has any reason
+	 * to: the pointer is on it, something inside it has focus, the tab is in the
+	 * background, the slider has been scrolled past, or the reader has asked
+	 * their system for less motion. A picture that keeps changing behind you is
+	 * the thing people dislike about sliders, and every one of those is a case
+	 * where nobody is looking.
+	 */
+	Array.prototype.forEach.call(document.querySelectorAll('[data-slider]'), function (root) {
+		var slides = root.querySelectorAll('[data-slide]');
+		var captions = root.querySelectorAll('[data-slide-caption]');
+		var dots = root.querySelectorAll('[data-slider-dot]');
+		var prev = root.querySelector('[data-slider-prev]');
+		var next = root.querySelector('[data-slider-next]');
+		if (slides.length < 2) {
+			return;
+		}
+
+		var delay = parseInt(root.getAttribute('data-slider-delay'), 10);
+		if (!(delay >= 2000)) {
+			delay = 6000;
+		}
+
+		var index = 0;
+		var timer = null;
+		var held = false;
+		var seen = true;
+
+		function show(n) {
+			index = (n + slides.length) % slides.length;
+
+			Array.prototype.forEach.call(slides, function (slide, i) {
+				var current = i === index;
+				slide.classList.toggle('is-current', current);
+				// Hide the rest from assistive technology rather than only from
+				// the eye: three stacked pictures are one picture at a time.
+				if (current) {
+					slide.removeAttribute('aria-hidden');
+				} else {
+					slide.setAttribute('aria-hidden', 'true');
+				}
+			});
+
+			// The captions are stacked in one cell the same way the slides are,
+			// so this is the same swap, not a second thing to keep in step.
+			Array.prototype.forEach.call(captions, function (caption, i) {
+				var current = i === index;
+				caption.classList.toggle('is-current', current);
+				if (current) {
+					caption.removeAttribute('aria-hidden');
+				} else {
+					caption.setAttribute('aria-hidden', 'true');
+				}
+			});
+
+			Array.prototype.forEach.call(dots, function (dot, i) {
+				dot.classList.toggle('is-current', i === index);
+				if (i === index) {
+					dot.setAttribute('aria-current', 'true');
+				} else {
+					dot.removeAttribute('aria-current');
+				}
+			});
+		}
+
+		function stop() {
+			if (timer) {
+				window.clearInterval(timer);
+				timer = null;
+			}
+		}
+
+		function start() {
+			stop();
+			if (reduce || held || !seen || document.hidden) {
+				return;
+			}
+			timer = window.setInterval(function () {
+				show(index + 1);
+			}, delay);
+		}
+
+		// Any deliberate move restarts the clock, so a slide somebody just
+		// chose is not replaced half a second later.
+		function go(n) {
+			show(n);
+			start();
+		}
+
+		if (prev) {
+			prev.addEventListener('click', function () { go(index - 1); });
+		}
+		if (next) {
+			next.addEventListener('click', function () { go(index + 1); });
+		}
+		Array.prototype.forEach.call(dots, function (dot, i) {
+			dot.addEventListener('click', function () { go(i); });
+		});
+
+		root.addEventListener('keydown', function (e) {
+			if (e.key === 'ArrowLeft') {
+				go(index - 1);
+			} else if (e.key === 'ArrowRight') {
+				go(index + 1);
+			}
+		});
+
+		['pointerenter', 'focusin'].forEach(function (name) {
+			root.addEventListener(name, function () {
+				held = true;
+				stop();
+			});
+		});
+		['pointerleave', 'focusout'].forEach(function (name) {
+			root.addEventListener(name, function () {
+				held = false;
+				start();
+			});
+		});
+
+		document.addEventListener('visibilitychange', start);
+
+		/*
+		 * Swipe. A drag towards the end of the line asks for the next picture,
+		 * which in Arabic is a drag to the right - the direction of "forward"
+		 * is the direction the page reads, not a fixed side of the screen.
+		 */
+		var startX = null;
+		root.addEventListener('pointerdown', function (e) {
+			startX = e.clientX;
+		});
+		root.addEventListener('pointerup', function (e) {
+			if (startX === null) {
+				return;
+			}
+			var dx = e.clientX - startX;
+			startX = null;
+			if (Math.abs(dx) < 40) {
+				return;
+			}
+			var rtl = document.documentElement.getAttribute('dir') === 'rtl';
+			var forward = rtl ? dx > 0 : dx < 0;
+			go(forward ? index + 1 : index - 1);
+		});
+		root.addEventListener('pointercancel', function () { startX = null; });
+
+		if ('IntersectionObserver' in window) {
+			new IntersectionObserver(function (entries) {
+				entries.forEach(function (entry) {
+					seen = entry.isIntersecting;
+					start();
+				});
+			}, { threshold: 0.25 }).observe(root);
+		}
+
+		show(0);
+		start();
+	});
+
 	/* --------------------------------------------------------- flow lines */
 
 	/*

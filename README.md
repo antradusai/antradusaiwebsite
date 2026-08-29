@@ -4,7 +4,7 @@ Source for the **Antradus** WordPress theme that powers
 [antradusai.com](https://antradusai.com/) - the marketing and publishing site
 for Antradus AI, the podcast-to-article system for WordPress.
 
-Current version: **2.5.0**
+Current version: **2.9.0**
 
 ## What is here
 

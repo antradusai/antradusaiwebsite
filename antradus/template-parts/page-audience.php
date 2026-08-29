@@ -93,10 +93,11 @@ $antradus_order = antradus_section_order(
 
 			<div class="ant-glass ant-page-hero-art">
 				<?php
-				antradus_image(
+				// A slider from the second picture onwards, a still one before.
+				antradus_slider(
 					$antradus_p . 'hero_image',
 					array(
-						'ratio' => '4 / 3',
+						'ratio' => '16 / 9',
 						'label' => __( 'Audience page hero image', 'antradus' ),
 						'alt'   => '',
 						'eager' => true,

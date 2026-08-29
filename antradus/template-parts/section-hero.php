@@ -75,10 +75,15 @@ $antradus_chips = array_slice( antradus_lines( antradus_opt( 'home_hero_chips', 
 			<div class="ant-hero-visual">
 				<div class="ant-glass ant-hero-frame">
 					<?php
-					antradus_image(
+					/*
+					 * One picture or several - the slot decides. Add a second
+					 * image in Antradus Content and the frame becomes a slider;
+					 * leave one and it is the still picture it always was.
+					 */
+					antradus_slider(
 						'home_hero_image',
 						array(
-							'ratio' => '4 / 3',
+							'ratio' => '16 / 9',
 							'label' => __( 'Home hero image', 'antradus' ),
 							'alt'   => '',
 							'eager' => true,

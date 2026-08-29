@@ -383,36 +383,70 @@ function antradus_image_url( $value, $size = 'large' ) {
 }
 
 /**
- * Render an image field, or a labelled placeholder when it is still empty.
+ * Split a stored image-list value into single image values.
  *
- * The placeholder is deliberately loud: it names the slot it fills, so an
- * unfinished page tells you what to do instead of showing a broken frame.
+ * A slider field stores its pictures as one comma-separated list of attachment
+ * IDs, which is why it is a string rather than an array: it goes through the
+ * same option row, the same sanitizer and the same translation merge as every
+ * other field, instead of needing a second shape for one setting.
  *
- * @param string $key  Option key holding the image.
- * @param array  $args ratio, label, class, alt, eager.
+ * @param string $value Stored value.
+ * @return string[]
  */
-function antradus_image( $key, $args = array() ) {
-	$args = wp_parse_args(
-		$args,
-		array(
-			'ratio' => '16 / 10',
-			'label' => '',
-			'class' => '',
-			'alt'   => '',
-			'eager' => false,
-		)
-	);
+function antradus_image_list( $value ) {
+	$out = array();
+	foreach ( explode( ',', (string) $value ) as $one ) {
+		$one = trim( $one );
+		if ( '' !== $one ) {
+			$out[] = $one;
+		}
+	}
+	return $out;
+}
 
-	$value = antradus_opt( $key, '' );
+/**
+ * The caption written on a picture in the media library.
+ *
+ * Only an attachment has one. A pasted URL points at a file on somebody else's
+ * server and there is nothing here to read a caption from, so it has none - and
+ * a slot mixing the two simply shows captions for the slides that have them.
+ *
+ * The caption is the file's, not the page's, which means it is the same in both
+ * languages. That is the right trade for a screenshot label, and it is the same
+ * rule every other image on this site already follows.
+ *
+ * @param string $value Stored value: an attachment ID or a URL.
+ * @return string
+ */
+function antradus_image_caption( $value ) {
+	$value = trim( (string) $value );
+	if ( '' === $value || ! ctype_digit( $value ) ) {
+		return '';
+	}
+	return trim( (string) wp_get_attachment_caption( (int) $value ) );
+}
+
+/**
+ * Render one picture from a stored value, or the placeholder when it is empty.
+ *
+ * The value, not the key: a slider hands this one slide at a time out of a
+ * list, and a plain image slot hands it the whole setting. Both want the same
+ * tag, the same srcset for an attachment and the same aspect ratio.
+ *
+ * @param string $value Stored value: an attachment ID or a URL.
+ * @param array  $args  ratio, label, class, alt, eager.
+ */
+function antradus_image_tag( $value, $args ) {
+	$value = trim( (string) $value );
 	$url   = antradus_image_url( $value, 'full' );
 	$class = trim( 'ant-media ' . $args['class'] );
 
 	if ( '' === $url ) {
-		antradus_placeholder( $args['label'] ? $args['label'] : $key, $args['ratio'], $args['class'] );
+		antradus_placeholder( $args['label'], $args['ratio'], $args['class'] );
 		return;
 	}
 
-	if ( ctype_digit( trim( (string) $value ) ) ) {
+	if ( ctype_digit( $value ) ) {
 		echo wp_get_attachment_image(
 			(int) $value,
 			'full',
@@ -435,6 +469,182 @@ function antradus_image( $key, $args = array() ) {
 		esc_attr( $args['ratio'] ),
 		$args['eager'] ? 'eager' : 'lazy'
 	);
+}
+
+/**
+ * Render an image field, or a labelled placeholder when it is still empty.
+ *
+ * The placeholder is deliberately loud: it names the slot it fills, so an
+ * unfinished page tells you what to do instead of showing a broken frame.
+ *
+ * @param string $key  Option key holding the image.
+ * @param array  $args ratio, label, class, alt, eager.
+ */
+function antradus_image( $key, $args = array() ) {
+	$args = wp_parse_args(
+		$args,
+		array(
+			'ratio' => '16 / 10',
+			'label' => '',
+			'class' => '',
+			'alt'   => '',
+			'eager' => false,
+		)
+	);
+
+	$args['label'] = $args['label'] ? $args['label'] : $key;
+
+	antradus_image_tag( antradus_opt( $key, '' ), $args );
+}
+
+/**
+ * Render an image slot that holds more than one picture, as a slider.
+ *
+ * The count decides the markup, not a setting. One picture is a picture - it
+ * gets the same single tag it always had, with no arrows to press and no
+ * script to load. The slider only exists from the second picture onwards, so
+ * an editor turns it on by adding a second image and off by removing one, and
+ * a page that has never been touched keeps the design it shipped with.
+ *
+ * Slides cross-fade in place rather than sliding along a track. That is a
+ * deliberate choice for a right-to-left site: a fade has no direction to
+ * mirror, so the Arabic hero behaves identically to the English one without a
+ * second code path deciding which way "next" points.
+ *
+ * @param string $key  Option key holding the list.
+ * @param array  $args ratio, label, class, alt, eager, delay.
+ */
+function antradus_slider( $key, $args = array() ) {
+	$args = wp_parse_args(
+		$args,
+		array(
+			'ratio' => '16 / 9',
+			'label' => '',
+			'class' => '',
+			'alt'   => '',
+			'eager' => false,
+			'delay' => 6000,
+		)
+	);
+
+	$args['label'] = $args['label'] ? $args['label'] : $key;
+
+	// A value that no longer resolves - a deleted attachment - is not a slide.
+	$slides = array();
+	foreach ( antradus_image_list( antradus_opt( $key, '' ) ) as $one ) {
+		if ( '' !== antradus_image_url( $one, 'full' ) ) {
+			$slides[] = $one;
+		}
+	}
+
+	if ( count( $slides ) < 2 ) {
+		antradus_image_tag( $slides ? $slides[0] : '', $args );
+		return;
+	}
+
+	$total = count( $slides );
+
+	/*
+	 * Captions come from the media library, not from a settings field: it is
+	 * the picture's own caption, written once where the picture is, and it
+	 * follows the file if the same shot is used on a second page. The row is
+	 * printed only when at least one slide has one, so a site that never writes
+	 * captions gets exactly the slider it had before.
+	 */
+	$captions = array();
+	$has_caption = false;
+	foreach ( $slides as $slide ) {
+		$caption = antradus_image_caption( $slide );
+		$captions[] = $caption;
+		$has_caption = $has_caption || '' !== $caption;
+	}
+
+	printf(
+		'<div class="ant-slider" data-slider data-slider-delay="%1$d" role="group" aria-roledescription="%2$s" aria-label="%3$s">',
+		(int) $args['delay'],
+		esc_attr__( 'image slider', 'antradus' ),
+		esc_attr( $args['label'] )
+	);
+
+	printf( '<div class="ant-slider-stage" style="aspect-ratio:%s">', esc_attr( $args['ratio'] ) );
+	echo '<ul class="ant-slider-track">';
+
+	foreach ( $slides as $index => $slide ) {
+		printf(
+			'<li class="ant-slide%1$s" data-slide %2$s>',
+			0 === $index ? ' is-current' : '',
+			0 === $index ? '' : 'aria-hidden="true"'
+		);
+		antradus_image_tag(
+			$slide,
+			array(
+				'ratio' => $args['ratio'],
+				'label' => $args['label'],
+				'class' => $args['class'],
+				'alt'   => $args['alt'],
+				// Only the first slide is worth blocking the hero on. The rest
+				// are below the fold of the eye, even though they share a box.
+				'eager' => $args['eager'] && 0 === $index,
+			)
+		);
+		echo '</li>';
+	}
+
+	echo '</ul>';
+
+	printf(
+		'<button type="button" class="ant-slider-nav ant-slider-prev" data-slider-prev aria-label="%s">'
+		. '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true">'
+		. '<path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
+		. '</svg></button>',
+		esc_attr__( 'Previous image', 'antradus' )
+	);
+	printf(
+		'<button type="button" class="ant-slider-nav ant-slider-next" data-slider-next aria-label="%s">'
+		. '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true">'
+		. '<path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
+		. '</svg></button>',
+		esc_attr__( 'Next image', 'antradus' )
+	);
+
+	echo '<div class="ant-slider-dots">';
+	foreach ( $slides as $index => $slide ) {
+		printf(
+			'<button type="button" class="ant-slider-dot%1$s" data-slider-dot %2$s aria-label="%3$s"><span></span></button>',
+			0 === $index ? ' is-current' : '',
+			0 === $index ? 'aria-current="true"' : '',
+			/* translators: 1: number of this image, 2: how many there are. */
+			esc_attr( sprintf( __( 'Image %1$d of %2$d', 'antradus' ), $index + 1, $total ) )
+		);
+	}
+	echo '</div>';
+
+	echo '</div>';
+
+	/*
+	 * Below the picture, outside the stage - a caption printed over a photo is
+	 * a label, and this is a line of text about it.
+	 *
+	 * Every caption is printed at once, stacked in one grid cell, with only the
+	 * current one visible. That is what keeps the row exactly as tall as the
+	 * longest caption from the first frame onwards: swapping the text instead
+	 * would make the hero grow or shrink by a line every few seconds, and drag
+	 * the rest of the page with it.
+	 */
+	if ( $has_caption ) {
+		echo '<div class="ant-slider-captions">';
+		foreach ( $captions as $index => $caption ) {
+			printf(
+				'<p class="ant-slide-caption%1$s" data-slide-caption %2$s>%3$s</p>',
+				0 === $index ? ' is-current' : '',
+				0 === $index ? '' : 'aria-hidden="true"',
+				esc_html( $caption )
+			);
+		}
+		echo '</div>';
+	}
+
+	echo '</div>';
 }
 
 /**
