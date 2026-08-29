@@ -27,7 +27,7 @@ if ( '' === trim( $antradus_title ) || ! $antradus_cards ) {
 		<div class="ant-grid ant-grid--2 ant-features">
 			<?php
 			foreach ( $antradus_cards as $antradus_card ) :
-				$antradus_img = antradus_image_url( antradus_cell( $antradus_card, 'image' ), 'large' );
+				$antradus_img = antradus_image_full_url( antradus_cell( $antradus_card, 'image' ) );
 				?>
 				<article class="ant-glass ant-feature">
 					<div class="ant-feature-copy">

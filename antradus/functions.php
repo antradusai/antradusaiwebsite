@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ANTRADUS_VERSION', '2.10.0' );
+define( 'ANTRADUS_VERSION', '2.11.0' );
 define( 'ANTRADUS_OPTION', 'antradus_theme_options' );
 
 // How many pictures one slider slot will keep. A hero that needs a tenth slide
@@ -31,6 +31,7 @@ require_once get_template_directory() . '/inc/defaults-ar.php';
 require_once get_template_directory() . '/inc/i18n.php';
 require_once get_template_directory() . '/inc/strings-ar.php';
 require_once get_template_directory() . '/inc/helpers.php';
+require_once get_template_directory() . '/inc/images.php';
 require_once get_template_directory() . '/inc/settings-schema.php';
 require_once get_template_directory() . '/inc/settings.php';
 require_once get_template_directory() . '/inc/security.php';

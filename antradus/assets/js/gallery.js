@@ -31,9 +31,11 @@
 
 			img.style.opacity = '0';
 			window.setTimeout(function () {
-				// The main image was rendered by WordPress with srcset and
-				// sizes for its own file - both have to go, or the browser
-				// keeps choosing a candidate from the previous image.
+				// This theme serves every picture whole, with no srcset at all
+				// (inc/images.php), but a plugin can put one back - and a
+				// leftover srcset outranks src, so the browser would keep
+				// choosing a candidate from the previous image. Clearing both
+				// leaves src as the only answer.
 				img.removeAttribute('srcset');
 				img.removeAttribute('sizes');
 				img.alt = small ? small.alt : '';

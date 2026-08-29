@@ -4,7 +4,7 @@ Source for the **Antradus** WordPress theme that powers
 [antradusai.com](https://antradusai.com/) - the marketing and publishing site
 for Antradus AI, the podcast-to-article system for WordPress.
 
-Current version: **2.10.0**
+Current version: **2.11.0**
 
 ## What is here
 
@@ -45,9 +45,9 @@ rejected. It prints the size and a sha256 of what it built:
 
 ```
 antradus-theme.zip
-  Antradus 2.9.0
-  59 files, 202,569 bytes
-  sha256 21eb76cb…
+  Antradus 2.11.0
+  60 files, 212,461 bytes
+  sha256 7aecbeb6…
   verified: unpacks to one folder 'antradus' with a readable style.css
 ```
 

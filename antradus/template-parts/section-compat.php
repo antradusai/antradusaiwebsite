@@ -26,9 +26,9 @@ if ( '' === trim( $antradus_title ) || ( ! $antradus_in && ! $antradus_out ) ) {
 	return;
 }
 
-$antradus_centre = antradus_image_url( antradus_opt( $antradus_k . 'center', '' ), 'medium' );
+$antradus_centre = antradus_image_full_url( antradus_opt( $antradus_k . 'center', '' ) );
 if ( '' === $antradus_centre ) {
-	$antradus_centre = antradus_image_url( antradus_opt( 'brand_logo', '' ), 'medium' );
+	$antradus_centre = antradus_image_full_url( antradus_opt( 'brand_logo', '' ) );
 }
 
 ?>

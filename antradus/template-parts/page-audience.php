@@ -177,7 +177,7 @@ $antradus_order = antradus_section_order(
 					?>
 					<div class="ant-grid ant-grid--2 ant-groups">
 						<?php foreach ( $antradus_groups as $antradus_group ) : ?>
-							<?php $antradus_shot = antradus_image_url( antradus_cell( $antradus_group, 'image' ), 'large' ); ?>
+							<?php $antradus_shot = antradus_image_full_url( antradus_cell( $antradus_group, 'image' ) ); ?>
 							<article class="ant-glass ant-group<?php echo $antradus_shot ? ' has-shot' : ''; // phpcs:ignore WordPress.Security.EscapeOutput -- static markup. ?>">
 								<?php if ( $antradus_shot ) : ?>
 									<img class="ant-group-shot" src="<?php echo esc_url( $antradus_shot ); ?>" alt="" loading="lazy" decoding="async">

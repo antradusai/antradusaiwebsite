@@ -135,6 +135,27 @@ correcting one is editing a line.
 - **Images**: every image slot has a media picker. An empty slot renders a
   labelled dashed placeholder on the site naming the setting that fills it, so
   an unfinished page tells you what it needs instead of showing a broken frame.
+- **Every picture on the site is served at the size it was uploaded.** Not the
+  `large` copy, not the `medium` one, and not the `-scaled` copy WordPress
+  quietly makes of anything wider than 2560px — the file itself, with no
+  `srcset` offering the browser anything smaller. That holds for the theme's
+  own image slots, post featured images, gallery carousels and pictures inside
+  an article alike, and it is the opposite of what a photography site wants.
+  Nearly every picture here is a screenshot of an interface: the point of it is
+  the text inside it, and a 300px-wide copy stretched across a card is mush.
+  Reading beats bytes on this site — so upload pictures at the size you want
+  them read at, because nothing downstream will shrink them for you. wp-admin
+  is unaffected: the settings screen, the media library and the block editor
+  still use the small copies.
+- **A picture on its own is shown whole, at its own shape.** Hero pictures,
+  the demo frame, the GEO and trends illustrations, the Features and newsletter
+  pictures — none of them is cropped to fit a frame, so a wide screenshot stays
+  wide and a tall one makes its panel taller. Two things still hold a shape on
+  purpose: a **slider**, whose slides are stacked in one box and need a height
+  before the second picture has loaded, and a **card in a grid** — feature
+  cards, group pictures, article thumbnails — where the pictures line up with
+  each other and one odd shape would break the row. The ratio on an empty slot
+  is what the placeholder is drawn at; it was never a promise about your file.
 - **The hero picture on Home, Publishers and Studios is a slider.** The slot is
   called *Hero pictures* and takes up to eight: add one and it is the still
   picture it always was, add a second and the frame starts fading between them
@@ -160,13 +181,11 @@ correcting one is editing a line.
   who wants a proper look at slide two can go on to three without closing it.
   Escape, the close button or a click outside brings them back, and the slider
   carries on from whichever slide they were looking at.
-- **Hero slides are served at full resolution, on purpose.** They carry no
-  `srcset`, and they bypass the copy WordPress makes of anything wider than
-  2560px — a screenshot of an interface is read, not glanced at, and a browser
-  choosing a candidate for a 600px-wide frame makes mush of the text in it.
-  The weight that would cost is paid back by loading one slide at a time: only
-  the first has an address in the HTML, and the script fills in each of the
-  others just before it is needed.
+- **A slider loads one slide at a time.** Full-resolution pictures cost weight,
+  and stacking eight of them in one frame would spend it all at once —
+  `loading="lazy"` is no help there, because every slide is in the viewport from
+  the first frame. So only the first slide has an address in the HTML, and the
+  script fills in each of the others just before it is needed.
 - **Lists** (feature bullets, trust lines, footer links) are one item per line.
   Footer and menu links are `Label | target`.
 - **A picture on a feature group.** On the Publishers and Studios tabs, every
@@ -407,6 +426,7 @@ inc/defaults-ar.php      the same keys, in Arabic. Edit the two side by side
 inc/i18n.php             which language, which fields translate, how they merge
 inc/strings-ar.php       the theme's own interface words in Arabic
 inc/helpers.php          options, the nine pages, images, render helpers
+inc/images.php           the front end serves the file you uploaded, never a preset
 inc/settings-schema.php  what the settings screen contains
 inc/settings.php         rendering and sanitizing that schema
 inc/security.php         the hardening, and the one capability check

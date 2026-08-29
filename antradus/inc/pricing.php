@@ -187,7 +187,7 @@ function antradus_freemius_account() {
 	$account = array(
 		'product' => '' !== $from_snippet['product'] ? $from_snippet['product'] : trim( (string) antradus_opt( 'fs_product_id', '' ) ),
 		'key'     => '' !== $from_snippet['key'] ? $from_snippet['key'] : trim( (string) antradus_opt( 'fs_public_key', '' ) ),
-		'image'   => '' !== $from_snippet['image'] ? $from_snippet['image'] : antradus_image_url( antradus_opt( 'fs_logo', '' ), 'medium' ),
+		'image'   => '' !== $from_snippet['image'] ? $from_snippet['image'] : antradus_image_full_url( antradus_opt( 'fs_logo', '' ) ),
 	);
 	return $account;
 }

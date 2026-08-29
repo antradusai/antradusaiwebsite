@@ -361,16 +361,21 @@ function antradus_current_page_key() {
  * ========================================================================= */
 
 /**
- * Turn a stored image value into a URL.
+ * Turn a stored image value into a URL, at a named size.
  *
  * Stored values are either an attachment ID (what the media picker writes) or
  * a plain URL (what a paste writes). Both are accepted.
+ *
+ * The size only means anything in wp-admin, where the settings screen wants a
+ * small copy for a preview. On the front end `inc/images.php` answers every
+ * size with the uploaded file, so front-end code should say what it means and
+ * call antradus_image_full_url() instead.
  *
  * @param string $value Stored value.
  * @param string $size  Image size for attachment IDs.
  * @return string
  */
-function antradus_image_url( $value, $size = 'large' ) {
+function antradus_image_url( $value, $size = 'full' ) {
 	$value = trim( (string) $value );
 	if ( '' === $value ) {
 		return '';
@@ -405,34 +410,65 @@ function antradus_image_list( $value ) {
 }
 
 /**
- * The address of the picture as it was uploaded, at its real resolution.
+ * The picture behind a stored value: its address, and its size when that can
+ * be known.
  *
  * WordPress does not hand back the file you gave it. Anything wider than the
  * "big image" threshold - 2560px unless a site changes it - is quietly resized
  * on upload, the resized copy is stored as `-scaled`, and that copy is what the
  * `full` size returns. For a photograph that is a kindness. For a screenshot of
  * an interface it is the difference between reading the text in it and not, so
- * the slider asks for the file itself.
+ * every picture on this site asks for the file itself. `inc/images.php` is
+ * where that rule is kept, and this reads it rather than repeating it.
  *
- * A pasted URL is already the file, and has nothing else to offer.
+ * An attachment can be measured. A pasted URL is already the file and points at
+ * somebody else's server, so there is nothing here to measure and its size
+ * comes back as zero - a caller leaves the attributes off rather than guessing.
+ *
+ * @param string $value Stored value: an attachment ID or a URL.
+ * @return array{url:string,width:int,height:int}|null Null when there is no picture.
+ */
+function antradus_image_file( $value ) {
+	$value = trim( (string) $value );
+	if ( '' === $value ) {
+		return null;
+	}
+
+	if ( ! ctype_digit( $value ) ) {
+		return array(
+			'url'    => esc_url_raw( $value ),
+			'width'  => 0,
+			'height' => 0,
+		);
+	}
+
+	$file = antradus_original_image( (int) $value );
+	if ( $file ) {
+		return $file;
+	}
+
+	// Not an image - an ID that was deleted, or a file with no picture in it.
+	$url = wp_get_attachment_url( (int) $value );
+	if ( ! $url ) {
+		return null;
+	}
+	return array(
+		'url'    => $url,
+		'width'  => 0,
+		'height' => 0,
+	);
+}
+
+/**
+ * The address of the picture as it was uploaded, for a caller that wants only
+ * the address.
  *
  * @param string $value Stored value: an attachment ID or a URL.
  * @return string
  */
 function antradus_image_full_url( $value ) {
-	$value = trim( (string) $value );
-	if ( '' === $value ) {
-		return '';
-	}
-	if ( ! ctype_digit( $value ) ) {
-		return esc_url_raw( $value );
-	}
-
-	$url = wp_get_original_image_url( (int) $value );
-	if ( ! $url ) {
-		$url = wp_get_attachment_url( (int) $value );
-	}
-	return $url ? $url : '';
+	$file = antradus_image_file( $value );
+	return $file ? $file['url'] : '';
 }
 
 /**
@@ -461,44 +497,45 @@ function antradus_image_caption( $value ) {
  * Render one picture from a stored value, or the placeholder when it is empty.
  *
  * The value, not the key: a slider hands this one slide at a time out of a
- * list, and a plain image slot hands it the whole setting. Both want the same
- * tag, the same srcset for an attachment and the same aspect ratio.
+ * list, and a plain image slot hands it the whole setting.
+ *
+ * A picture standing on its own is drawn whole, at its own shape. The slot's
+ * ratio is what the design expects, not a promise about the file, and cropping
+ * a screenshot to it cuts the ends off the very sentences the picture is there
+ * to show. A slider is the exception and sets the ratio itself, because its
+ * slides are stacked in one box and that box needs a height before the second
+ * picture is ever loaded; so is a card in a grid, where the pictures line up
+ * with each other. Neither is this.
+ *
+ * The width and height attributes take the ratio's place: they let the browser
+ * keep the right amount of room while the file is on its way, which is what the
+ * ratio was really buying. An attachment can be measured, a pasted URL cannot,
+ * and for that one the attributes are left off rather than guessed at.
  *
  * @param string $value Stored value: an attachment ID or a URL.
  * @param array  $args  ratio, label, class, alt, eager.
  */
 function antradus_image_tag( $value, $args ) {
-	$value = trim( (string) $value );
-	$url   = antradus_image_url( $value, 'full' );
+	$file  = antradus_image_file( $value );
 	$class = trim( 'ant-media ' . $args['class'] );
 
-	if ( '' === $url ) {
+	if ( ! $file ) {
 		antradus_placeholder( $args['label'], $args['ratio'], $args['class'] );
 		return;
 	}
 
-	if ( ctype_digit( $value ) ) {
-		echo wp_get_attachment_image(
-			(int) $value,
-			'full',
-			false,
-			array(
-				'class'   => $class,
-				'alt'     => $args['alt'],
-				'style'   => 'aspect-ratio:' . $args['ratio'],
-				'loading' => $args['eager'] ? 'eager' : 'lazy',
-			)
-		);
-		return;
+	$size = '';
+	if ( $file['width'] > 0 && $file['height'] > 0 ) {
+		$size = sprintf( ' width="%d" height="%d"', (int) $file['width'], (int) $file['height'] );
 	}
 
 	printf(
-		'<img class="%1$s" src="%2$s" alt="%3$s" style="aspect-ratio:%4$s" loading="%5$s" decoding="async">',
+		'<img class="%1$s" src="%2$s" alt="%3$s"%4$s %5$s decoding="async">',
 		esc_attr( $class ),
-		esc_url( $url ),
+		esc_url( $file['url'] ),
 		esc_attr( $args['alt'] ),
-		esc_attr( $args['ratio'] ),
-		$args['eager'] ? 'eager' : 'lazy'
+		$size, // phpcs:ignore WordPress.Security.EscapeOutput -- two integers, printed above.
+		$args['eager'] ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"'
 	);
 }
 
@@ -563,7 +600,7 @@ function antradus_slider( $key, $args = array() ) {
 	// A value that no longer resolves - a deleted attachment - is not a slide.
 	$slides = array();
 	foreach ( antradus_image_list( antradus_opt( $key, '' ) ) as $one ) {
-		if ( '' !== antradus_image_url( $one, 'full' ) ) {
+		if ( '' !== antradus_image_full_url( $one ) ) {
 			$slides[] = $one;
 		}
 	}
@@ -601,15 +638,11 @@ function antradus_slider( $key, $args = array() ) {
 	echo '<ul class="ant-slider-track">';
 
 	/*
-	 * Every slide is the uploaded file at its own resolution, with no srcset.
+	 * Every slide is the uploaded file at its own resolution, with no srcset -
+	 * which is the rule for every picture on this site, and `inc/images.php` is
+	 * where it is argued for.
 	 *
-	 * That is deliberate and it is the opposite of what a photograph wants. The
-	 * hero frame is about six hundred CSS pixels wide, so a browser choosing
-	 * from a srcset picks a candidate around that size - correct for a picture,
-	 * and mush for a screenshot of an interface, where the whole point is the
-	 * text in it. Oversampling is the feature here.
-	 *
-	 * The weight that would buy is paid back by loading them one at a time.
+	 * The weight that costs is paid back here by loading them one at a time.
 	 * `loading="lazy"` is no help - the slides are stacked in the same box, so
 	 * every one of them is in the viewport from the first frame and a browser
 	 * fetches the lot. Only the first slide carries a `src`; the rest carry the
@@ -1013,7 +1046,7 @@ function antradus_compat_column( $rows, $title, $side ) {
 	echo '<ul>';
 	foreach ( $rows as $row ) {
 		$name = antradus_cell( $row, 'name' );
-		$url  = antradus_image_url( antradus_cell( $row, 'image' ), 'thumbnail' );
+		$url  = antradus_image_full_url( antradus_cell( $row, 'image' ) );
 		echo '<li class="ant-glass ant-compat-item">';
 		if ( $url ) {
 			printf( '<img src="%s" alt="" loading="lazy" decoding="async">', esc_url( $url ) );

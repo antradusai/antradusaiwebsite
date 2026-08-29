@@ -23,7 +23,7 @@ if ( '' === trim( $antradus_title ) || ! $antradus_logos ) {
 			<?php
 			foreach ( $antradus_logos as $antradus_logo ) :
 				$antradus_name = antradus_cell( $antradus_logo, 'name', __( 'Logo', 'antradus' ) );
-				$antradus_url  = antradus_image_url( antradus_cell( $antradus_logo, 'image' ), 'medium' );
+				$antradus_url  = antradus_image_full_url( antradus_cell( $antradus_logo, 'image' ) );
 				?>
 				<li class="ant-logo">
 					<?php if ( $antradus_url ) : ?>
