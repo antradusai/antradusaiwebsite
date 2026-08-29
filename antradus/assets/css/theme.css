@@ -797,6 +797,25 @@ body.ant-site {
 }
 
 /*
+ * The picture is a button. It should not look like one - it should look like
+ * the picture it was before, and say what it does when a pointer is on it.
+ */
+.ant-slide-open {
+	display: block;
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	background: none;
+	border: 0;
+	cursor: zoom-in;
+}
+
+.ant-slide-open:focus-visible {
+	outline: 3px solid var(--ant-accent);
+	outline-offset: -3px;
+}
+
+/*
  * The captions, stacked in one grid cell. All of them are laid out, so the row
  * is as tall as the longest one from the first frame and never resizes between
  * slides - a hero that grew a line every six seconds would push the whole page
@@ -821,6 +840,181 @@ body.ant-site {
 
 .ant-slide-caption.is-current {
 	opacity: 1;
+}
+
+/* ---- the lightbox ---- */
+
+/*
+ * The picture over the page, at the size it was uploaded. It is the one place
+ * in this design that is dark: a screenshot is judged against what surrounds
+ * it, and a white page around a white interface hides the edges of the thing
+ * you opened it to look at.
+ */
+.ant-lb-shut,
+.ant-lb-shut body {
+	overflow: hidden;
+}
+
+/*
+ * Hiding the scrollbar makes the page wider by its width and shoves the layout
+ * sideways behind the veil. The script measures it; this gives it back.
+ */
+.ant-lb-shut body {
+	padding-inline-end: var(--ant-lb-gap, 0);
+}
+
+.ant-lb {
+	position: fixed;
+	inset: 0;
+	z-index: 900;
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr) auto;
+	align-items: center;
+	gap: clamp(6px, 2vw, 22px);
+	padding: clamp(14px, 3vw, 34px);
+}
+
+.ant-lb[hidden] {
+	display: none;
+}
+
+.ant-lb-veil {
+	position: absolute;
+	inset: 0;
+	background: rgba(6, 14, 32, .88);
+	-webkit-backdrop-filter: blur(6px);
+	backdrop-filter: blur(6px);
+}
+
+.ant-lb-figure {
+	position: relative;
+	z-index: 1;
+	display: grid;
+	justify-items: center;
+	gap: 14px;
+	margin: 0;
+	min-width: 0;
+}
+
+.ant-lb-img {
+	display: block;
+	/*
+	 * Never upscaled past its own pixels, never taller than the screen. A
+	 * screenshot smaller than the viewport is shown at its real size, which is
+	 * the size it is sharp at.
+	 */
+	max-width: 100%;
+	max-height: 78vh;
+	width: auto;
+	height: auto;
+	border-radius: 10px;
+	box-shadow: 0 30px 80px rgba(0, 0, 0, .5);
+	opacity: 0;
+	transition: opacity 220ms ease;
+}
+
+.ant-lb-img.is-ready {
+	opacity: 1;
+}
+
+.ant-lb-caption {
+	max-width: 70ch;
+	margin: 0;
+	color: rgba(255, 255, 255, .82);
+	font-size: 14px;
+	line-height: 1.6;
+	text-align: center;
+	text-wrap: balance;
+}
+
+.ant-lb-caption[hidden] {
+	display: none;
+}
+
+.ant-lb-nav,
+.ant-lb-close {
+	position: relative;
+	z-index: 1;
+	display: grid;
+	place-items: center;
+	width: 48px;
+	height: 48px;
+	padding: 0;
+	background: rgba(255, 255, 255, .1);
+	border: 1px solid rgba(255, 255, 255, .22);
+	border-radius: 50%;
+	color: #fff;
+	cursor: pointer;
+	transition: background 180ms ease, transform 180ms ease;
+}
+
+.ant-lb-nav:hover,
+.ant-lb-close:hover {
+	background: rgba(255, 255, 255, .2);
+	transform: scale(1.06);
+}
+
+.ant-lb-nav:focus-visible,
+.ant-lb-close:focus-visible {
+	outline: 3px solid #fff;
+	outline-offset: 3px;
+}
+
+.ant-lb-nav[hidden] {
+	/* Kept in the grid so a single picture stays centred. */
+	display: grid;
+	visibility: hidden;
+}
+
+.ant-lb-close {
+	position: absolute;
+	top: clamp(12px, 2.5vw, 26px);
+	inset-inline-end: clamp(12px, 2.5vw, 26px);
+}
+
+.ant-lb-count {
+	position: absolute;
+	z-index: 1;
+	inset-inline: 0;
+	bottom: clamp(10px, 2vw, 20px);
+	margin: 0;
+	color: rgba(255, 255, 255, .6);
+	font-size: 13px;
+	font-variant-numeric: tabular-nums;
+	text-align: center;
+}
+
+@media (max-width: 640px) {
+	.ant-lb {
+		grid-template-columns: 1fr;
+		justify-items: center;
+	}
+
+	/* No room for arrows beside the picture - swipe, or use the dots below. */
+	.ant-lb-nav {
+		position: absolute;
+		bottom: clamp(34px, 9vw, 54px);
+	}
+
+	.ant-lb-prev {
+		inset-inline-start: 16px;
+	}
+
+	.ant-lb-next {
+		inset-inline-end: 16px;
+	}
+
+	.ant-lb-img {
+		max-height: 66vh;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ant-lb-img,
+	.ant-lb-nav,
+	.ant-lb-close {
+		transition: none;
+	}
 }
 
 /* No pointer to hover with, so the arrows have to be there already. */

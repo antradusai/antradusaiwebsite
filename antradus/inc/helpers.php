@@ -405,6 +405,37 @@ function antradus_image_list( $value ) {
 }
 
 /**
+ * The address of the picture as it was uploaded, at its real resolution.
+ *
+ * WordPress does not hand back the file you gave it. Anything wider than the
+ * "big image" threshold - 2560px unless a site changes it - is quietly resized
+ * on upload, the resized copy is stored as `-scaled`, and that copy is what the
+ * `full` size returns. For a photograph that is a kindness. For a screenshot of
+ * an interface it is the difference between reading the text in it and not, so
+ * the slider asks for the file itself.
+ *
+ * A pasted URL is already the file, and has nothing else to offer.
+ *
+ * @param string $value Stored value: an attachment ID or a URL.
+ * @return string
+ */
+function antradus_image_full_url( $value ) {
+	$value = trim( (string) $value );
+	if ( '' === $value ) {
+		return '';
+	}
+	if ( ! ctype_digit( $value ) ) {
+		return esc_url_raw( $value );
+	}
+
+	$url = wp_get_original_image_url( (int) $value );
+	if ( ! $url ) {
+		$url = wp_get_attachment_url( (int) $value );
+	}
+	return $url ? $url : '';
+}
+
+/**
  * The caption written on a picture in the media library.
  *
  * Only an attachment has one. A pasted URL points at a file on somebody else's
@@ -569,25 +600,64 @@ function antradus_slider( $key, $args = array() ) {
 	printf( '<div class="ant-slider-stage" style="aspect-ratio:%s">', esc_attr( $args['ratio'] ) );
 	echo '<ul class="ant-slider-track">';
 
+	/*
+	 * Every slide is the uploaded file at its own resolution, with no srcset.
+	 *
+	 * That is deliberate and it is the opposite of what a photograph wants. The
+	 * hero frame is about six hundred CSS pixels wide, so a browser choosing
+	 * from a srcset picks a candidate around that size - correct for a picture,
+	 * and mush for a screenshot of an interface, where the whole point is the
+	 * text in it. Oversampling is the feature here.
+	 *
+	 * The weight that would buy is paid back by loading them one at a time.
+	 * `loading="lazy"` is no help - the slides are stacked in the same box, so
+	 * every one of them is in the viewport from the first frame and a browser
+	 * fetches the lot. Only the first slide carries a `src`; the rest carry the
+	 * address in `data-src` and the script fills it in just before the slide is
+	 * needed. Turn the script off and the first slide is the only one that can
+	 * be reached anyway.
+	 */
 	foreach ( $slides as $index => $slide ) {
+		$url     = antradus_image_full_url( $slide );
+		$first   = ( 0 === $index );
+		$caption = $captions[ $index ];
+
 		printf(
 			'<li class="ant-slide%1$s" data-slide %2$s>',
-			0 === $index ? ' is-current' : '',
-			0 === $index ? '' : 'aria-hidden="true"'
+			$first ? ' is-current' : '',
+			$first ? '' : 'aria-hidden="true"'
 		);
-		antradus_image_tag(
-			$slide,
-			array(
-				'ratio' => $args['ratio'],
-				'label' => $args['label'],
-				'class' => $args['class'],
-				'alt'   => $args['alt'],
-				// Only the first slide is worth blocking the hero on. The rest
-				// are below the fold of the eye, even though they share a box.
-				'eager' => $args['eager'] && 0 === $index,
+
+		/*
+		 * The picture is inside a button, because opening it full size is
+		 * something you do to it - and a button is the one control that a
+		 * keyboard, a screen reader and a thumb all already know how to use.
+		 * Only the current slide's button is reachable; the script moves that
+		 * along with the slide.
+		 */
+		printf(
+			'<button type="button" class="ant-slide-open" data-slide-open data-full="%1$s" data-caption="%2$s"%3$s aria-label="%4$s">',
+			esc_url( $url ),
+			esc_attr( $caption ),
+			$first ? '' : ' tabindex="-1"',
+			esc_attr(
+				$caption
+					/* translators: %s: the picture's caption. */
+					? sprintf( __( 'View full size: %s', 'antradus' ), $caption )
+					: __( 'View this picture full size', 'antradus' )
 			)
 		);
-		echo '</li>';
+
+		printf(
+			'<img class="ant-media" %1$s="%2$s" alt="%3$s" style="aspect-ratio:%4$s" %5$s decoding="async">',
+			$first ? 'src' : 'data-src',
+			esc_url( $url ),
+			esc_attr( $args['alt'] ),
+			esc_attr( $args['ratio'] ),
+			$first && $args['eager'] ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"'
+		);
+
+		echo '</button></li>';
 	}
 
 	echo '</ul>';

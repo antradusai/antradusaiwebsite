@@ -125,6 +125,8 @@ function antradus_settings_assets( $hook ) {
 			'moveEarlier'  => __( 'Move earlier', 'antradus' ),
 			'moveLater'    => __( 'Move later', 'antradus' ),
 			'dropImage'    => __( 'Remove this picture', 'antradus' ),
+			'editImage'    => __( 'Open this picture in the media library', 'antradus' ),
+			'doneImage'    => __( 'Done', 'antradus' ),
 			'confirmClear' => __( 'Remove every picture from this slot?', 'antradus' ),
 			'confirmDrop'  => __( 'Remove this item?', 'antradus' ),
 			'noImage'      => __( 'No picture', 'antradus' ),
@@ -579,6 +581,12 @@ function antradus_render_image_field( $id, $name, $value ) {
  * change, so reordering is moving a thumbnail rather than retyping anything -
  * the same arrows the repeater rows and the section order already use.
  *
+ * Clicking a thumbnail opens it in WordPress's own media modal, which is where
+ * the caption, the alt text and the title are edited - the caption a slide
+ * shows on the site is the picture's own, so the place to write it is the place
+ * the picture lives, not a second field here that could disagree with it.
+ * Choosing a different picture in that modal swaps this one for it, in place.
+ *
  * This is a top-level field only. A repeater sub-field stays a single image:
  * the export would have to describe a list inside a row inside a language, and
  * nothing on the site needs it.
@@ -600,13 +608,14 @@ function antradus_render_images_field( $id, $name, $value ) {
 		}
 		printf(
 			'<li class="antradus-images-item" data-value="%1$s">'
-			. '<img src="%2$s" alt="">'
+			. '<button type="button" class="antradus-images-edit" aria-label="%2$s"><img src="%3$s" alt=""></button>'
 			. '<span class="antradus-images-tools">'
-			. '<button type="button" class="antradus-images-move" data-dir="up" aria-label="%3$s">&#8592;</button>'
-			. '<button type="button" class="antradus-images-move" data-dir="down" aria-label="%4$s">&#8594;</button>'
-			. '<button type="button" class="antradus-images-drop" aria-label="%5$s">&times;</button>'
+			. '<button type="button" class="antradus-images-move" data-dir="up" aria-label="%4$s">&#8592;</button>'
+			. '<button type="button" class="antradus-images-move" data-dir="down" aria-label="%5$s">&#8594;</button>'
+			. '<button type="button" class="antradus-images-drop" aria-label="%6$s">&times;</button>'
 			. '</span></li>',
 			esc_attr( $item ),
+			esc_attr__( 'Open this picture in the media library', 'antradus' ),
 			esc_url( $url ),
 			esc_attr__( 'Move earlier', 'antradus' ),
 			esc_attr__( 'Move later', 'antradus' ),

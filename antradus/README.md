@@ -149,6 +149,24 @@ correcting one is editing a line.
   jumps between slides. Because it belongs to the file and not to the page, it
   is the *same* caption in both languages — an Arabic page shows the caption as
   it was written, which is worth knowing before you write one in English.
+- **Click a thumbnail** in *Hero pictures* and WordPress's own media modal opens
+  on that picture — which is where you write its caption, alt text and title.
+  That is the point of clicking it: the caption a slide shows belongs to the
+  file, so it is edited where the file is, and there is no second field here to
+  disagree with it. Pick a *different* picture before closing and it replaces
+  that one, keeping its place in the slide order.
+- **Clicking a slide on the site** opens it in a lightbox at the size it was
+  uploaded, with the rest of the slot's pictures behind the arrows — so a reader
+  who wants a proper look at slide two can go on to three without closing it.
+  Escape, the close button or a click outside brings them back, and the slider
+  carries on from whichever slide they were looking at.
+- **Hero slides are served at full resolution, on purpose.** They carry no
+  `srcset`, and they bypass the copy WordPress makes of anything wider than
+  2560px — a screenshot of an interface is read, not glanced at, and a browser
+  choosing a candidate for a 600px-wide frame makes mush of the text in it.
+  The weight that would cost is paid back by loading one slide at a time: only
+  the first has an address in the HTML, and the script fills in each of the
+  others just before it is needed.
 - **Lists** (feature bullets, trust lines, footer links) are one item per line.
   Footer and menu links are `Label | target`.
 - **A picture on a feature group.** On the Publishers and Studios tabs, every
@@ -401,8 +419,8 @@ inc/gallery.php          galleries to carousel
 template-parts/          one file per home section, one per designed page
 assets/css/theme.css     the design system
 assets/css/rtl.css       right-to-left, loaded only on Arabic pages
-assets/js/theme.js       menu, anchors, the hero slider, the diagram's flow
-                         lines, docs search, checkout
+assets/js/theme.js       menu, anchors, the hero slider and its lightbox, the
+                         diagram's flow lines, docs search, checkout
 ```
 
 Adding a field is three edits: a default in `inc/defaults.php`, its Arabic twin

@@ -213,11 +213,33 @@
 	overflow: hidden;
 }
 
+/*
+ * The whole thumbnail is the button that opens the media modal, so it has to
+ * look like the picture it replaced rather than like a button.
+ */
+.antradus-images-edit {
+	display: block;
+	width: 100%;
+	padding: 0;
+	background: none;
+	border: 0;
+	cursor: pointer;
+}
+
+.antradus-images-edit:focus-visible {
+	outline: 2px solid #1f6feb;
+	outline-offset: -2px;
+}
+
 .antradus-images-item img {
 	display: block;
 	width: 100%;
 	height: 88px;
 	object-fit: cover;
+}
+
+.antradus-images-edit:hover img {
+	filter: brightness(1.06);
 }
 
 .antradus-images-tools {

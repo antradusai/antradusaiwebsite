@@ -304,3 +304,12 @@
 [dir="rtl"] .ant-slide-caption {
 	unicode-bidi: plaintext;
 }
+
+/*
+ * Same as the slider's: the lightbox positions itself with inset-inline and
+ * mirrors on its own. Only the chevrons inside the two buttons are drawn
+ * pointing a particular way, so those are flipped.
+ */
+[dir="rtl"] .ant-lb-nav svg {
+	transform: scaleX(-1);
+}

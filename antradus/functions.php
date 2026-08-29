@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ANTRADUS_VERSION', '2.9.0' );
+define( 'ANTRADUS_VERSION', '2.10.0' );
 define( 'ANTRADUS_OPTION', 'antradus_theme_options' );
 
 // How many pictures one slider slot will keep. A hero that needs a tenth slide
@@ -145,6 +145,10 @@ function antradus_assets() {
 			'rtl'      => antradus_is_rtl() ? 1 : 0,
 			'lang'     => antradus_lang(),
 			'noResult' => antradus_opt( 'docs_empty', __( 'No guide matches that.', 'antradus' ) ),
+			// The lightbox is built in the browser, so its labels travel here.
+			'close'    => __( 'Close', 'antradus' ),
+			'prev'     => __( 'Previous image', 'antradus' ),
+			'next'     => __( 'Next image', 'antradus' ),
 		)
 	);
 
