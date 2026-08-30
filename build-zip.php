@@ -1,6 +1,6 @@
 <?php
 /**
- * Package the theme as antradus-theme.zip.
+ * Package the theme as antradus-theme-<version>.zip.
  *
  * Run with:  c:/xampp/php/php.exe build-zip.php
  *
@@ -14,16 +14,49 @@
 
 $root = __DIR__;
 $src  = $root . '/antradus';
-$out  = $root . '/antradus-theme.zip';
 
 if ( ! is_dir( $src ) ) {
 	fwrite( STDERR, "No antradus/ directory beside this script.\n" );
 	exit( 1 );
 }
 
+/*
+ * The filename carries the version, and that is not decoration.
+ *
+ * "The theme is missing the style.css stylesheet" is the message WordPress
+ * prints for every package failure, including the one where the file being
+ * uploaded is simply not this file - an older build in Downloads, a copy on
+ * another machine, or GitHub's Code -> Download ZIP, which hands over the whole
+ * repository because the built zip is gitignored and has never been on GitHub.
+ *
+ * Every one of those impostors is called antradus-theme.zip. None of them can
+ * be called antradus-theme-2.12.0.zip. A name that changes every release is
+ * the difference between "I uploaded the zip" and "I uploaded THIS zip", and
+ * it is checkable in the file picker without opening anything.
+ */
+$src_header = (string) file_get_contents( $src . '/style.css' );
+$declared   = preg_match( '/^[ \t\/*#@]*Version:(.*)$/mi', $src_header, $m ) ? trim( $m[1] ) : '';
+if ( '' === $declared ) {
+	fwrite( STDERR, "antradus/style.css has no readable Version header.\n" );
+	exit( 1 );
+}
+
+$out = $root . '/antradus-theme-' . $declared . '.zip';
+
 if ( file_exists( $out ) && ! unlink( $out ) ) {
 	fwrite( STDERR, "Could not remove the existing zip.\n" );
 	exit( 1 );
+}
+
+/*
+ * Clear away the old un-versioned name if it is still lying about. It is a
+ * build artifact this script owns, it is gitignored, and leaving it beside the
+ * real file is exactly how the wrong one gets picked.
+ */
+$stale = $root . '/antradus-theme.zip';
+$cleared = false;
+if ( file_exists( $stale ) ) {
+	$cleared = unlink( $stale );
 }
 
 $zip = new ZipArchive();
@@ -167,14 +200,26 @@ antradus_rmdir( $temp );
  * is about to send.
  */
 printf(
-	"%s\n  %s %s\n  %d files, %s bytes\n  sha256 %s\n  verified: unpacks to one folder '%s' with a readable style.css\n\n  UPLOAD THIS FILE:\n  %s\n",
+	"%s\n  %s %s\n  %d files, %s bytes\n  sha256 %s\n  verified: unpacks to one folder '%s' with a readable style.css\n",
 	basename( $out ),
 	$name,
 	$version,
 	$count,
 	number_format( (int) filesize( $out ) ),
 	hash_file( 'sha256', $out ),
-	$top[0],
-	str_replace( '/', DIRECTORY_SEPARATOR, $out )
+	$top[0]
+);
+
+if ( $cleared ) {
+	printf( "  removed the old un-versioned antradus-theme.zip, so it cannot be picked by mistake\n" );
+}
+
+printf(
+	"\n  UPLOAD THIS FILE:\n  %s\n\n  In the file picker, the name must read exactly:  %s\n  and the size must read:  %s bytes (about %d KB)\n"
+		. "  Anything called antradus-theme.zip, or any other size, is not this build.\n",
+	str_replace( '/', DIRECTORY_SEPARATOR, $out ),
+	basename( $out ),
+	number_format( (int) filesize( $out ) ),
+	(int) round( filesize( $out ) / 1024 )
 );
 exit( 0 );
