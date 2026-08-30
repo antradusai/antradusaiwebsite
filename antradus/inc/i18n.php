@@ -93,12 +93,127 @@ function antradus_is_lang( $lang ) {
 	return is_string( $lang ) && isset( $langs[ $lang ] );
 }
 
+/* ===========================================================================
+ * Published, or still being written
+ * ========================================================================= */
+
+/**
+ * Is this language switched on for readers?
+ *
+ * A language the theme knows about is not the same thing as a language the
+ * site publishes in. Arabic can be written, proof-read and previewed for weeks
+ * before anybody outside wp-admin is allowed to see it, which is the whole
+ * point of the switch on the Brand tab: go live in English, finish the Arabic
+ * afterwards, turn it on in one tick.
+ *
+ * The option is read raw, on purpose. antradus_opt() resolves through
+ * antradus_options(), antradus_options() asks which language this is, and that
+ * asks this - a loop with no bottom, and the same trap antradus_languages()
+ * already dodges by never calling __(). get_option() plus the shipped defaults
+ * answers the question without going round.
+ *
+ * @param string $lang Language code.
+ * @return bool
+ */
+function antradus_lang_is_published( $lang ) {
+	if ( ! antradus_is_lang( $lang ) ) {
+		return false;
+	}
+	// The default language is the site. It cannot be switched off.
+	if ( antradus_default_lang() === $lang ) {
+		return true;
+	}
+
+	static $cache = array();
+	if ( isset( $cache[ $lang ] ) ) {
+		return $cache[ $lang ];
+	}
+
+	$key   = 'lang_' . $lang . '_publish';
+	$saved = get_option( ANTRADUS_OPTION, array() );
+	$saved = is_array( $saved ) ? $saved : array();
+
+	if ( array_key_exists( $key, $saved ) ) {
+		$value = $saved[ $key ];
+	} else {
+		$shipped = antradus_default_options();
+		$value   = isset( $shipped[ $key ] ) ? $shipped[ $key ] : '';
+	}
+
+	$cache[ $lang ] = ( '1' === (string) $value );
+	return $cache[ $lang ];
+}
+
+/**
+ * May the person reading this see a language that is not published yet?
+ *
+ * Whoever can edit the settings can preview the translation on the real site,
+ * because reading it in a settings table is not the same as reading it laid
+ * out right to left at the width it will actually be published at. Everybody
+ * else is sent to the English page - see antradus_redirect_unpublished_lang().
+ *
+ * @return bool
+ */
+function antradus_can_preview_langs() {
+	static $can = null;
+	if ( null !== $can ) {
+		return $can;
+	}
+
+	/*
+	 * Answered, but not remembered, until WordPress knows who is asking.
+	 *
+	 * The theme's own gettext filter calls antradus_lang() from
+	 * after_setup_theme, which runs before WP has resolved the login cookie
+	 * into a user. Caching "no" at that moment would be caching the answer to
+	 * a question nobody had asked yet, and an administrator would then be
+	 * refused the preview for the whole request - including at wp_head and in
+	 * the templates, which are the only places the answer matters.
+	 */
+	if ( ! function_exists( 'current_user_can' ) || ! did_action( 'init' ) ) {
+		return false;
+	}
+
+	$can = current_user_can( antradus_settings_cap() );
+	return $can;
+}
+
+/**
+ * The languages a reader is offered.
+ *
+ * @return array<string,array<string,string>>
+ */
+function antradus_public_languages() {
+	$out = array();
+	foreach ( antradus_languages() as $code => $def ) {
+		if ( antradus_lang_is_published( $code ) ) {
+			$out[ $code ] = $def;
+		}
+	}
+	return $out;
+}
+
+/**
+ * Is this request looking at a language the public cannot see yet?
+ *
+ * @return bool
+ */
+function antradus_is_lang_preview() {
+	return ! is_admin() && ! antradus_lang_is_published( antradus_lang() );
+}
+
 /**
  * The language of this request.
  *
  * On the front end that is ?lang=. In wp-admin it is whichever language tab
  * the settings screen is showing, which is what makes one field renderer serve
  * both vocabularies.
+ *
+ * A language that is switched off is not a language on the front end: ?lang=ar
+ * resolves to English for a reader, and only to Arabic for somebody who can
+ * edit the settings, so the translation can be proof-read on the real site
+ * before it goes live. wp-admin always honours the request, because that is
+ * the screen the translation is written on.
  *
  * @return string
  */
@@ -107,20 +222,27 @@ function antradus_lang() {
 		return $GLOBALS['antradus_lang_context'];
 	}
 
-	static $lang = null;
-	if ( null !== $lang ) {
-		return $lang;
+	/*
+	 * What was asked for is fixed for the request and worth remembering. What
+	 * the answer is, is not: it depends on who is reading, and who is reading
+	 * is not known yet the first time this runs - see
+	 * antradus_can_preview_langs(). So the parse is cached and the decision is
+	 * taken fresh, which costs one array lookup and two memoised calls.
+	 */
+	static $asked = null;
+	if ( null === $asked ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- a public display preference, not an action.
+		$asked = isset( $_GET['lang'] ) ? sanitize_key( wp_unslash( $_GET['lang'] ) ) : '';
+		$asked = antradus_is_lang( $asked ) ? $asked : '';
 	}
 
-	$lang = antradus_default_lang();
-
-	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- a public display preference, not an action.
-	$asked = isset( $_GET['lang'] ) ? sanitize_key( wp_unslash( $_GET['lang'] ) ) : '';
-	if ( antradus_is_lang( $asked ) ) {
-		$lang = $asked;
+	if ( '' === $asked ) {
+		return antradus_default_lang();
 	}
-
-	return $lang;
+	if ( antradus_lang_is_published( $asked ) || is_admin() || antradus_can_preview_langs() ) {
+		return $asked;
+	}
+	return antradus_default_lang();
 }
 
 /**
@@ -548,12 +670,24 @@ function antradus_language_attributes( $output ) {
 add_action( 'wp_head', 'antradus_hreflang_tags', 2 );
 /**
  * Tell search engines the two addresses are the same page.
+ *
+ * Only for languages that are actually published. An hreflang pointing at a
+ * language the site is not serving yet is an invitation to crawl and index a
+ * page that answers in English, which is the one outcome a switched-off
+ * translation is meant to avoid.
+ *
+ * A single published language needs no alternates at all - hreflang describes
+ * a set of equivalents, and a set of one is just the page.
  */
 function antradus_hreflang_tags() {
 	if ( is_404() ) {
 		return;
 	}
-	foreach ( antradus_languages() as $code => $def ) {
+	$langs = antradus_public_languages();
+	if ( count( $langs ) < 2 ) {
+		return;
+	}
+	foreach ( $langs as $code => $def ) {
 		printf(
 			'<link rel="alternate" hreflang="%1$s" href="%2$s">' . "\n",
 			esc_attr( $def['html'] ),
@@ -566,6 +700,47 @@ function antradus_hreflang_tags() {
 	);
 }
 
+add_action( 'template_redirect', 'antradus_redirect_unpublished_lang' );
+/**
+ * Send a reader who asked for a switched-off language back to the English page.
+ *
+ * Rendering English at /pricing/?lang=ar instead would leave the same article
+ * on two addresses, which is a duplicate a search engine has to pick between
+ * and a link somebody can share by accident. A 302 is right rather than a 301:
+ * the language is coming back, and a permanent redirect cached in every
+ * browser that ever saw it would outlive the decision.
+ *
+ * Somebody who can edit the settings is previewing, and is left alone.
+ */
+function antradus_redirect_unpublished_lang() {
+	if ( is_admin() || wp_doing_ajax() || is_feed() || is_robots() ) {
+		return;
+	}
+	if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+		return;
+	}
+
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- a public display preference, not an action.
+	$asked = isset( $_GET['lang'] ) ? sanitize_key( wp_unslash( $_GET['lang'] ) ) : '';
+	if ( '' === $asked ) {
+		return;
+	}
+
+	// A language that is live is the normal case and stays where it is.
+	if ( antradus_lang_is_published( $asked ) ) {
+		return;
+	}
+	// A language that is written but not live is previewable by its editor.
+	if ( antradus_is_lang( $asked ) && antradus_can_preview_langs() ) {
+		return;
+	}
+	// Anything else - a switched-off language, or ?lang=fr typed by a crawler -
+	// is a second address for a page that has only one, so it is folded back.
+
+	wp_safe_redirect( antradus_lang_switch_url( antradus_default_lang() ), 302 );
+	exit;
+}
+
 add_filter( 'body_class', 'antradus_lang_body_class' );
 /**
  * @param array $classes Existing classes.
@@ -575,6 +750,9 @@ function antradus_lang_body_class( $classes ) {
 	$classes[] = 'ant-lang-' . antradus_lang();
 	if ( antradus_is_rtl() ) {
 		$classes[] = 'ant-rtl';
+	}
+	if ( antradus_is_lang_preview() ) {
+		$classes[] = 'ant-lang-preview';
 	}
 	return $classes;
 }
@@ -608,11 +786,16 @@ function antradus_filter_permalink( $url ) {
 /**
  * The language switcher, as a list of links.
  *
- * @return array<int,array{code:string,label:string,short:string,url:string,current:bool}>
+ * Only published languages, unless the person reading can edit the settings -
+ * they get the unpublished ones too, flagged, so previewing the translation is
+ * the same two clicks as reading the site.
+ *
+ * @return array<int,array{code:string,label:string,short:string,url:string,current:bool,draft:bool}>
  */
 function antradus_lang_links() {
 	$out     = array();
 	$current = antradus_lang();
+	$preview = antradus_can_preview_langs();
 
 	/*
 	 * The documentation is English-only and forces itself back to English, so
@@ -624,6 +807,11 @@ function antradus_lang_links() {
 	$stranded = function_exists( 'antradus_docs_is_english_only' ) && antradus_docs_is_english_only();
 
 	foreach ( antradus_languages() as $code => $def ) {
+		$live = antradus_lang_is_published( $code );
+		if ( ! $live && ! $preview ) {
+			continue;
+		}
+
 		$url = ( $stranded && $code !== $current )
 			? antradus_localize_url( home_url( '/' ), $code )
 			: antradus_lang_switch_url( $code );
@@ -634,6 +822,7 @@ function antradus_lang_links() {
 			'short'   => $def['short'],
 			'url'     => $url,
 			'current' => ( $code === $current ),
+			'draft'   => ! $live,
 		);
 	}
 	return $out;
@@ -655,14 +844,51 @@ function antradus_lang_switch( $class = '' ) {
 		esc_attr__( 'Language', 'antradus' )
 	);
 	foreach ( $links as $link ) {
+		$classes = 'ant-lang';
+		$classes .= $link['current'] ? ' is-current' : '';
+		$classes .= ! empty( $link['draft'] ) ? ' is-draft' : '';
+
 		printf(
-			'<a class="ant-lang%1$s" href="%2$s" hreflang="%3$s" lang="%3$s"%4$s>%5$s</a>',
-			$link['current'] ? ' is-current' : '',
+			'<a class="%1$s" href="%2$s" hreflang="%3$s" lang="%3$s"%4$s%5$s>%6$s</a>',
+			esc_attr( $classes ),
 			esc_url( $link['url'] ),
 			esc_attr( $link['code'] ),
 			$link['current'] ? ' aria-current="true"' : '',
+			! empty( $link['draft'] ) ? ' title="' . esc_attr__( 'Not published - only you can see this', 'antradus' ) . '"' : '',
 			esc_html( $link['label'] )
 		);
 	}
 	echo '</div>';
+}
+
+add_action( 'wp_body_open', 'antradus_lang_preview_notice' );
+/**
+ * Say out loud that this page is not the one a reader gets.
+ *
+ * Previewing a switched-off translation without being told is how a site ends
+ * up "live in Arabic" in one person's browser and nowhere else. The strip only
+ * ever renders for somebody who can turn the language on, and it links to the
+ * switch that does it.
+ */
+function antradus_lang_preview_notice() {
+	if ( is_admin() || ! antradus_is_lang_preview() || ! antradus_can_preview_langs() ) {
+		return;
+	}
+	$langs = antradus_languages();
+	$lang  = antradus_lang();
+	$name  = isset( $langs[ $lang ] ) ? $langs[ $lang ]['native'] : $lang;
+
+	printf(
+		'<div class="ant-preview-bar" role="status"><strong>%1$s</strong> <span>%2$s</span> <a href="%3$s">%4$s</a></div>',
+		esc_html(
+			sprintf(
+				/* translators: %s: language name. */
+				__( '%s is switched off.', 'antradus' ),
+				$name
+			)
+		),
+		esc_html__( 'You are previewing it. Visitors are sent to the English page.', 'antradus' ),
+		esc_url( admin_url( 'themes.php?page=antradus-content&tab=brand' ) ),
+		esc_html__( 'Turn it on', 'antradus' )
+	);
 }

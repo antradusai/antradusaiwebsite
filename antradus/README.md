@@ -113,6 +113,38 @@ The theme's own words — "Skip to content", "3 min read", the menu labels — a
 in `inc/strings-ar.php`, a plain PHP array rather than a compiled `.mo`, so
 correcting one is editing a line.
 
+### Publishing Arabic, or not yet
+
+**Arabic ships switched off.** That is the state a site is really in on launch
+day: the English pages are finished and the translation is not. Go live in
+English, finish the Arabic afterwards, and turn it on when it is ready.
+
+The switch is **Appearance → Antradus Content → Brand & header → Languages**.
+
+While it is off:
+
+- the language button is gone from the header and the footer;
+- `?lang=ar` **redirects** to the English address — a 302, because the language
+  is coming back. Rendering English at a second address instead would leave the
+  same page on two URLs for a search engine to pick between;
+- no `hreflang` tag advertises an Arabic version, so nothing is crawled that
+  answers in the wrong language.
+
+**Nothing is deleted, and nothing stops.** The Arabic tab and every word already
+written on it stay exactly where they are, the counter keeps counting, and the
+"not published" chip in the language bar says so on every tab so a long
+translating session never forgets where the words are going.
+
+**You can still read the whole site in Arabic while signed in.** An
+administrator following `?lang=ar` gets the real Arabic page, at the real width,
+laid out right to left — with an unmissable strip across the top saying it is a
+preview and that visitors are being sent to the English page. Proof-reading a
+translation in a settings table is not the same as reading it as a page, and
+this is the difference between the two.
+
+Turning it on publishes every Arabic page at once. There is no per-page state
+and nothing to migrate.
+
 ---
 
 ## Editing content
@@ -375,6 +407,65 @@ the checkbox on the Security tab brings them back exactly as they were.
 
 ---
 
+## Search metadata
+
+The **SEO** tab holds a focus keyword, a search title and a meta description for
+each of the nine designed pages, in both languages. They ship written rather
+than blank, because a description nobody got round to writing is the usual
+reason a page goes live with the first two lines of its hero in the search
+results.
+
+The titles are kept under about 60 characters and the descriptions under about
+155, which is roughly where Google stops reading. Each focus keyword appears in
+its own title and description, and — where the page's address already carries
+the phrase, as `/pricing/` and `/for-studios/` and `/plugin-features/` do —
+in the URL too.
+
+### The button
+
+**SEO → Send these to Rank Math** copies the English set onto the nine pages as
+Rank Math's own post meta: `rank_math_focus_keyword`, `rank_math_title`,
+`rank_math_description`. Nothing is stored twice and nothing has to be taught to
+Rank Math — the metabox shows the values, the analysis scores them and the front
+end renders them, exactly as if they had been typed in by hand. **From that
+point on they are Rank Math's**, and this theme prints nothing at all on an
+English page.
+
+There are two buttons because there are two intentions:
+
+| Button | What it does |
+|---|---|
+| **Send these to Rank Math** | Fills only the fields Rank Math has left empty. Anything you have already written there survives. |
+| **Replace what is already there** | Overwrites all nine pages with the wording on this tab. |
+
+The table above the buttons shows, before you press either, which pages are
+ready, which already hold wording of your own, and which do not exist yet — a
+page has to exist before it can be given metadata, so create the missing ones on
+the Pages tab first.
+
+Rank Math does not have to be active. The values are written as the meta Rank
+Math reads, so activating it later picks up all of them at once, and until then
+the theme prints the description and the sharing tags itself.
+
+### The Arabic half
+
+Rank Math has nowhere to put it. Both languages live at the same post —
+`/pricing/` and `/pricing/?lang=ar` — and post meta has room for one title and
+one description. So the Arabic set stays on this tab, and the theme serves it on
+Arabic pages through the SEO plugin's own filters (Rank Math and Yoast are both
+handled).
+
+It also **corrects the canonical**, which matters more than it sounds. Every
+canonical is generated from the permalink, and the permalink of
+`/pricing/?lang=ar` is `/pricing/`. Left alone, every Arabic page would tell
+search engines that the real page is the English one — which is the instruction
+to drop the translation from the index. On a published Arabic page the canonical
+now points at itself.
+
+None of it does anything while Arabic is switched off.
+
+---
+
 ## Security
 
 Everything on the **Security** tab is on, and none of it changes what a reader
@@ -435,6 +526,8 @@ inc/comments.php         comments, switched off in all five places
 inc/pricing.php          plan cards, comparison table, FAQ, checkout wiring
 inc/blog.php             the article index
 inc/docs.php             the documentation hub and its search
+inc/seo.php              the nine pages' search metadata, the Rank Math button,
+                         and the Arabic half no SEO plugin has room for
 inc/gallery.php          galleries to carousel
 template-parts/          one file per home section, one per designed page
 assets/css/theme.css     the design system

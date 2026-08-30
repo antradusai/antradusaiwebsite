@@ -44,7 +44,8 @@ function antradus_default_options_ar() {
 		antradus_defaults_ar_contact(),
 		antradus_defaults_ar_welcome(),
 		antradus_defaults_ar_docs(),
-		antradus_defaults_ar_footer()
+		antradus_defaults_ar_footer(),
+		antradus_defaults_ar_seo()
 	);
 }
 
@@ -1001,6 +1002,74 @@ function antradus_defaults_ar_docs() {
 		'docs_search_hint'  => 'اكتب للبحث في الأدلة',
 		'docs_empty'        => 'لا يوجد دليل يطابق ذلك.',
 		'docs_all_label'    => 'الكل',
+	);
+}
+
+/* ===========================================================================
+ * Footer
+ * ========================================================================= */
+
+/* ===========================================================================
+ * Search metadata
+ * ========================================================================= */
+
+/**
+ * The Arabic focus keyword, search title and meta description per page.
+ *
+ * Not translations of the English ones. A focus keyword is whatever an Arabic
+ * speaker actually types, and that is rarely the Arabic for the English
+ * phrase: somebody looking for this writes "تحويل البودكاست إلى مقالات", never
+ * a rendering of "podcast-to-article system". So each line here is written
+ * from the claim, not from the sentence above it.
+ *
+ * Product names, versions and prices stay in Latin script and Western digits,
+ * because that is what the checkout, the plugin and the invoice all show.
+ *
+ * Rank Math cannot hold these. Both languages share one post - /pricing/ and
+ * /pricing/?lang=ar - and post meta has room for one title and one
+ * description, so inc/seo.php serves these through Rank Math's own filters
+ * instead. They are used the moment Arabic is switched on, and ignored while
+ * it is off.
+ *
+ * @return array
+ */
+function antradus_defaults_ar_seo() {
+	return array(
+		'seo_home_focus'      => 'تحويل البودكاست إلى مقالات',
+		'seo_home_title'      => 'Antradus AI: تحويل البودكاست إلى مقالات في ووردبريس',
+		'seo_home_desc'       => 'حلقة واحدة أو كلمة مفتاحية واحدة تكفي: Antradus AI يكتب المقال وملاحظات الحلقة وبطاقات الاقتباس والنشرة البريدية داخل ووردبريس، بمفاتيح API الخاصة بك.',
+
+		'seo_publisher_focus' => 'الكتابة بالذكاء الاصطناعي لأصحاب المواقع',
+		'seo_publisher_title' => 'الكتابة بالذكاء الاصطناعي لأصحاب المواقع | Antradus AI',
+		'seo_publisher_desc'  => 'لأصحاب المواقع الذين لا يتوقف نشرهم: عناقيد كلمات مفتاحية، ونشر جماعي، وجدولة موزّعة، وروابط داخلية تلقائية، وتقرير تكلفة، كل ذلك داخل ووردبريس.',
+
+		'seo_studio_focus'    => 'الذكاء الاصطناعي لاستوديوهات البودكاست',
+		'seo_studio_title'    => 'الذكاء الاصطناعي لاستوديوهات البودكاست | Antradus AI',
+		'seo_studio_desc'     => 'حلقة واحدة تصير مقالاً وملاحظات وفصولاً زمنية وبطاقات اقتباس ونشرة بريدية، مع التحقق من كل اقتباس مقابل التسجيل نفسه قبل نشره.',
+
+		'seo_features_focus'  => 'مزايا إضافة الكتابة بالذكاء الاصطناعي',
+		'seo_features_title'  => 'مزايا إضافة الكتابة بالذكاء الاصطناعي | Antradus AI',
+		'seo_features_desc'   => 'قائمة المزايا كاملة بلغة واضحة: من الحلقة إلى المقال، واقتباسات موثّقة، وبيانات SEO، ونشر جماعي، ونبرة علامتك، ومفاتيح API الخاصة بك.',
+
+		'seo_pricing_focus'   => 'أسعار Antradus AI',
+		'seo_pricing_title'   => 'أسعار Antradus AI: باقة Lite مجانية، وPublisher، وStudio',
+		'seo_pricing_desc'    => 'Lite مجانية إلى الأبد، وPublisher بـ 275 دولاراً شهرياً لخمسة مواقع مع تجربة 7 أيام، وStudio بـ 1,500 دولار شهرياً. مفاتيح API تبقى ملكك.',
+
+		'seo_docs_focus'      => 'توثيق Antradus AI',
+		'seo_docs_title'      => 'توثيق Antradus AI: كل ميزة، مشروحة بالتفصيل',
+		'seo_docs_desc'       => 'دليل لكل جزء من الإضافة، بالوضوح نفسه الموجود في الواجهة: الإعداد، ومزوّدو الذكاء الاصطناعي، والنشر، وSEO، والصور، وحساب التكلفة.',
+
+		'seo_blog_focus'      => 'مدونة النشر بالذكاء الاصطناعي',
+		'seo_blog_title'      => 'مدوّنة Antradus AI عن النشر بالذكاء الاصطناعي',
+		'seo_blog_desc'       => 'ما نتعلّمه عن الكتابة التي تُقرأ كأن إنساناً كتبها، وإعادة استخدام حلقات البودكاست، والظهور أمام محركات البحث ومساعدات الذكاء الاصطناعي معاً.',
+
+		'seo_contact_focus'   => 'تواصل مع Antradus AI',
+		'seo_contact_title'   => 'تواصل مع Antradus AI: الدعم والمبيعات والشراكات',
+		'seo_contact_desc'    => 'أسئلة عن الاشتراكات أو المزايا أو التراخيص أو إعدادك؟ أرسل رسالة ويردّ عليك شخص حقيقي خلال يوم عمل واحد. ونستقبل طلبات التسويق بالعمولة.',
+
+		'seo_welcome_focus'   => 'نشرة Antradus AI البريدية',
+		'seo_welcome_title'   => 'نشرة Antradus AI: ملاحظات الإصدار وتكتيكات النشر',
+		'seo_welcome_desc'    => 'اشترك لتصلك ملاحظات الإصدارات وتكتيكات النشر ومراجعات صريحة لما نجح وما لم ينجح. رسالة واحدة أسبوعياً على الأكثر، وإلغاء الاشتراك بنقرة واحدة.',
 	);
 }
 

@@ -599,6 +599,22 @@
 	color: #fff;
 }
 
+/* Said on every tab, so a long translating session never forgets it. */
+.antradus-langbtn-off {
+	padding: 1px 8px;
+	background: rgba(124, 45, 18, .12);
+	border-radius: 999px;
+	color: #7c2d12;
+	font-size: 11.5px;
+	font-weight: 700;
+	text-transform: lowercase;
+}
+
+.antradus-langbtn.is-current .antradus-langbtn-off {
+	background: rgba(255, 255, 255, .24);
+	color: #fff;
+}
+
 .antradus-translating-note {
 	max-width: 96ch;
 	margin: 0 0 8px;

@@ -34,6 +34,67 @@ function antradus_link_help() {
 }
 
 /**
+ * The search-metadata tab, built from the list of designed pages.
+ *
+ * Generated rather than typed out, so the day a tenth page is added to
+ * antradus_pages() it arrives here with its three boxes already waiting. The
+ * page's own address is printed in the section blurb because a focus keyword
+ * that also appears in the URL is one of the few SEO tests that costs nothing
+ * to pass, and you cannot judge that without seeing the slug.
+ *
+ * @return array
+ */
+function antradus_seo_schema_tab() {
+	$sections = array(
+		array(
+			'title'  => __( 'Rank Math', 'antradus' ),
+			'render' => 'antradus_render_seo_panel',
+			'fields' => array(),
+		),
+	);
+
+	foreach ( antradus_pages() as $key => $def ) {
+		$slug = trim( (string) antradus_opt( 'slug_' . $key, $def['slug'] ), '/ ' );
+
+		$sections[] = array(
+			'title'  => $def['label'],
+			'blurb'  => sprintf(
+				/* translators: %s: page address. */
+				__( 'Lives at <code>/%s/</code>. A focus keyword that appears in the address, in the title and in the description scores better than one that appears in none of them.', 'antradus' ),
+				esc_html( $slug )
+			),
+			'fields' => array(
+				array(
+					'key'   => 'seo_' . $key . '_focus',
+					'label' => __( 'Focus keyword', 'antradus' ),
+					'type'  => 'text',
+					'help'  => __( 'The phrase somebody types when they are looking for this page. One phrase, not a list - Rank Math scores the first one.', 'antradus' ),
+				),
+				array(
+					'key'   => 'seo_' . $key . '_title',
+					'label' => __( 'Search title', 'antradus' ),
+					'type'  => 'text',
+					'help'  => __( 'What the search result says. Keep it under about 60 characters or Google cuts the end off, and put the focus keyword near the front.', 'antradus' ),
+				),
+				array(
+					'key'   => 'seo_' . $key . '_desc',
+					'label' => __( 'Meta description', 'antradus' ),
+					'type'  => 'textarea',
+					'rows'  => 3,
+					'help'  => __( 'The two grey lines under the title. Under about 155 characters, containing the focus keyword, and saying something the title did not.', 'antradus' ),
+				),
+			),
+		);
+	}
+
+	return array(
+		'label'    => __( 'SEO', 'antradus' ),
+		'blurb'    => __( 'A focus keyword, a search title and a meta description for each of the nine designed pages, in both languages. The button below copies the English set into Rank Math, as its own fields - after that Rank Math owns them and scores them like anything you typed in yourself. The Arabic set stays here, because both languages share one page and Rank Math has room for one description.', 'antradus' ),
+		'sections' => $sections,
+	);
+}
+
+/**
  * The trends band, as a schema section.
  *
  * Two lists, because the feature has two halves worth selling: what it finds,
@@ -654,6 +715,20 @@ function antradus_settings_schema() {
 								'full' => __( 'Edge to edge - the whole screen, less a margin', 'antradus' ),
 							),
 							'help'    => __( 'Section backgrounds always run the full width of the screen. This only sets how wide the content inside them is allowed to get. Articles keep their own reading measure whatever you choose here, because a line of text 1800px long is not readable.', 'antradus' ),
+						),
+					),
+				),
+				array(
+					'title'  => __( 'Languages', 'antradus' ),
+					'blurb'  => __( 'English is the site and cannot be switched off. Arabic is a second publication you turn on when its words are ready.', 'antradus' ),
+					'render' => 'antradus_render_languages_panel',
+					'fields' => array(
+						array(
+							'key'   => 'lang_ar_publish',
+							'label' => __( 'Publish the Arabic site', 'antradus' ),
+							'type'  => 'checkbox',
+							'cbtxt' => __( 'Show Arabic to visitors', 'antradus' ),
+							'help'  => __( 'Off: the language button disappears, <code>?lang=ar</code> redirects to the English page, and no <code>hreflang</code> tells a search engine an Arabic version exists. Nothing is deleted - the Arabic tab, and every word already written on it, stays exactly where it is, and you can still walk the whole site in Arabic while signed in. Turn it on when the translation is ready and every Arabic page appears at once.', 'antradus' ),
 						),
 					),
 				),
@@ -2340,6 +2415,14 @@ function antradus_settings_schema() {
 				),
 			),
 		),
+
+		/* =================================================================
+		 * Security
+		 * ============================================================== */
+		/* =================================================================
+		 * SEO
+		 * ============================================================== */
+		'seo'      => antradus_seo_schema_tab(),
 
 		/* =================================================================
 		 * Security

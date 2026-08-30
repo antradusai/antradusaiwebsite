@@ -3735,6 +3735,46 @@ td.ant-cost-us .ant-ic {
 	border-color: var(--ant-line);
 }
 
+/*
+ * A language that is written but not switched on. Only ever rendered for
+ * somebody who can switch it on, so it is a working note rather than a state
+ * a reader is being shown - dashed, because dashed reads as provisional.
+ */
+.ant-langs .ant-lang.is-draft {
+	border: 1px dashed rgba(var(--ant-accent-rgb), .5);
+	opacity: .75;
+}
+
+.ant-langs .ant-lang.is-draft.is-current {
+	opacity: 1;
+}
+
+/* The strip that says this page is not the one a visitor gets. */
+.ant-preview-bar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 4px 10px;
+	padding: 9px 18px;
+	background: #7c2d12;
+	color: #fff;
+	font-size: 13.5px;
+	line-height: 1.4;
+	text-align: center;
+}
+
+.ant-preview-bar strong {
+	font-weight: 800;
+}
+
+.ant-preview-bar a {
+	color: #fff;
+	font-weight: 700;
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
 /* =========================================================================
  * 14. The trust bar
  * ====================================================================== */

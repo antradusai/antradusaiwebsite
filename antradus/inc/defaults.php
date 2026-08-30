@@ -30,7 +30,8 @@ function antradus_default_options() {
 		antradus_defaults_welcome(),
 		antradus_defaults_docs(),
 		antradus_defaults_footer(),
-		antradus_defaults_security()
+		antradus_defaults_security(),
+		antradus_defaults_seo()
 	);
 }
 
@@ -54,6 +55,16 @@ function antradus_defaults_brand() {
 		'announce_text'     => 'Antradus 2.7 is out - two plans now: Publisher for a website, Studio for a whole show.',
 		'announce_link'     => 'page:blog',
 		'announce_link_txt' => 'Read the release notes',
+
+		/*
+		 * Arabic ships switched OFF, which is the state a site is actually in
+		 * on the day it launches: the English pages are finished and the
+		 * translation is not. Off means readers never reach it - no language
+		 * button, no hreflang, and ?lang=ar redirects - while the Arabic tab in
+		 * wp-admin stays exactly where it was and an administrator can preview
+		 * the whole site in Arabic on the real domain. One tick publishes it.
+		 */
+		'lang_ar_publish'   => '',
 
 		// Slug overrides for the seven designed pages.
 		'slug_home'         => 'home',
@@ -1400,6 +1411,70 @@ function antradus_defaults_security() {
 		'sec_headers'     => '1',
 		'sec_clean_head'  => '1',
 		'comments_enable' => '',
+	);
+}
+
+/* ===========================================================================
+ * Search metadata
+ * ========================================================================= */
+
+/**
+ * A focus keyword, a search title and a meta description for each page.
+ *
+ * Written to three constraints rather than to taste. The title stays under
+ * about sixty characters, because Google measures pixels and cuts the rest.
+ * The description stays under about a hundred and fifty-five, for the same
+ * reason, and says something a person might act on rather than repeating the
+ * title. And the focus keyword appears in both, near the front, because that
+ * is what Rank Math scores and what a reader scanning ten blue links matches
+ * their own question against.
+ *
+ * The keywords are the phrases somebody types when they are shopping, not the
+ * ones we would choose to be described by: "podcast to article WordPress
+ * plugin" rather than "publishing system". Where a page's own address already
+ * carries the phrase - /pricing/, /for-studios/, /plugin-features/ - the
+ * keyword is built around that word, which is one of the few SEO tests that
+ * is genuinely free to pass.
+ *
+ * @return array
+ */
+function antradus_defaults_seo() {
+	return array(
+		'seo_home_focus'      => 'podcast to article WordPress plugin',
+		'seo_home_title'      => 'Podcast to Article WordPress Plugin | Antradus AI',
+		'seo_home_desc'       => 'Antradus AI is the podcast to article WordPress plugin that turns one episode - or one keyword - into articles, show notes, quote cards and a newsletter.',
+
+		'seo_publisher_focus' => 'AI content for publishers',
+		'seo_publisher_title' => 'AI Content for Publishers, Inside WordPress | Antradus',
+		'seo_publisher_desc'  => 'AI content for publishers who must keep shipping: keyword clusters, bulk queues, drip scheduling, internal links and cost reporting, all inside WordPress.',
+
+		'seo_studio_focus'    => 'AI for podcast studios',
+		'seo_studio_title'    => 'AI for Podcast Studios: One Episode, a Week of Content',
+		'seo_studio_desc'     => 'AI for podcast studios: one episode becomes an article, show notes, chapters, quote cards and a newsletter, every quotation checked against the recording.',
+
+		'seo_features_focus'  => 'AI writing plugin features',
+		'seo_features_title'  => 'AI Writing Plugin Features, in Plain Language | Antradus',
+		'seo_features_desc'   => 'Every AI writing plugin feature in plain language: episode to article, verified quotations, SEO metadata, bulk publishing, brand voice, your own API keys.',
+
+		'seo_pricing_focus'   => 'Antradus AI pricing',
+		'seo_pricing_title'   => 'Antradus AI Pricing: Free Lite, Publisher, Studio',
+		'seo_pricing_desc'    => 'Antradus AI pricing: Lite is free forever, Publisher is $275 a month for five sites with a 7-day trial, Studio is $1,500 a month. Bring your own API keys.',
+
+		'seo_docs_focus'      => 'Antradus AI docs',
+		'seo_docs_title'      => 'Antradus AI Docs: Every Feature, Written Down',
+		'seo_docs_desc'       => 'Antradus AI docs - a guide for every part of the plugin, in the same plain language as the interface. Setup, providers, publishing, SEO, images and costs.',
+
+		'seo_blog_focus'      => 'AI publishing blog',
+		'seo_blog_title'      => 'The Antradus AI Publishing Blog | Search, GEO, Podcasts',
+		'seo_blog_desc'       => 'An AI publishing blog on writing that sounds human, podcast repurposing, and being found by search engines and AI assistants alike. Notes from Antradus.',
+
+		'seo_contact_focus'   => 'contact Antradus AI',
+		'seo_contact_title'   => 'Contact Antradus AI - Support, Sales and Affiliates',
+		'seo_contact_desc'    => 'Contact Antradus AI about plans, features, licensing or your setup. A real person replies within one business day. Affiliate applications welcome too.',
+
+		'seo_welcome_focus'   => 'Antradus AI newsletter',
+		'seo_welcome_title'   => 'The Antradus AI Newsletter: Release Notes and Tactics',
+		'seo_welcome_desc'    => 'Join the Antradus AI newsletter for release notes, publishing tactics and honest post-mortems. One email a week at most, and unsubscribe in one click.',
 	);
 }
 
