@@ -2,7 +2,7 @@
 /**
  * Pages.
  *
- * One of the nine designed pages gets its design; anything else gets the plain
+ * One of the ten designed pages gets its design; anything else gets the plain
  * article treatment, so a Privacy Policy page looks like it belongs here too.
  *
  * @package Antradus
@@ -27,6 +27,7 @@ switch ( $antradus_key ) {
 	case 'contact':
 	case 'welcome':
 	case 'docs':
+	case 'transcript':
 		get_template_part( 'template-parts/page', $antradus_key );
 		break;
 

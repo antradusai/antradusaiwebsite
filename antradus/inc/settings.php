@@ -1373,13 +1373,13 @@ function antradus_render_seo_panel() {
 	printf(
 		'<a class="button" href="%1$s" onclick="return confirm(%2$s);">%3$s</a>',
 		esc_url( $link( true ) ),
-		esc_attr( (string) wp_json_encode( __( 'This replaces the focus keyword, title and description already saved in Rank Math on all nine pages. Continue?', 'antradus' ) ) ),
+		esc_attr( (string) wp_json_encode( __( 'This replaces the focus keyword, title and description already saved in Rank Math on all ten pages. Continue?', 'antradus' ) ) ),
 		esc_html__( 'Replace what is already there', 'antradus' )
 	);
 	echo '</p>';
 
 	echo '<p class="description">';
-	esc_html_e( 'The first button only fills fields Rank Math has left empty, so anything you have already written there survives. The second overwrites all nine pages with the wording on this tab. A page has to exist before it can be given metadata - create the missing ones on the Pages tab first.', 'antradus' );
+	esc_html_e( 'The first button only fills fields Rank Math has left empty, so anything you have already written there survives. The second overwrites all ten pages with the wording on this tab. A page has to exist before it can be given metadata - create the missing ones on the Pages tab first.', 'antradus' );
 	echo '</p>';
 
 	if ( $missing ) {

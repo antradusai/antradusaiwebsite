@@ -30,7 +30,7 @@ function antradus_icon_choices() {
  * @return string
  */
 function antradus_link_help() {
-	return __( 'A full URL, an in-page #anchor, or <code>page:pricing</code> / <code>page:publisher</code> / <code>page:studio</code> / <code>page:contact</code> / <code>page:blog</code> / <code>page:docs</code> / <code>page:features</code> / <code>page:welcome</code> / <code>page:home</code>. A <code>page:</code> link disappears from the site while that page is a draft.', 'antradus' );
+	return __( 'A full URL, an in-page #anchor, or <code>page:pricing</code> / <code>page:publisher</code> / <code>page:studio</code> / <code>page:contact</code> / <code>page:blog</code> / <code>page:docs</code> / <code>page:features</code> / <code>page:transcript</code> / <code>page:welcome</code> / <code>page:home</code>. A <code>page:</code> link disappears from the site while that page is a draft.', 'antradus' );
 }
 
 /**
@@ -89,7 +89,7 @@ function antradus_seo_schema_tab() {
 
 	return array(
 		'label'    => __( 'SEO', 'antradus' ),
-		'blurb'    => __( 'A focus keyword, a search title and a meta description for each of the nine designed pages, in both languages. The button below copies the English set into Rank Math, as its own fields - after that Rank Math owns them and scores them like anything you typed in yourself. The Arabic set stays here, because both languages share one page and Rank Math has room for one description.', 'antradus' ),
+		'blurb'    => __( 'A focus keyword, a search title and a meta description for each of the ten designed pages, in both languages. The button below copies the English set into Rank Math, as its own fields - after that Rank Math owns them and scores them like anything you typed in yourself. The Arabic set stays here, because both languages share one page and Rank Math has room for one description.', 'antradus' ),
 		'sections' => $sections,
 	);
 }
@@ -614,7 +614,7 @@ function antradus_settings_schema() {
 		 * ============================================================== */
 		'pages'    => array(
 			'label'    => __( 'Pages', 'antradus' ),
-			'blurb'    => __( 'The nine pages this theme designs. A page only appears in the menu, the footer and any button pointing at it once it is <strong>published</strong> - leave it as a draft and the whole site simply stops linking to it.', 'antradus' ),
+			'blurb'    => __( 'The ten pages this theme designs. A page only appears in the menu, the footer and any button pointing at it once it is <strong>published</strong> - leave it as a draft and the whole site simply stops linking to it.', 'antradus' ),
 			'sections' => array(
 				array(
 					'title'  => __( 'Page status', 'antradus' ),
@@ -668,6 +668,11 @@ function antradus_settings_schema() {
 						array(
 							'key'   => 'slug_welcome',
 							'label' => __( 'Welcome', 'antradus' ),
+							'type'  => 'text',
+						),
+						array(
+							'key'   => 'slug_transcript',
+							'label' => __( 'Transcript Extractor', 'antradus' ),
 							'type'  => 'text',
 						),
 					),
@@ -2322,6 +2327,484 @@ function antradus_settings_schema() {
 							'key'   => 'docs_empty',
 							'label' => __( 'Shown when nothing matches', 'antradus' ),
 							'type'  => 'text',
+						),
+					),
+				),
+			),
+		),
+
+		/* =================================================================
+		 * Transcript Extractor page
+		 * ============================================================== */
+		'transcript' => array(
+			'label'    => __( 'Transcript Extractor', 'antradus' ),
+			'blurb'    => __( 'The page for the Chrome extension, which is sold on its own and is not part of the plugin. It stays out of the main menu - link to it with <code>page:transcript</code>. Its plan buttons go to the Chrome Web Store, never to a checkout: a plan is bought inside the extension, where the checkout is tied to the Google account that signed in.', 'antradus' ),
+			'sections' => array(
+				array(
+					'title'  => __( 'Hero', 'antradus' ),
+					'fields' => array(
+						array(
+							'key'   => 'tx_eyebrow',
+							'label' => __( 'Eyebrow', 'antradus' ),
+							'type'  => 'text',
+						),
+						array(
+							'key'   => 'tx_title',
+							'label' => __( 'Heading', 'antradus' ),
+							'type'  => 'text',
+							'help'  => __( 'The only h1 on the page, so keep the phrase people search for in it.', 'antradus' ),
+						),
+						array(
+							'key'   => 'tx_sub',
+							'label' => __( 'Supporting paragraph', 'antradus' ),
+							'type'  => 'textarea',
+							'rows'  => 3,
+						),
+						array(
+							'key'   => 'tx_cta1',
+							'label' => __( 'Main button text', 'antradus' ),
+							'type'  => 'text',
+						),
+						array(
+							'key'   => 'tx_cta1_url',
+							'label' => __( 'Main button link', 'antradus' ),
+							'type'  => 'text',
+							'help'  => __( 'The Chrome Web Store listing. It is also the install address search engines are given.', 'antradus' ),
+						),
+						array(
+							'key'   => 'tx_cta2',
+							'label' => __( 'Second button text', 'antradus' ),
+							'type'  => 'text',
+						),
+						array(
+							'key'   => 'tx_cta2_url',
+							'label' => __( 'Second button link', 'antradus' ),
+							'type'  => 'text',
+							'help'  => $link,
+						),
+						array(
+							'key'   => 'tx_note',
+							'label' => __( 'Small note under the buttons', 'antradus' ),
+							'type'  => 'text',
+						),
+						array(
+							'key'   => 'tx_hero_image',
+							'label' => __( 'Hero pictures', 'antradus' ),
+							'type'  => 'images',
+							'help'  => __( 'Screenshots of the side panel beside an episode. Until you add one, the page draws the side panel itself. Add more than one and the frame becomes a slider.', 'antradus' ),
+						),
+						array(
+							'key'   => 'tx_app_name',
+							'label' => __( 'Product name', 'antradus' ),
+							'type'  => 'text',
+							'help'  => __( 'The name the Chrome Web Store lists the extension under. It goes into the structured data search engines read, and is not printed on the page.', 'antradus' ),
+						),
+					),
+				),
+				array(
+					'title'  => __( 'How it works', 'antradus' ),
+					'fields' => array(
+						array(
+							'key'   => 'tx_steps_eyebrow',
+							'label' => __( 'Eyebrow', 'antradus' ),
+							'type'  => 'text',
+						),
+						array(
+							'key'   => 'tx_steps_title',
+							'label' => __( 'Heading', 'antradus' ),
+							'type'  => 'text',
+							'help'  => __( 'Clear this to remove the whole section.', 'antradus' ),
+						),
+						array(
+							'key'   => 'tx_steps_sub',
+							'label' => __( 'Supporting line', 'antradus' ),
+							'type'  => 'textarea',
+							'rows'  => 2,
+						),
+						array(
+							'key'    => 'tx_steps',
+							'label'  => __( 'Steps', 'antradus' ),
+							'type'   => 'repeater',
+							'single' => __( 'Step', 'antradus' ),
+							'fields' => array(
+								array(
+									'key'   => 'title',
+									'label' => __( 'Step', 'antradus' ),
+									'type'  => 'text',
+								),
+								array(
+									'key'   => 'text',
+									'label' => __( 'What happens', 'antradus' ),
+									'type'  => 'textarea',
+									'rows'  => 3,
+								),
+							),
+						),
+						array(
+							'key'   => 'tx_steps_note',
+							'label' => __( 'Line under the steps', 'antradus' ),
+							'type'  => 'text',
+						),
+					),
+				),
+				array(
+					'title'  => __( 'Speaker names', 'antradus' ),
+					'fields' => array(
+						array(
+							'key'   => 'tx_why_eyebrow',
+							'label' => __( 'Eyebrow', 'antradus' ),
+							'type'  => 'text',
+						),
+						array(
+							'key'   => 'tx_why_title',
+							'label' => __( 'Heading', 'antradus' ),
+							'type'  => 'text',
+							'help'  => __( 'Clear this to remove the whole section.', 'antradus' ),
+						),
+						array(
+							'key'   => 'tx_why_sub',
+							'label' => __( 'Supporting paragraph', 'antradus' ),
+							'type'  => 'textarea',
+							'rows'  => 3,
+						),
+						array(
+							'key'    => 'tx_why_points',
+							'label'  => __( 'Points', 'antradus' ),
+							'type'   => 'repeater',
+							'single' => __( 'Point', 'antradus' ),
+							'fields' => array(
+								array(
+									'key'     => 'icon',
+									'label'   => __( 'Icon', 'antradus' ),
+									'type'    => 'select',
+									'options' => $icons,
+								),
+								array(
+									'key'   => 'title',
+									'label' => __( 'Title', 'antradus' ),
+									'type'  => 'text',
+								),
+								array(
+									'key'   => 'text',
+									'label' => __( 'Text', 'antradus' ),
+									'type'  => 'textarea',
+									'rows'  => 2,
+								),
+							),
+						),
+						array(
+							'key'   => 'tx_why_note',
+							'label' => __( 'Note under the points', 'antradus' ),
+							'type'  => 'textarea',
+							'rows'  => 2,
+						),
+						array(
+							'key'   => 'tx_why_image',
+							'label' => __( 'Picture', 'antradus' ),
+							'type'  => 'image',
+							'help'  => __( 'Until you add one, the page draws a Spotify transcript before and after the names are put on it.', 'antradus' ),
+						),
+					),
+				),
+				array(
+					'title'  => __( 'What you get', 'antradus' ),
+					'fields' => array(
+						array(
+							'key'   => 'tx_get_eyebrow',
+							'label' => __( 'Eyebrow', 'antradus' ),
+							'type'  => 'text',
+						),
+						array(
+							'key'   => 'tx_get_title',
+							'label' => __( 'Heading', 'antradus' ),
+							'type'  => 'text',
+							'help'  => __( 'Clear this to remove the whole section.', 'antradus' ),
+						),
+						array(
+							'key'   => 'tx_get_sub',
+							'label' => __( 'Supporting line', 'antradus' ),
+							'type'  => 'textarea',
+							'rows'  => 2,
+						),
+						array(
+							'key'    => 'tx_get_cards',
+							'label'  => __( 'Cards', 'antradus' ),
+							'type'   => 'repeater',
+							'single' => __( 'Card', 'antradus' ),
+							'fields' => array(
+								array(
+									'key'     => 'icon',
+									'label'   => __( 'Icon', 'antradus' ),
+									'type'    => 'select',
+									'options' => $icons,
+								),
+								array(
+									'key'   => 'title',
+									'label' => __( 'Title', 'antradus' ),
+									'type'  => 'text',
+								),
+								array(
+									'key'   => 'text',
+									'label' => __( 'Text', 'antradus' ),
+									'type'  => 'textarea',
+									'rows'  => 2,
+								),
+							),
+						),
+					),
+				),
+				array(
+					'title'  => __( 'Who it is for', 'antradus' ),
+					'fields' => array(
+						array(
+							'key'   => 'tx_who_eyebrow',
+							'label' => __( 'Eyebrow', 'antradus' ),
+							'type'  => 'text',
+						),
+						array(
+							'key'   => 'tx_who_title',
+							'label' => __( 'Heading', 'antradus' ),
+							'type'  => 'text',
+							'help'  => __( 'Clear this to remove the whole section.', 'antradus' ),
+						),
+						array(
+							'key'   => 'tx_who_sub',
+							'label' => __( 'Supporting line', 'antradus' ),
+							'type'  => 'textarea',
+							'rows'  => 2,
+						),
+						array(
+							'key'    => 'tx_who_cards',
+							'label'  => __( 'Cards', 'antradus' ),
+							'type'   => 'repeater',
+							'single' => __( 'Card', 'antradus' ),
+							'fields' => array(
+								array(
+									'key'     => 'icon',
+									'label'   => __( 'Icon', 'antradus' ),
+									'type'    => 'select',
+									'options' => $icons,
+								),
+								array(
+									'key'   => 'title',
+									'label' => __( 'Who', 'antradus' ),
+									'type'  => 'text',
+								),
+								array(
+									'key'   => 'text',
+									'label' => __( 'Text', 'antradus' ),
+									'type'  => 'textarea',
+									'rows'  => 2,
+								),
+							),
+						),
+					),
+				),
+				array(
+					'title'  => __( 'Plans', 'antradus' ),
+					'blurb'  => __( 'These cards belong to this page and have no Freemius fields - every button is a link, normally to the Chrome Web Store. When the extension\'s prices or limits change, change them here.', 'antradus' ),
+					'fields' => array(
+						array(
+							'key'   => 'tx_plans_eyebrow',
+							'label' => __( 'Eyebrow', 'antradus' ),
+							'type'  => 'text',
+						),
+						array(
+							'key'   => 'tx_plans_title',
+							'label' => __( 'Heading', 'antradus' ),
+							'type'  => 'text',
+							'help'  => __( 'Clear this to remove the whole section.', 'antradus' ),
+						),
+						array(
+							'key'   => 'tx_plans_sub',
+							'label' => __( 'Supporting line', 'antradus' ),
+							'type'  => 'textarea',
+							'rows'  => 2,
+						),
+						array(
+							'key'    => 'tx_plans',
+							'label'  => __( 'Plans', 'antradus' ),
+							'type'   => 'repeater',
+							'single' => __( 'Plan', 'antradus' ),
+							'wide'   => true,
+							'fields' => array(
+								array(
+									'key'   => 'name',
+									'label' => __( 'Plan name', 'antradus' ),
+									'type'  => 'text',
+								),
+								array(
+									'key'   => 'sub',
+									'label' => __( 'One-line description', 'antradus' ),
+									'type'  => 'text',
+								),
+								array(
+									'key'   => 'badge',
+									'label' => __( 'Badge', 'antradus' ),
+									'type'  => 'text',
+								),
+								array(
+									'key'   => 'featured',
+									'label' => __( 'Highlight this plan', 'antradus' ),
+									'type'  => 'checkbox',
+									'cbtxt' => __( 'Draw it larger, with the accent border', 'antradus' ),
+								),
+								array(
+									'key'   => 'currency',
+									'label' => __( 'Currency symbol', 'antradus' ),
+									'type'  => 'text',
+								),
+								array(
+									'key'   => 'amount',
+									'label' => __( 'Amount', 'antradus' ),
+									'type'  => 'text',
+								),
+								array(
+									'key'   => 'cents',
+									'label' => __( 'Decimals', 'antradus' ),
+									'type'  => 'text',
+									'help'  => __( 'e.g. .99', 'antradus' ),
+								),
+								array(
+									'key'   => 'unit',
+									'label' => __( 'Unit', 'antradus' ),
+									'type'  => 'text',
+								),
+								array(
+									'key'   => 'billed',
+									'label' => __( 'Billing line', 'antradus' ),
+									'type'  => 'text',
+								),
+								array(
+									'key'   => 'chip',
+									'label' => __( 'Chip', 'antradus' ),
+									'type'  => 'text',
+								),
+								array(
+									'key'   => 'intro',
+									'label' => __( 'Feature list heading', 'antradus' ),
+									'type'  => 'text',
+								),
+								array(
+									'key'   => 'features',
+									'label' => __( 'Features', 'antradus' ),
+									'type'  => 'textarea',
+									'rows'  => 6,
+									'help'  => __( 'One per line.', 'antradus' ),
+								),
+								array(
+									'key'   => 'cta',
+									'label' => __( 'Button text', 'antradus' ),
+									'type'  => 'text',
+								),
+								array(
+									'key'   => 'cta_url',
+									'label' => __( 'Button link', 'antradus' ),
+									'type'  => 'text',
+									'help'  => $link,
+								),
+								array(
+									'key'   => 'note',
+									'label' => __( 'Note under the button', 'antradus' ),
+									'type'  => 'text',
+								),
+							),
+						),
+						array(
+							'key'   => 'tx_plans_note',
+							'label' => __( 'Note under the cards', 'antradus' ),
+							'type'  => 'textarea',
+							'rows'  => 2,
+						),
+						array(
+							'key'   => 'tx_trust',
+							'label' => __( 'Promises under the cards', 'antradus' ),
+							'type'  => 'textarea',
+							'rows'  => 4,
+							'help'  => __( 'One per line.', 'antradus' ),
+						),
+					),
+				),
+				array(
+					'title'  => __( 'Questions', 'antradus' ),
+					'fields' => array(
+						array(
+							'key'   => 'tx_faq_title',
+							'label' => __( 'Heading', 'antradus' ),
+							'type'  => 'text',
+							'help'  => __( 'Clear this to remove the whole section.', 'antradus' ),
+						),
+						array(
+							'key'   => 'tx_faq_sub',
+							'label' => __( 'Supporting line', 'antradus' ),
+							'type'  => 'textarea',
+							'rows'  => 2,
+						),
+						array(
+							'key'    => 'tx_faq_items',
+							'label'  => __( 'Questions', 'antradus' ),
+							'type'   => 'repeater',
+							'single' => __( 'Question', 'antradus' ),
+							'fields' => array(
+								array(
+									'key'   => 'q',
+									'label' => __( 'Question', 'antradus' ),
+									'type'  => 'text',
+								),
+								array(
+									'key'   => 'a',
+									'label' => __( 'Answer', 'antradus' ),
+									'type'  => 'textarea',
+									'rows'  => 4,
+								),
+							),
+						),
+					),
+				),
+				array(
+					'title'  => __( 'Antradus AI', 'antradus' ),
+					'blurb'  => __( 'A short row near the end for readers who want articles rather than transcripts.', 'antradus' ),
+					'fields' => array(
+						array(
+							'key'   => 'tx_more_title',
+							'label' => __( 'Heading', 'antradus' ),
+							'type'  => 'text',
+							'help'  => __( 'Clear this to remove the row.', 'antradus' ),
+						),
+						array(
+							'key'   => 'tx_more_text',
+							'label' => __( 'Text', 'antradus' ),
+							'type'  => 'textarea',
+							'rows'  => 3,
+						),
+						array(
+							'key'   => 'tx_more_btn',
+							'label' => __( 'Button text', 'antradus' ),
+							'type'  => 'text',
+						),
+						array(
+							'key'   => 'tx_more_btn_url',
+							'label' => __( 'Button link', 'antradus' ),
+							'type'  => 'text',
+							'help'  => $link,
+						),
+					),
+				),
+				array(
+					'title'  => __( 'Small print', 'antradus' ),
+					'fields' => array(
+						array(
+							'key'   => 'tx_legal',
+							'label' => __( 'Who makes it, and who it is not affiliated with', 'antradus' ),
+							'type'  => 'textarea',
+							'rows'  => 3,
+						),
+						array(
+							'key'   => 'tx_legal_links',
+							'label' => __( 'Links', 'antradus' ),
+							'type'  => 'textarea',
+							'rows'  => 3,
+							'help'  => __( 'One per line, as <code>Label | target</code>.', 'antradus' ),
 						),
 					),
 				),

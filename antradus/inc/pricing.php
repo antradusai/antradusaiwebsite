@@ -382,6 +382,9 @@ function antradus_checkout_attrs( $checkout, $name, $trial ) {
  * @param array $args compact => drop the long feature lists.
  *                    only    => plan names to show, one per line or comma
  *                               separated; everything else is left out.
+ *                    rows    => plan rows to draw instead of the Pricing tab's,
+ *                               for a page that sells another product. A row
+ *                               with no Freemius fields is an ordinary link.
  */
 function antradus_render_plans( $args = array() ) {
 	$args = wp_parse_args(
@@ -389,12 +392,17 @@ function antradus_render_plans( $args = array() ) {
 		array(
 			'compact' => false,
 			'only'    => '',
+			'rows'    => null,
 		)
 	);
 
-	$plans = ( '' !== trim( (string) $args['only'] ) )
-		? antradus_plans_named( $args['only'] )
-		: antradus_plans();
+	if ( is_array( $args['rows'] ) ) {
+		$plans = $args['rows'];
+	} elseif ( '' !== trim( (string) $args['only'] ) ) {
+		$plans = antradus_plans_named( $args['only'] );
+	} else {
+		$plans = antradus_plans();
+	}
 
 	if ( ! $plans ) {
 		return;

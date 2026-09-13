@@ -1,12 +1,12 @@
 <?php
 /**
- * Antradus theme - the search metadata for the nine designed pages.
+ * Antradus theme - the search metadata for the ten designed pages.
  *
  * The theme does not want to be an SEO plugin, and this file is careful not to
  * become one. What it owns is narrow and specific:
  *
  *   1. A focus keyword, a search title and a meta description for each of the
- *      nine pages the theme designs, in both languages, editable like every
+ *      ten pages the theme designs, in both languages, editable like every
  *      other word on the site. They ship written rather than blank, because a
  *      description nobody got round to writing is the usual reason a page goes
  *      live with the first two lines of its hero in the search results.
@@ -425,4 +425,134 @@ function antradus_seo_fallback_tags() {
 		'<meta property="og:locale" content="%s">' . "\n",
 		esc_attr( antradus_is_rtl() ? 'ar_AR' : 'en_US' )
 	);
+}
+
+/* ===========================================================================
+ * Structured data for the Transcript Extractor page
+ * ========================================================================= */
+
+add_action( 'wp_head', 'antradus_seo_transcript_schema', 20 );
+/**
+ * What the extension is, where it installs, what it costs, and where its page
+ * sits on the site.
+ *
+ * SoftwareApplication is the type Google reads for an app, and the breadcrumb
+ * lets a result read "antradusai.com > Transcript Extractor" rather than a bare
+ * address. Both are built from the Transcript Extractor tab - the product name,
+ * the install link and one offer per plan card - so a price changed there
+ * changes here too, and there is no second copy to forget.
+ *
+ * Deliberately missing: a rating. There are no reviews on this site to rate
+ * the extension with, and an aggregate nobody collected is exactly what a
+ * manual action is for. Rank Math's own graph describes the page rather than
+ * the product, so the two sit side by side without competing.
+ */
+function antradus_seo_transcript_schema() {
+	if ( is_admin() || 'transcript' !== antradus_current_page_key() ) {
+		return;
+	}
+
+	$name = trim( (string) antradus_opt( 'tx_app_name', '' ) );
+	if ( '' === $name ) {
+		return;
+	}
+
+	$url   = antradus_lang_switch_url( antradus_lang() );
+	$brand = antradus_opt( 'brand_name', get_bloginfo( 'name' ) );
+
+	$app = array(
+		'@context'            => 'https://schema.org',
+		'@type'               => 'SoftwareApplication',
+		'name'                => $name,
+		'applicationCategory' => 'BrowserApplication',
+		'operatingSystem'     => 'Chrome, Edge, Brave',
+		'url'                 => $url,
+		'publisher'           => array(
+			'@type' => 'Organization',
+			'name'  => $brand,
+			'url'   => home_url( '/' ),
+		),
+	);
+
+	$desc = antradus_seo_value( 'transcript', 'desc' );
+	if ( '' !== $desc ) {
+		$app['description'] = $desc;
+	}
+
+	// Only a full address is somewhere to install from; "#plans" is not.
+	$install = antradus_link( antradus_opt( 'tx_cta1_url', '' ) );
+	if ( 0 === strpos( $install, 'http' ) ) {
+		$app['installUrl'] = $install;
+	}
+
+	/*
+	 * Every price on the page is written in dollars, so every offer is in USD.
+	 * A card whose amount is words rather than a number is not an offer.
+	 */
+	$offers = array();
+	foreach ( antradus_rows( 'tx_plans' ) as $plan ) {
+		$amount = preg_replace( '/[^0-9]/', '', (string) antradus_cell( $plan, 'amount' ) );
+		if ( '' === $amount ) {
+			continue;
+		}
+		$cents    = substr( preg_replace( '/[^0-9]/', '', (string) antradus_cell( $plan, 'cents' ) ) . '00', 0, 2 );
+		$offers[] = array(
+			'@type'         => 'Offer',
+			'name'          => antradus_cell( $plan, 'name' ),
+			'price'         => $amount . '.' . $cents,
+			'priceCurrency' => 'USD',
+		);
+	}
+	if ( $offers ) {
+		$app['offers'] = $offers;
+	}
+
+	$graphs = array( $app );
+
+	/*
+	 * Rank Math already prints a BreadcrumbList in its own graph, and two of
+	 * them on one page is two answers to the same question. Ours is only for a
+	 * site running without it.
+	 */
+	if ( antradus_seo_rank_math_active() ) {
+		antradus_seo_print_json_ld( $graphs );
+		return;
+	}
+
+	$pages    = antradus_pages();
+	$graphs[] = array(
+		'@context'        => 'https://schema.org',
+		'@type'           => 'BreadcrumbList',
+		'itemListElement' => array(
+			array(
+				'@type'    => 'ListItem',
+				'position' => 1,
+				'name'     => $brand,
+				'item'     => antradus_localize_url( home_url( '/' ) ),
+			),
+			array(
+				'@type'    => 'ListItem',
+				'position' => 2,
+				'name'     => $pages['transcript']['nav'],
+				'item'     => $url,
+			),
+		),
+	);
+
+	antradus_seo_print_json_ld( $graphs );
+}
+
+/**
+ * Print structured-data blocks, one script tag each.
+ *
+ * @param array[] $graphs Schema.org objects.
+ */
+function antradus_seo_print_json_ld( $graphs ) {
+	foreach ( $graphs as $graph ) {
+		// JSON_HEX_TAG: a "</script>" typed into a setting must not close the tag.
+		printf(
+			'<script type="application/ld+json">%s</script>' . "\n",
+			wp_json_encode( $graph, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG ) // phpcs:ignore WordPress.Security.EscapeOutput -- JSON, with tags hex-escaped.
+		);
+	}
 }

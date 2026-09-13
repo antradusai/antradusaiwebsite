@@ -13,6 +13,15 @@ $antradus_logo      = antradus_image_full_url( antradus_opt( 'brand_logo', '' ) 
 $antradus_cols      = antradus_rows( 'footer_cols' );
 $antradus_social    = antradus_link_list( antradus_opt( 'footer_social', '' ) );
 $antradus_trust     = antradus_lines( antradus_opt( 'footer_trust', '' ) );
+
+/*
+ * The closing call to action sells the plugin. The Transcript Extractor page
+ * sells a different product and ends with its own plans, so the band pointing
+ * every reader at the plugin's pricing is left off there.
+ */
+if ( 'transcript' === antradus_current_page_key() ) {
+	$antradus_cta_title = '';
+}
 ?>
 </main><!-- /.ant-main -->
 

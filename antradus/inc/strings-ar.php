@@ -113,6 +113,27 @@ function antradus_strings_ar() {
 		'%s illustration'          => 'رسم توضيحي لـ %s',
 		'No form is showing here. Either the shortcode in Antradus Content points at a form plugin that is not active, or there is no form on this page yet.' => 'لا يظهر أي نموذج هنا. إمّا أن الرمز المختصر في إعدادات محتوى أنترادوس يشير إلى إضافة نماذج غير مفعّلة، وإمّا أنه لا يوجد نموذج في هذه الصفحة بعد.',
 
+		/* ---- the Transcript Extractor page and its two drawings ---- */
+		'Transcript Extractor'     => 'مستخرج النصوص',
+		'Transcript Extractor hero pictures' => 'صور واجهة صفحة مستخرج النصوص',
+		'Speaker section picture'  => 'صورة قسم المتحدّثين',
+		'The side panel beside a Spotify episode: two named speakers, their lines and the export formats' => 'اللوحة الجانبية بجوار حلقة على سبوتيفاي: متحدّثان بأسمائهما، وجملهما، وصيغ التصدير',
+		'A Spotify transcript with Speaker 1 and Speaker 2, and the same lines with the names on them' => 'نص من سبوتيفاي فيه «المتحدّث 1» و«المتحدّث 2»، والجمل نفسها وقد وُضعت عليها الأسماء',
+		'Transcript'               => 'النص',
+		'Who is speaking'          => 'مَن يتحدّث',
+		'AI guess'                 => 'تخمين بالذكاء الاصطناعي',
+		'Speaker 1'                => 'المتحدّث 1',
+		'Speaker 2'                => 'المتحدّث 2',
+		'Host'                     => 'المقدّم',
+		'Guest'                    => 'الضيف',
+		'Spotify transcript'       => 'نص سبوتيفاي',
+		'With names'               => 'مع الأسماء',
+		'So where did the idea actually start?' => 'فمن أين بدأت الفكرة فعلاً؟',
+		'With an interview nobody could quote, because it only said Speaker 2.' => 'من مقابلة لم يستطع أحد الاقتباس منها، لأنها لم تذكر سوى «المتحدّث 2».',
+		'And now it says who said it.' => 'والآن تذكر مَن قال ماذا.',
+		'Thanks for coming on the show.' => 'شكراً لانضمامك إلى البرنامج.',
+		'Thanks for having me.'    => 'شكراً على الاستضافة.',
+
 		/* ---- 404 ---- */
 		'That page is not here'    => 'هذه الصفحة غير موجودة',
 		'It may have moved, or it may not be published yet. Either way, here is the way back.' => 'ربما نُقلت، أو لم تُنشر بعد. في الحالتين، هذا هو طريق العودة.',

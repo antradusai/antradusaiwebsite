@@ -28,7 +28,7 @@ Content** in wp-admin, in **English and Arabic**.
 2. **Appearance → Themes → Add New → Upload Theme**, choose the zip, install,
    activate.
 3. Go to **Appearance → Antradus Content**. The first tab, **Pages**, lists the
-   nine pages the theme designs and tells you which of them exist. If any are
+   ten pages the theme designs and tells you which of them exist. If any are
    missing, one button creates them as drafts.
 4. **Settings → Reading**: set the front page to your Home page.
 
@@ -59,15 +59,15 @@ Freemius details, your form shortcodes and your page addresses are not touched.
 
 **A page only appears on the site once it is published.**
 
-The theme knows nine pages: Home, Plugin features, Pricing, Docs, Blog,
-Contact, Welcome, For publishers and For studios. Every menu item, footer link and call-to-action button that
+The theme knows ten pages: Home, Plugin features, Pricing, Docs, Blog,
+Contact, Welcome, For publishers, For studios and Transcript Extractor. Every menu item, footer link and call-to-action button that
 points at one of them is resolved through a single function. While a page is a
 draft that function returns nothing, and the link is not rendered at all — not
 greyed out, not broken, simply absent.
 
 So you can write the Pricing page over three days without a half-finished page
 being reachable, and publishing it puts every link back on its own. The **Pages**
-tab shows the live status of all nine at a glance.
+tab shows the live status of all ten at a glance.
 
 Buttons you configure yourself take part in this too: write a link target as
 `page:pricing` rather than a full URL and it inherits the same behaviour.
@@ -366,6 +366,41 @@ put the plan most people choose there.
 
 ---
 
+## The Transcript Extractor page
+
+`/transcript-extractor/` sells a different product from every other page: the
+Chrome extension that reads Spotify and YouTube transcripts, sold on its own
+through Freemius. It has its own tab, **Antradus Content → Transcript
+Extractor**, in both languages, and its own row on the SEO tab.
+
+- **It is not in the main menu.** The menu belongs to the plugin. The page is
+  linked from the footer's Product column, and from anywhere you write
+  `page:transcript`. A site that saved its Footer tab before 2.13.0 keeps its
+  own columns, so add `Transcript Extractor | page:transcript` to one yourself.
+- **The plan buttons go to the Chrome Web Store, never to a checkout.** A plan
+  is bought from the Plans screen inside the extension, where Freemius opens
+  with the buyer's Google email locked - and that email is how the purchase
+  finds the account. A checkout opened from this page under any other address
+  would take the money and unlock nothing. The cards use the Pricing page's
+  design, but their rows live on this tab and have no Freemius fields.
+- **The footer's closing call to action is left off this page**, because it
+  sells the plugin.
+- **Until you choose pictures, the page draws them.** The hero shows a drawing
+  of the side panel, and the speaker section shows a Spotify transcript before
+  and after the names. Both are built from the theme's colours. Add a
+  screenshot to either slot and it takes the drawing's place.
+- **Structured data.** The page prints `SoftwareApplication` - the product
+  name, the install link and one offer per plan card - and a `BreadcrumbList`,
+  both built from the tab, so a price changed there changes here. No rating is
+  printed: there are no reviews on this site to rate it with.
+- **The facts are the extension's.** Three free transcripts, 50 and 150 a
+  month, 2 and 4 hours, the prices and the 30-day free re-export all come from
+  the extension's backend and its Freemius plans. When they change, change the
+  tab - or, after a theme update that ships the new numbers, use **Tools →
+  Bring back the shipped wording** on this page.
+
+---
+
 ## Your posts
 
 Nothing about your existing posts changes — only how they are presented.
@@ -410,7 +445,7 @@ the checkbox on the Security tab brings them back exactly as they were.
 ## Search metadata
 
 The **SEO** tab holds a focus keyword, a search title and a meta description for
-each of the nine designed pages, in both languages. They ship written rather
+each of the ten designed pages, in both languages. They ship written rather
 than blank, because a description nobody got round to writing is the usual
 reason a page goes live with the first two lines of its hero in the search
 results.
@@ -423,7 +458,7 @@ in the URL too.
 
 ### The button
 
-**SEO → Send these to Rank Math** copies the English set onto the nine pages as
+**SEO → Send these to Rank Math** copies the English set onto the ten pages as
 Rank Math's own post meta: `rank_math_focus_keyword`, `rank_math_title`,
 `rank_math_description`. Nothing is stored twice and nothing has to be taught to
 Rank Math — the metabox shows the values, the analysis scores them and the front
@@ -436,7 +471,7 @@ There are two buttons because there are two intentions:
 | Button | What it does |
 |---|---|
 | **Send these to Rank Math** | Fills only the fields Rank Math has left empty. Anything you have already written there survives. |
-| **Replace what is already there** | Overwrites all nine pages with the wording on this tab. |
+| **Replace what is already there** | Overwrites all ten pages with the wording on this tab. |
 
 The table above the buttons shows, before you press either, which pages are
 ready, which already hold wording of your own, and which do not exist yet — a
@@ -516,7 +551,7 @@ inc/defaults.php         every shipped string in English - the content
 inc/defaults-ar.php      the same keys, in Arabic. Edit the two side by side
 inc/i18n.php             which language, which fields translate, how they merge
 inc/strings-ar.php       the theme's own interface words in Arabic
-inc/helpers.php          options, the nine pages, images, render helpers
+inc/helpers.php          options, the ten pages, images, render helpers
 inc/images.php           the front end serves the file you uploaded, never a preset
 inc/settings-schema.php  what the settings screen contains
 inc/settings.php         rendering and sanitizing that schema
@@ -526,7 +561,7 @@ inc/comments.php         comments, switched off in all five places
 inc/pricing.php          plan cards, comparison table, FAQ, checkout wiring
 inc/blog.php             the article index
 inc/docs.php             the documentation hub and its search
-inc/seo.php              the nine pages' search metadata, the Rank Math button,
+inc/seo.php              the ten pages' search metadata, the Rank Math button,
                          and the Arabic half no SEO plugin has room for
 inc/gallery.php          galleries to carousel
 template-parts/          one file per home section, one per designed page

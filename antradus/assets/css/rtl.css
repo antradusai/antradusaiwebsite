@@ -313,3 +313,30 @@
 [dir="rtl"] .ant-lb-nav svg {
 	transform: scaleX(-1);
 }
+
+/* =========================================================================
+ * 9. The Transcript Extractor drawings
+ * ====================================================================== */
+
+/*
+ * The drawings are laid out with logical properties and mirror on their own.
+ * What does not mirror is what is never Arabic: the timestamps, the export
+ * formats and the platform name read left to right, and the sample names are
+ * Latin, so each line takes its direction from its own first letter. The arrow
+ * between the two transcripts points onward, and onward is the other way here.
+ */
+[dir="rtl"] .ant-tx-lines time,
+[dir="rtl"] .ant-tx-exports span,
+[dir="rtl"] .ant-tx-pill {
+	direction: ltr;
+	unicode-bidi: isolate;
+}
+
+[dir="rtl"] .ant-tx-voice b,
+[dir="rtl"] .ant-tx-side .ant-tx-lines b {
+	unicode-bidi: plaintext;
+}
+
+[dir="rtl"] .ant-tx-arrow svg {
+	transform: scaleX(-1);
+}

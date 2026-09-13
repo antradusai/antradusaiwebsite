@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ANTRADUS_VERSION', '2.12.0' );
+define( 'ANTRADUS_VERSION', '2.13.0' );
 define( 'ANTRADUS_OPTION', 'antradus_theme_options' );
 
 // How many pictures one slider slot will keep. A hero that needs a tenth slide
@@ -315,6 +315,9 @@ function antradus_nav_items() {
 	foreach ( antradus_pages() as $key => $def ) {
 		if ( 'home' === $key ) {
 			continue; // The logo is the way home.
+		}
+		if ( isset( $def['menu'] ) && ! $def['menu'] ) {
+			continue; // Designed and linkable, but not one of the plugin's pages.
 		}
 		$url = antradus_page_url( $key );
 		if ( '' === $url ) {

@@ -29,6 +29,7 @@ function antradus_default_options() {
 		antradus_defaults_contact(),
 		antradus_defaults_welcome(),
 		antradus_defaults_docs(),
+		antradus_defaults_transcript(),
 		antradus_defaults_footer(),
 		antradus_defaults_security(),
 		antradus_defaults_seo()
@@ -1395,6 +1396,282 @@ function antradus_defaults_docs() {
 }
 
 /* ===========================================================================
+ * Transcript Extractor - the Chrome extension's page
+ * ========================================================================= */
+
+/**
+ * The page for the Chrome extension, a separate product from the plugin that
+ * is sold on its own.
+ *
+ * The facts in here - three free transcripts, fifty and a hundred and fifty a
+ * month, two and four hours, the prices, the thirty-day free re-export - are
+ * the extension's, set in its backend and in its Freemius plans. When those
+ * change this page has to change with them, and on a site that has already
+ * saved the tab, Tools -> Bring back the shipped wording is how it catches up.
+ *
+ * Every plan button goes to the Chrome Web Store rather than a checkout: a
+ * plan is bought inside the extension, where the checkout is tied to the
+ * Google account that signed in. page-transcript.php explains why.
+ *
+ * @return array
+ */
+function antradus_defaults_transcript() {
+	$store = 'https://chromewebstore.google.com/detail/efndabknjimhpfijeljhjhegnmkjlpbg';
+
+	return array(
+		'tx_app_name'      => 'Transcript for Spotify & YouTube – Speaker Names',
+		'tx_eyebrow'       => 'Chrome extension for Spotify and YouTube',
+		'tx_title'         => 'Spotify podcast transcripts, *in one click*',
+		'tx_sub'           => 'Get the transcript of a Spotify episode or a YouTube video without leaving the page, and export it to TXT, Markdown, Word, SRT or VTT. On a paid plan, AI also guesses who is speaking - and every name is yours to check before you export.',
+		'tx_cta1'          => 'Add to Chrome - free',
+		'tx_cta1_url'      => $store,
+		'tx_cta2'          => 'See the plans',
+		'tx_cta2_url'      => '#plans',
+		'tx_note'          => '3 free transcripts. No credit card. Works in Chrome, Edge and Brave.',
+		'tx_hero_image'    => '',
+
+		'tx_steps_eyebrow' => 'How it works',
+		'tx_steps_title'   => 'How to get a *Spotify podcast transcript*',
+		'tx_steps_sub'     => 'Four steps, and the first three take a few seconds.',
+		'tx_steps'         => array(
+			array(
+				'title' => 'Open the episode',
+				'text'  => 'Open an episode on open.spotify.com that shows a Transcript tab - many shows have one. On YouTube, open any video with captions.',
+			),
+			array(
+				'title' => 'Click Get transcript',
+				'text'  => 'Click the extension icon. The side panel opens beside the episode, and one click reads the whole transcript.',
+			),
+			array(
+				'title' => 'Check who is speaking',
+				'text'  => 'On Starter and Creator, switch on Guess who is speaking. Each voice comes with a line it says and a timestamp that plays it. Rename or merge anyone.',
+			),
+			array(
+				'title' => 'Export or copy',
+				'text'  => 'Download TXT, Markdown, Word, SRT or VTT, or copy the timed, plain or speaker view.',
+			),
+		),
+		'tx_steps_note'    => 'No audio upload, no waiting for a transcription, no pasting links into another website.',
+
+		'tx_why_eyebrow'   => 'On Starter and Creator',
+		'tx_why_title'     => 'Who said it? *Spotify does not say.*',
+		'tx_why_sub'       => 'Spotify labels the voices in a transcript Speaker 1 and Speaker 2, and YouTube captions do not separate them at all. A transcript like that cannot be quoted, cited or handed to a client.',
+		'tx_why_points'    => array(
+			array(
+				'icon'  => 'users',
+				'title' => 'Names from the episode itself',
+				'text'  => 'AI reads the title, the show notes and the introductions - where hosts name their guests - and puts a name on each voice.',
+			),
+			array(
+				'icon'  => 'play',
+				'title' => 'Every guess, with the evidence',
+				'text'  => 'A table shows each voice, a line in their own words and a timestamp that plays that exact second.',
+			),
+			array(
+				'icon'  => 'pen',
+				'title' => 'Yours to correct',
+				'text'  => 'Rename anyone, or give two voices the same name to merge them, before you export.',
+			),
+			array(
+				'icon'  => 'shield',
+				'title' => 'Blank rather than made up',
+				'text'  => 'A voice the episode does not name is left blank for you to fill in, rather than given a guessed name.',
+			),
+		),
+		'tx_why_note'      => 'Guessing who is speaking is a switch in the side panel. It starts off, and it is available on Starter and Creator.',
+		'tx_why_image'     => '',
+
+		'tx_get_eyebrow'   => 'What you get',
+		'tx_get_title'     => 'Everything happens *in the side panel*',
+		'tx_get_sub'       => 'Every plan, the free one included, has every export format and every view.',
+		'tx_get_cards'     => array(
+			array(
+				'icon'  => 'download',
+				'title' => 'Five export formats',
+				'text'  => 'TXT, Markdown, Word (DOCX), SRT and VTT. When the speakers are named, the subtitles say who is talking.',
+			),
+			array(
+				'icon'  => 'doc',
+				'title' => 'Timed, plain and speaker views',
+				'text'  => 'Switch between them, and copy any view in one click.',
+			),
+			array(
+				'icon'  => 'globe',
+				'title' => 'On the page you are already on',
+				'text'  => 'The transcript is read in your own browser. Nothing is uploaded, and audio is never downloaded.',
+			),
+			array(
+				'icon'  => 'clock',
+				'title' => 'Instant, because nothing is transcribed',
+				'text'  => 'It uses the transcript Spotify or YouTube already shows, so there is no queue and no waiting.',
+			),
+			array(
+				'icon'  => 'calendar',
+				'title' => 'Free re-exports for 30 days',
+				'text'  => 'Export the same episode again within 30 days and it is not counted against your plan.',
+			),
+			array(
+				'icon'  => 'play',
+				'title' => 'YouTube too',
+				'text'  => 'Any video with captions, with timestamps and every export. On paid plans, AI works out the turns and the names from the words alone.',
+			),
+		),
+
+		'tx_who_eyebrow'   => 'Who it is for',
+		'tx_who_title'     => 'For people who *quote what was said*',
+		'tx_who_sub'       => '',
+		'tx_who_cards'     => array(
+			array(
+				'icon'  => 'mic',
+				'title' => 'Podcasters',
+				'text'  => 'Turn a back catalogue into articles, show notes and clips, starting from the words you already recorded.',
+			),
+			array(
+				'icon'  => 'pen',
+				'title' => 'Content marketers',
+				'text'  => 'Turn an interview into a blog post without typing a word of it out.',
+			),
+			array(
+				'icon'  => 'quote',
+				'title' => 'Journalists and researchers',
+				'text'  => 'Get the quote, the second it was said and the person who said it.',
+			),
+			array(
+				'icon'  => 'bulb',
+				'title' => 'Students',
+				'text'  => 'Work through long conversations and lectures as text you can search and annotate.',
+			),
+		),
+
+		'tx_plans_eyebrow' => 'Pricing',
+		'tx_plans_title'   => 'Start with 3 free. *Upgrade when it pays.*',
+		'tx_plans_sub'     => 'Every plan has every export format. The paid plans add AI that guesses who is speaking, more transcripts and longer episodes.',
+		'tx_plans'         => array(
+			array(
+				'name'     => 'Free',
+				'sub'      => 'To try it on your own episodes',
+				'badge'    => '',
+				'featured' => '',
+				'mode'     => 'amount',
+				'currency' => '$',
+				'amount'   => '0',
+				'cents'    => '',
+				'unit'     => '',
+				'billed'   => 'No credit card',
+				'chip'     => 'Episodes up to 2 hours',
+				'intro'    => 'Includes',
+				'features' => "3 transcripts\nTXT, Markdown, Word, SRT and VTT\nTimed, plain and speaker views\nSpotify and YouTube",
+				'cta'      => 'Add to Chrome',
+				'cta_url'  => $store,
+				'note'     => '',
+			),
+			array(
+				'name'     => 'Starter',
+				'sub'      => 'For a regular show or a weekly habit',
+				'badge'    => 'Most popular',
+				'featured' => '1',
+				'mode'     => 'amount',
+				'currency' => '$',
+				'amount'   => '9',
+				'cents'    => '.99',
+				'unit'     => '/month',
+				'billed'   => 'Or $99 a year',
+				'chip'     => 'Episodes up to 2 hours',
+				'intro'    => 'Everything in Free, plus',
+				'features' => "50 transcripts a month\nAI guesses who is speaking, on Spotify and YouTube\nSpeaker names in your SRT and VTT subtitles",
+				'cta'      => 'Install, then upgrade',
+				'cta_url'  => $store,
+				'note'     => '',
+			),
+			array(
+				'name'     => 'Creator',
+				'sub'      => 'For long interviews and higher volume',
+				'badge'    => '',
+				'featured' => '',
+				'mode'     => 'amount',
+				'currency' => '$',
+				'amount'   => '24',
+				'cents'    => '',
+				'unit'     => '/month',
+				'billed'   => 'Or $229 a year',
+				'chip'     => 'Episodes up to 4 hours',
+				'intro'    => 'Everything in Starter, plus',
+				'features' => "150 transcripts a month\nEpisodes up to 4 hours\nPriority support",
+				'cta'      => 'Install, then upgrade',
+				'cta_url'  => $store,
+				'note'     => '',
+			),
+		),
+		'tx_plans_note'    => 'Plans are bought from the Plans screen inside the extension, so the plan is attached to the Google account you sign in with. Payments are handled by Freemius.',
+		'tx_trust'         => "3 free transcripts, no card\n7-day money-back guarantee\nCancel anytime\nSecure checkout by Freemius",
+
+		'tx_faq_title'     => 'Questions, *answered*',
+		'tx_faq_sub'       => '',
+		'tx_faq_items'     => array(
+			array(
+				'q' => 'How do I get a transcript of a Spotify podcast?',
+				'a' => 'Open the episode on open.spotify.com in Chrome, click the extension icon, then Get transcript. It reads the transcript Spotify already shows on an episode with a Transcript tab, and lets you export it.',
+			),
+			array(
+				'q' => 'Does Spotify show who is speaking?',
+				'a' => 'Only anonymously. Spotify separates the voices as Speaker 1, Speaker 2 and so on, and never says who they are. On Starter and Creator, AI puts names on those labels.',
+			),
+			array(
+				'q' => 'Is guessing who is speaking on the free plan?',
+				'a' => 'No. The free plan gives you 3 transcripts with every export format. Guessing who is speaking is on Starter and Creator, as a switch in the side panel that starts off.',
+			),
+			array(
+				'q' => 'Can I download a Spotify transcript as Word or SRT?',
+				'a' => 'Yes - TXT, Markdown, Word (DOCX), SRT and VTT. When the speakers are named, the SRT and VTT subtitles say who is talking.',
+			),
+			array(
+				'q' => 'Does it transcribe the audio?',
+				'a' => 'No, and that is why it is instant. It uses the transcript or captions the platform already shows. Audio is never downloaded.',
+			),
+			array(
+				'q' => 'Does it work with every Spotify episode?',
+				'a' => 'Only episodes that show a Transcript tab. Many shows have one, but not all. An episode without one is never counted.',
+			),
+			array(
+				'q' => 'Does it work with YouTube?',
+				'a' => 'Yes, on videos with captions, with timestamps and every export. YouTube captions say nothing about who is speaking, so on paid plans AI works out the turns and the names from the words alone - check them before you publish.',
+			),
+			array(
+				'q' => 'How accurate are the speaker names?',
+				'a' => 'They are AI guesses, and the side panel labels them that way. On Spotify, where the voices are already separated, names are usually right when the show notes or the introductions mention the people. On YouTube it is a best effort. Every name comes with a line and a timestamp so you can check it.',
+			),
+			array(
+				'q' => 'What counts as one transcript?',
+				'a' => 'One episode or one video. Exporting the same one again within 30 days is free.',
+			),
+			array(
+				'q' => 'Is there a limit on episode length?',
+				'a' => 'Free and Starter cover episodes up to 2 hours, and Creator covers up to 4 hours. An episode over the limit is refused before anything is read, so it never uses up a transcript.',
+			),
+			array(
+				'q' => 'Why do I sign in with Google?',
+				'a' => 'It keeps the free transcripts fair - one allowance per person, browser and network - and it is the account a paid plan attaches to. We receive only your email address and account ID.',
+			),
+			array(
+				'q' => 'What happens to my data?',
+				'a' => 'Transcripts are read in your own browser. When AI guesses who is speaking, the text it needs is sent to our service and is not kept afterwards; the names it finds are kept for 30 days so the same episode is not processed twice. Audio is never downloaded. The privacy policy has the details.',
+			),
+			array(
+				'q' => 'How do I upgrade or cancel?',
+				'a' => 'Upgrade from the Plans screen in the side panel. Cancel anytime from your Freemius account, and your plan stays active until the end of the period you paid for.',
+			),
+		),
+
+		'tx_more_title'    => 'Need articles, *not just transcripts?*',
+		'tx_more_text'     => 'Antradus AI is our WordPress plugin: it turns podcasts and videos into SEO articles with verified quotes, show notes and newsletter drafts. It is a separate product, and it starts free with Antradus AI Lite.',
+		'tx_more_btn'      => 'See Antradus AI',
+		'tx_more_btn_url'  => 'page:features',
+		'tx_legal'         => 'Transcript for Spotify & YouTube (Transcript Extractor) is a Chrome extension by Antradus AI, sold separately from the Antradus AI WordPress plugin. It is not affiliated with, endorsed by or sponsored by Spotify, YouTube or Google.',
+		'tx_legal_links'   => "Terms | /transcript-extractor-terms/\nPrivacy | /transcript-extractor-privacy/\nContact | page:contact",
+	);
+}
+
+/* ===========================================================================
  * Security and comments
  * ========================================================================= */
 
@@ -1475,6 +1752,10 @@ function antradus_defaults_seo() {
 		'seo_welcome_focus'   => 'Antradus AI newsletter',
 		'seo_welcome_title'   => 'The Antradus AI Newsletter: Release Notes and Tactics',
 		'seo_welcome_desc'    => 'Join the Antradus AI newsletter for release notes, publishing tactics and honest post-mortems. One email a week at most, and unsubscribe in one click.',
+
+		'seo_transcript_focus' => 'spotify podcast transcript',
+		'seo_transcript_title' => 'Spotify Podcast Transcript in One Click | Chrome Extension',
+		'seo_transcript_desc'  => 'Get a Spotify podcast transcript in one click in Chrome, then export it to Word, Markdown, SRT or VTT. YouTube too. Paid plans add AI speaker names.',
 	);
 }
 
@@ -1494,7 +1775,7 @@ function antradus_defaults_footer() {
 		'footer_cols'      => array(
 			array(
 				'title' => 'Product',
-				'links' => "For publishers | page:publisher\nFor studios | page:studio\nFeatures | page:features\nPricing | page:pricing\nDocs | page:docs\nDownload Lite | https://wordpress.org/plugins/antradus-ai-lite/",
+				'links' => "For publishers | page:publisher\nFor studios | page:studio\nFeatures | page:features\nPricing | page:pricing\nDocs | page:docs\nTranscript Extractor | page:transcript\nDownload Lite | https://wordpress.org/plugins/antradus-ai-lite/",
 			),
 			array(
 				'title' => 'Company',

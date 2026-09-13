@@ -119,7 +119,7 @@ function antradus_on( $key, $default = true ) {
  * ========================================================================= */
 
 /**
- * The nine pages this theme designs.
+ * The ten pages this theme designs.
  *
  * A page is "live" only when a published page with that slug exists. Every
  * navigation link, footer link and in-page CTA runs through antradus_page_url(),
@@ -132,7 +132,13 @@ function antradus_on( $key, $default = true ) {
  * before the pages that answer "what does it do" and "what does it cost". The
  * order of this array is the order of the menu.
  *
- * @return array<string,array<string,string>>
+ * One of them is not about the plugin at all. The Transcript Extractor is a
+ * separate product - a Chrome extension, sold on its own - so its entry says
+ * 'menu' => false: the page is designed, linkable with page:transcript and
+ * given its own search metadata, but it stays out of the main menu, which
+ * belongs to the plugin.
+ *
+ * @return array<string,array<string,mixed>>
  */
 function antradus_pages() {
 	return array(
@@ -180,6 +186,12 @@ function antradus_pages() {
 			'label' => __( 'Welcome', 'antradus' ),
 			'slug'  => 'welcome',
 			'nav'   => __( 'Newsletter', 'antradus' ),
+		),
+		'transcript' => array(
+			'label' => __( 'Transcript Extractor', 'antradus' ),
+			'slug'  => 'transcript-extractor',
+			'nav'   => __( 'Transcript Extractor', 'antradus' ),
+			'menu'  => false,
 		),
 	);
 }
