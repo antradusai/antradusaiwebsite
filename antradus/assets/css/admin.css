@@ -186,6 +186,165 @@
 	text-decoration: none;
 }
 
+/* ---- a slot that holds several pictures ---- */
+
+/*
+ * The thumbnails are the field. They read left to right in the order the site
+ * will show them, and each carries its own arrows and cross, so reordering is
+ * done where the pictures are rather than in a list of filenames somewhere
+ * else.
+ */
+.antradus-images-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	margin: 0 0 8px;
+	padding: 0;
+	list-style: none;
+}
+
+.antradus-images-item {
+	position: relative;
+	width: 136px;
+	margin: 0;
+	background: #f6f7fa;
+	border: 1px solid #c9cfda;
+	border-radius: 9px;
+	overflow: hidden;
+}
+
+/*
+ * The whole thumbnail is the button that opens the media modal, so it has to
+ * look like the picture it replaced rather than like a button.
+ */
+.antradus-images-edit {
+	display: block;
+	width: 100%;
+	padding: 0;
+	background: none;
+	border: 0;
+	cursor: pointer;
+}
+
+.antradus-images-edit:focus-visible {
+	outline: 2px solid #1f6feb;
+	outline-offset: -2px;
+}
+
+.antradus-images-item img {
+	display: block;
+	width: 100%;
+	height: 88px;
+	object-fit: cover;
+}
+
+.antradus-images-edit:hover img {
+	filter: brightness(1.06);
+}
+
+.antradus-images-tools {
+	position: absolute;
+	inset: auto 0 0 0;
+	display: flex;
+	justify-content: center;
+	gap: 2px;
+	padding: 3px;
+	background: rgba(255, 255, 255, .92);
+	border-top: 1px solid #dfe3ea;
+}
+
+.antradus-images-tools button {
+	width: 26px;
+	height: 22px;
+	padding: 0;
+	background: none;
+	border: 1px solid transparent;
+	border-radius: 4px;
+	color: #3c434a;
+	font-size: 13px;
+	line-height: 1;
+	cursor: pointer;
+}
+
+.antradus-images-tools button:hover {
+	background: #fff;
+	border-color: #c9cfda;
+	color: #1f6feb;
+}
+
+.antradus-images-drop:hover {
+	color: #a4362e !important;
+}
+
+.antradus-images-empty {
+	margin: 0 0 8px;
+	color: #7b8595;
+	font-size: 11.5px;
+}
+
+/* ---------------------------------------------------------- section order */
+
+.antradus-order {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	max-width: 520px;
+	display: grid;
+	gap: 6px;
+	counter-reset: none;
+}
+
+.antradus-order-row {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin: 0;
+	padding: 9px 10px 9px 12px;
+	background: #fbfcfe;
+	border: 1px solid #e2e5ec;
+	border-radius: 8px;
+}
+
+.antradus-order-num {
+	flex: 0 0 22px;
+	width: 22px;
+	height: 22px;
+	line-height: 22px;
+	text-align: center;
+	background: #eef1f6;
+	border-radius: 6px;
+	color: #6b7280;
+	font-size: 11.5px;
+	font-weight: 700;
+}
+
+.antradus-order-name {
+	flex: 1;
+	color: #1d2327;
+	font-size: 13.5px;
+	font-weight: 600;
+}
+
+.antradus-order-tools {
+	display: flex;
+	gap: 2px;
+}
+
+.antradus-order-tools .button-link {
+	width: 28px;
+	height: 28px;
+	line-height: 26px;
+	text-align: center;
+	color: #6b7280;
+	text-decoration: none;
+	border-radius: 5px;
+}
+
+.antradus-order-tools .button-link:hover {
+	background: #eef1f6;
+	color: #1d2327;
+}
+
 /* -------------------------------------------------------------- repeaters */
 
 .antradus-rep-rows {
@@ -436,6 +595,22 @@
 }
 
 .antradus-langbtn.is-current .antradus-langbtn-count {
+	background: rgba(255, 255, 255, .24);
+	color: #fff;
+}
+
+/* Said on every tab, so a long translating session never forgets it. */
+.antradus-langbtn-off {
+	padding: 1px 8px;
+	background: rgba(124, 45, 18, .12);
+	border-radius: 999px;
+	color: #7c2d12;
+	font-size: 11.5px;
+	font-weight: 700;
+	text-transform: lowercase;
+}
+
+.antradus-langbtn.is-current .antradus-langbtn-off {
 	background: rgba(255, 255, 255, .24);
 	color: #fff;
 }

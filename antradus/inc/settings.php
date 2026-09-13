@@ -118,9 +118,18 @@ function antradus_settings_assets( $hook ) {
 		'antradus-admin',
 		'antradusAdmin',
 		array(
-			'chooseImage' => __( 'Choose an image', 'antradus' ),
-			'useImage'    => __( 'Use this image', 'antradus' ),
-			'confirmDrop' => __( 'Remove this item?', 'antradus' ),
+			'chooseImage'  => __( 'Choose an image', 'antradus' ),
+			'useImage'     => __( 'Use this image', 'antradus' ),
+			'chooseImages' => __( 'Add pictures', 'antradus' ),
+			'useImages'    => __( 'Add these pictures', 'antradus' ),
+			'moveEarlier'  => __( 'Move earlier', 'antradus' ),
+			'moveLater'    => __( 'Move later', 'antradus' ),
+			'dropImage'    => __( 'Remove this picture', 'antradus' ),
+			'editImage'    => __( 'Open this picture in the media library', 'antradus' ),
+			'doneImage'    => __( 'Done', 'antradus' ),
+			'confirmClear' => __( 'Remove every picture from this slot?', 'antradus' ),
+			'confirmDrop'  => __( 'Remove this item?', 'antradus' ),
+			'noImage'      => __( 'No picture', 'antradus' ),
 		)
 	);
 }
@@ -197,6 +206,17 @@ function antradus_settings_page() {
 							);
 							?>
 						</span>
+						<?php
+						/*
+						 * Said on every tab, not only on the one holding the
+						 * switch. Somebody translating the pricing table for an
+						 * hour should not have to remember that none of it is
+						 * reaching anybody yet.
+						 */
+						if ( ! antradus_lang_is_published( $code ) ) :
+							?>
+							<span class="antradus-langbtn-off"><?php esc_html_e( 'not published', 'antradus' ); ?></span>
+						<?php endif; ?>
 					<?php endif; ?>
 				</a>
 			<?php endforeach; ?>
@@ -206,6 +226,12 @@ function antradus_settings_page() {
 			<div class="antradus-translating-note">
 				<strong><?php esc_html_e( 'You are writing the translation.', 'antradus' ); ?></strong>
 				<?php esc_html_e( 'Only the words are shown - links, images, colours, shortcodes, plan IDs and page slugs are shared by both languages and are edited on the English tab. Leave a field empty and the English wording is used on the Arabic page, so a half-finished translation still reads.', 'antradus' ); ?>
+				<?php if ( ! antradus_lang_is_published( $lang ) ) : ?>
+					<br>
+					<strong><?php esc_html_e( 'This language is switched off.', 'antradus' ); ?></strong>
+					<?php esc_html_e( 'Nothing you write here reaches a visitor yet, and nothing is lost while it waits. Take as long as you need, then publish it in one tick on the Brand &amp; header tab.', 'antradus' ); ?>
+					<a href="<?php echo esc_url( admin_url( 'themes.php?page=antradus-content&tab=brand' ) ); ?>"><?php esc_html_e( 'Go to the switch', 'antradus' ); ?></a>
+				<?php endif; ?>
 			</div>
 		<?php endif; ?>
 
@@ -440,6 +466,14 @@ function antradus_render_field( $field, $lang ) {
 			antradus_render_image_field( $id, $name, (string) $value );
 			break;
 
+		case 'images':
+			antradus_render_images_field( $id, $name, (string) $value );
+			break;
+
+		case 'order':
+			antradus_render_order_field( $name, (string) $value, $field );
+			break;
+
 		default:
 			printf(
 				'<input type="text" id="%1$s" name="%2$s" value="%3$s" class="regular-text antradus-wide">',
@@ -553,6 +587,135 @@ function antradus_render_image_field( $id, $name, $value ) {
 	echo '<button type="button" class="button-link antradus-image-clear">' . esc_html__( 'Remove', 'antradus' ) . '</button>';
 	echo '</p>';
 	echo '</div>';
+}
+
+/**
+ * The media picker that takes more than one picture.
+ *
+ * The list is the field: the thumbnails on screen, left to right, are the
+ * slides the page will show, in that order. Each one carries its own value in a
+ * data attribute and the hidden input is rewritten from the row on every
+ * change, so reordering is moving a thumbnail rather than retyping anything -
+ * the same arrows the repeater rows and the section order already use.
+ *
+ * Clicking a thumbnail opens it in WordPress's own media modal, which is where
+ * the caption, the alt text and the title are edited - the caption a slide
+ * shows on the site is the picture's own, so the place to write it is the place
+ * the picture lives, not a second field here that could disagree with it.
+ * Choosing a different picture in that modal swaps this one for it, in place.
+ *
+ * This is a top-level field only. A repeater sub-field stays a single image:
+ * the export would have to describe a list inside a row inside a language, and
+ * nothing on the site needs it.
+ *
+ * @param string $id    Field id.
+ * @param string $name  Field name.
+ * @param string $value Stored comma-separated list.
+ */
+function antradus_render_images_field( $id, $name, $value ) {
+	$items = antradus_image_list( $value );
+
+	echo '<div class="antradus-images">';
+	echo '<ul class="antradus-images-list">';
+
+	foreach ( $items as $item ) {
+		$url = antradus_image_url( $item, 'medium' );
+		if ( '' === $url ) {
+			continue;
+		}
+		printf(
+			'<li class="antradus-images-item" data-value="%1$s">'
+			. '<button type="button" class="antradus-images-edit" aria-label="%2$s"><img src="%3$s" alt=""></button>'
+			. '<span class="antradus-images-tools">'
+			. '<button type="button" class="antradus-images-move" data-dir="up" aria-label="%4$s">&#8592;</button>'
+			. '<button type="button" class="antradus-images-move" data-dir="down" aria-label="%5$s">&#8594;</button>'
+			. '<button type="button" class="antradus-images-drop" aria-label="%6$s">&times;</button>'
+			. '</span></li>',
+			esc_attr( $item ),
+			esc_attr__( 'Open this picture in the media library', 'antradus' ),
+			esc_url( $url ),
+			esc_attr__( 'Move earlier', 'antradus' ),
+			esc_attr__( 'Move later', 'antradus' ),
+			esc_attr__( 'Remove this picture', 'antradus' )
+		);
+	}
+
+	echo '</ul>';
+
+	printf(
+		'<p class="antradus-images-empty"%1$s>%2$s</p>',
+		$items ? ' hidden' : '',
+		esc_html__( 'No pictures yet - a labelled placeholder is shown on the site.', 'antradus' )
+	);
+
+	printf(
+		'<input type="hidden" class="antradus-images-value" id="%1$s" name="%2$s" value="%3$s" data-max="%4$d">',
+		esc_attr( $id ),
+		esc_attr( $name ),
+		esc_attr( implode( ',', $items ) ),
+		(int) ANTRADUS_MAX_SLIDES
+	);
+
+	echo '<p class="antradus-image-actions">';
+	echo '<button type="button" class="button antradus-images-pick">' . esc_html__( 'Add pictures', 'antradus' ) . '</button> ';
+	echo '<button type="button" class="button-link antradus-images-clear">' . esc_html__( 'Remove all', 'antradus' ) . '</button>';
+	echo '</p>';
+	echo '</div>';
+}
+
+/**
+ * Put a page's sections in the order the editor wants them.
+ *
+ * A list of every section with a pair of arrows, which is the same control the
+ * repeater rows already use - an editor who has reordered a feature group knows
+ * how to reorder a section. The stored value is a comma-separated list of keys.
+ *
+ * The list is rebuilt from antradus_audience_sections_list() every time rather
+ * than from what was saved, so a section added to the theme later turns up here
+ * on its own. Order is structure, not words, so this never appears on a
+ * translation tab.
+ *
+ * @param string $name   Field name attribute.
+ * @param string $value  Stored comma-separated order.
+ * @param array  $field  Field definition, including 'choices'.
+ */
+function antradus_render_order_field( $name, $value, $field ) {
+	$choices = isset( $field['choices'] ) && is_array( $field['choices'] ) ? $field['choices'] : array();
+	if ( ! $choices ) {
+		return;
+	}
+
+	// The same resolution the front end uses, so the screen cannot show an
+	// order the page would not actually render.
+	$order = array();
+	foreach ( array_filter( array_map( 'trim', explode( ',', $value ) ) ) as $key ) {
+		if ( isset( $choices[ $key ] ) && ! in_array( $key, $order, true ) ) {
+			$order[] = $key;
+		}
+	}
+	foreach ( array_keys( $choices ) as $key ) {
+		if ( ! in_array( $key, $order, true ) ) {
+			$order[] = $key;
+		}
+	}
+
+	echo '<ol class="antradus-order">';
+	foreach ( $order as $position => $key ) {
+		echo '<li class="antradus-order-row">';
+		echo '<span class="antradus-order-num" aria-hidden="true">' . esc_html( (string) ( $position + 1 ) ) . '</span>';
+		echo '<span class="antradus-order-name">' . esc_html( $choices[ $key ] ) . '</span>';
+		printf(
+			'<input type="hidden" class="antradus-order-key" name="%1$s[]" value="%2$s">',
+			esc_attr( $name ),
+			esc_attr( $key )
+		);
+		echo '<span class="antradus-order-tools">';
+		echo '<button type="button" class="button-link antradus-order-up" title="' . esc_attr__( 'Move up', 'antradus' ) . '">&uarr;</button>';
+		echo '<button type="button" class="button-link antradus-order-down" title="' . esc_attr__( 'Move down', 'antradus' ) . '">&darr;</button>';
+		echo '</span>';
+		echo '</li>';
+	}
+	echo '</ol>';
 }
 
 /* ===========================================================================
@@ -891,6 +1054,56 @@ function antradus_sanitize_value( $field, $raw, $words_only = false ) {
 			}
 			return ctype_digit( $raw ) ? (string) absint( $raw ) : esc_url_raw( $raw );
 
+		case 'images':
+			/*
+			 * Stored as one comma-separated list, which is also why a comma can
+			 * never be part of a value: it is the separator. Every entry is
+			 * sanitized exactly as a single image would be, the same picture
+			 * twice is a mistake rather than a slide, and the count is capped -
+			 * a slider is a handful of pictures, and a posted list of a thousand
+			 * is not an editor's doing.
+			 */
+			$items = is_array( $raw ) ? $raw : explode( ',', (string) $raw );
+			$out   = array();
+			foreach ( $items as $one ) {
+				$one = trim( (string) $one );
+				if ( '' === $one ) {
+					continue;
+				}
+				$one = ctype_digit( $one ) ? (string) absint( $one ) : esc_url_raw( str_replace( ',', '', $one ) );
+				if ( '' === $one || in_array( $one, $out, true ) ) {
+					continue;
+				}
+				$out[] = $one;
+				if ( count( $out ) >= ANTRADUS_MAX_SLIDES ) {
+					break;
+				}
+			}
+			return implode( ',', $out );
+
+		case 'order':
+			/*
+			 * Arrives as the list of keys in the order they were left on
+			 * screen. Only keys this field actually offers are kept, and any it
+			 * offers that did not arrive are appended - so a posted order can
+			 * never drop a section off the page or smuggle one in.
+			 */
+			$choices = isset( $field['choices'] ) && is_array( $field['choices'] ) ? $field['choices'] : array();
+			$posted  = is_array( $raw ) ? $raw : explode( ',', (string) $raw );
+			$out     = array();
+			foreach ( $posted as $key ) {
+				$key = sanitize_key( (string) $key );
+				if ( isset( $choices[ $key ] ) && ! in_array( $key, $out, true ) ) {
+					$out[] = $key;
+				}
+			}
+			foreach ( array_keys( $choices ) as $key ) {
+				if ( ! in_array( $key, $out, true ) ) {
+					$out[] = $key;
+				}
+			}
+			return implode( ',', $out );
+
 		case 'repeater':
 			$rows = is_array( $raw ) ? $raw : array();
 			$out  = array();
@@ -1003,6 +1216,191 @@ function antradus_render_pages_panel() {
 			esc_html__( 'They are created as drafts, so nothing appears on the site until you publish it.', 'antradus' )
 		);
 	}
+}
+
+/**
+ * Which languages are live, which are still being written.
+ *
+ * Printed above the switch rather than below it, because the question people
+ * arrive with is "what is the site doing right now" and the tick box only
+ * answers "what would I like it to do".
+ */
+function antradus_render_languages_panel() {
+	echo '<table class="widefat striped antradus-pages"><thead><tr>';
+	echo '<th>' . esc_html__( 'Language', 'antradus' ) . '</th>';
+	echo '<th>' . esc_html__( 'Visitors see it', 'antradus' ) . '</th>';
+	echo '<th>' . esc_html__( 'Words written', 'antradus' ) . '</th>';
+	echo '<th>' . esc_html__( 'Look at it', 'antradus' ) . '</th>';
+	echo '</tr></thead><tbody>';
+
+	foreach ( antradus_languages() as $code => $def ) {
+		$live     = antradus_lang_is_published( $code );
+		$progress = antradus_translation_progress( $code );
+		$is_base  = ( antradus_default_lang() === $code );
+
+		echo '<tr>';
+		printf(
+			'<td><strong lang="%1$s">%2$s</strong><br><code>%3$s</code></td>',
+			esc_attr( $code ),
+			esc_html( $def['native'] ),
+			esc_html( $is_base ? home_url( '/' ) : '?lang=' . $code )
+		);
+
+		echo '<td>';
+		if ( $live ) {
+			echo '<span class="antradus-pill antradus-pill--on">' . esc_html__( 'Published', 'antradus' ) . '</span>';
+		} else {
+			echo '<span class="antradus-pill antradus-pill--off">' . esc_html__( 'Switched off', 'antradus' ) . '</span>';
+		}
+		echo '</td>';
+
+		echo '<td>';
+		if ( $is_base ) {
+			echo '&mdash;';
+		} else {
+			printf(
+				'%s / %s',
+				esc_html( number_format_i18n( $progress['done'] ) ),
+				esc_html( number_format_i18n( $progress['total'] ) )
+			);
+		}
+		echo '</td>';
+
+		printf(
+			'<td><a href="%1$s" target="_blank" rel="noopener">%2$s</a></td>',
+			esc_url( antradus_localize_url( home_url( '/' ), $code ) ),
+			esc_html( $live ? __( 'View', 'antradus' ) : __( 'Preview', 'antradus' ) )
+		);
+		echo '</tr>';
+	}
+	echo '</tbody></table>';
+
+	echo '<p class="antradus-card-blurb">';
+	esc_html_e( 'Switched off does not mean deleted. The Arabic tab and every word on it stay exactly where they are, and while you are signed in you can still walk the whole site in Arabic - a strip across the top says so, so you never mistake your own preview for what a visitor gets. Everybody else who asks for an Arabic address is sent to the English one.', 'antradus' );
+	echo '</p>';
+}
+
+/**
+ * The search metadata, and the button that hands it to Rank Math.
+ *
+ * This panel is printed inside the settings form - the tab has real fields -
+ * so the two actions are nonced links to admin-post.php rather than a form of
+ * their own. HTML has no nested forms and the browser silently drops the inner
+ * tags, which would make both buttons save the settings instead.
+ *
+ * Two links rather than one button and a tick box, for the same reason: a
+ * checkbox here would be posted to options.php by the Save button and stored
+ * as a setting nobody asked for. Two links also make the difference between
+ * the two outcomes impossible to miss.
+ */
+function antradus_render_seo_panel() {
+	$has_rank_math = antradus_seo_rank_math_active();
+
+	if ( $has_rank_math ) {
+		echo '<p class="antradus-card-blurb">';
+		printf(
+			/* translators: %s: Rank Math version. */
+			esc_html__( 'Rank Math %s is running. The values below are written into its own fields - focus keyword, SEO title and SEO description - so its analysis picks them up and its preview shows them. Nothing is stored twice.', 'antradus' ),
+			esc_html( defined( 'RANK_MATH_VERSION' ) ? RANK_MATH_VERSION : '' )
+		);
+		echo '</p>';
+	} else {
+		echo '<div class="notice notice-warning inline"><p>';
+		esc_html_e( 'Rank Math is not active. The button still works - the values are written onto the pages as the meta Rank Math reads, so activating it later picks them all up at once. In the meantime the theme prints the description and the sharing tags itself, so no page goes out without them.', 'antradus' );
+		echo '</p></div>';
+	}
+
+	// What pressing it would do, before anybody presses it.
+	$ready   = 0;
+	$kept    = 0;
+	$missing = array();
+	$pages   = antradus_pages();
+
+	echo '<table class="widefat striped antradus-pages"><thead><tr>';
+	echo '<th>' . esc_html__( 'Page', 'antradus' ) . '</th>';
+	echo '<th>' . esc_html__( 'Focus keyword', 'antradus' ) . '</th>';
+	echo '<th>' . esc_html__( 'In Rank Math', 'antradus' ) . '</th>';
+	echo '</tr></thead><tbody>';
+
+	foreach ( $pages as $key => $def ) {
+		$plan  = antradus_seo_plan_page( $key, false );
+		$focus = antradus_seo_value( $key, 'focus', antradus_default_lang() );
+
+		switch ( $plan['status'] ) {
+			case 'nopage':
+				$missing[] = $def['label'];
+				$pill      = '<span class="antradus-pill antradus-pill--off">' . esc_html__( 'No page yet', 'antradus' ) . '</span>';
+				break;
+			case 'write':
+				++$ready;
+				$pill = '<span class="antradus-pill antradus-pill--on">' . esc_html__( 'Ready to send', 'antradus' ) . '</span>';
+				break;
+			case 'kept':
+				++$kept;
+				$pill = '<span class="antradus-pill antradus-pill--off">' . esc_html__( 'You have your own', 'antradus' ) . '</span>';
+				break;
+			default:
+				$pill = '<span class="antradus-pill antradus-pill--on">' . esc_html__( 'Already matches', 'antradus' ) . '</span>';
+		}
+
+		echo '<tr>';
+		echo '<td><strong>' . esc_html( $def['label'] ) . '</strong></td>';
+		echo '<td>' . ( '' !== $focus ? '<code>' . esc_html( $focus ) . '</code>' : '&mdash;' ) . '</td>';
+		echo '<td>' . wp_kses( $pill, array( 'span' => array( 'class' => array() ) ) ) . '</td>';
+		echo '</tr>';
+	}
+	echo '</tbody></table>';
+
+	$link = static function ( $overwrite ) {
+		return wp_nonce_url(
+			add_query_arg(
+				array(
+					'action'    => 'antradus_seo_push',
+					'overwrite' => $overwrite ? '1' : '0',
+				),
+				admin_url( 'admin-post.php' )
+			),
+			'antradus_seo_push'
+		);
+	};
+
+	echo '<p class="antradus-inline-form">';
+	printf(
+		'<a class="button button-primary" href="%1$s">%2$s</a> ',
+		esc_url( $link( false ) ),
+		esc_html__( 'Send these to Rank Math', 'antradus' )
+	);
+	printf(
+		'<a class="button" href="%1$s" onclick="return confirm(%2$s);">%3$s</a>',
+		esc_url( $link( true ) ),
+		esc_attr( (string) wp_json_encode( __( 'This replaces the focus keyword, title and description already saved in Rank Math on all nine pages. Continue?', 'antradus' ) ) ),
+		esc_html__( 'Replace what is already there', 'antradus' )
+	);
+	echo '</p>';
+
+	echo '<p class="description">';
+	esc_html_e( 'The first button only fills fields Rank Math has left empty, so anything you have already written there survives. The second overwrites all nine pages with the wording on this tab. A page has to exist before it can be given metadata - create the missing ones on the Pages tab first.', 'antradus' );
+	echo '</p>';
+
+	if ( $missing ) {
+		echo '<p class="description"><strong>' . esc_html__( 'Skipped, because the page does not exist yet:', 'antradus' ) . '</strong> ';
+		echo esc_html( implode( ', ', $missing ) );
+		echo '</p>';
+	}
+	if ( $kept ) {
+		echo '<p class="description">';
+		printf(
+			/* translators: %d: number of pages. */
+			esc_html( _n( '%d page already has wording of its own in Rank Math. The first button will leave it alone.', '%d pages already have wording of their own in Rank Math. The first button will leave them alone.', $kept, 'antradus' ) ),
+			(int) $kept
+		);
+		echo '</p>';
+	}
+
+	echo '<h3>' . esc_html__( 'The Arabic set', 'antradus' ) . '</h3>';
+	echo '<p class="description">';
+	esc_html_e( 'Both languages live at the same page - /pricing/ and /pricing/?lang=ar - and Rank Math stores one title and one description per page, so there is nowhere to put a second language. The Arabic tab here holds it instead, and the theme serves it on Arabic pages through Rank Math\'s own filters. It also fixes the canonical, which would otherwise point every Arabic page at its English twin and ask Google to ignore the translation. None of it does anything while Arabic is switched off.', 'antradus' );
+	echo '</p>';
 }
 
 /**
@@ -1315,6 +1713,36 @@ function antradus_handle_reset() {
 	antradus_settings_redirect( 'tools', array( 'antradus_reset' => 1 ) );
 }
 
+add_action( 'admin_post_antradus_seo_push', 'antradus_handle_seo_push' );
+/**
+ * Copy the English search metadata into Rank Math.
+ *
+ * Deliberately not snapshotted. Nothing on this site is being changed - the
+ * theme's own settings are untouched - and what it writes lands in Rank Math's
+ * fields, where it is visible, editable and undoable by the person who owns
+ * them. A snapshot of the theme options would restore nothing that this button
+ * altered.
+ */
+function antradus_handle_seo_push() {
+	antradus_require_admin( 'antradus_seo_push' );
+
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- checked above.
+	$overwrite = isset( $_GET['overwrite'] ) && '1' === sanitize_key( wp_unslash( $_GET['overwrite'] ) );
+
+	$report = antradus_seo_push_to_rank_math( $overwrite );
+
+	antradus_settings_redirect(
+		'seo',
+		array(
+			'antradus_seo'  => '1',
+			'ant_seo_pages' => (int) $report['pages'],
+			'ant_seo_flds'  => (int) $report['fields'],
+			'ant_seo_kept'  => (int) $report['kept'],
+			'ant_seo_gone'  => count( $report['missing'] ),
+		)
+	);
+}
+
 add_action( 'admin_notices', 'antradus_admin_notices' );
 /**
  * Confirmations for the actions above.
@@ -1431,6 +1859,43 @@ function antradus_admin_notices() {
 		printf(
 			'<div class="notice notice-success is-dismissible"><p>%s</p></div>',
 			esc_html__( 'Everything is back to the shipped content. Undo is on this tab if that was not what you meant.', 'antradus' )
+		);
+	}
+	if ( isset( $_GET['antradus_seo'] ) ) {
+		$seo_pages  = isset( $_GET['ant_seo_pages'] ) ? (int) $_GET['ant_seo_pages'] : 0;
+		$seo_fields = isset( $_GET['ant_seo_flds'] ) ? (int) $_GET['ant_seo_flds'] : 0;
+		$seo_kept   = isset( $_GET['ant_seo_kept'] ) ? (int) $_GET['ant_seo_kept'] : 0;
+		$seo_gone   = isset( $_GET['ant_seo_gone'] ) ? (int) $_GET['ant_seo_gone'] : 0;
+
+		$lines = array();
+		if ( $seo_fields ) {
+			$lines[] = sprintf(
+				/* translators: 1: number of fields, 2: number of pages. */
+				__( '%1$d fields written into Rank Math, across %2$d pages.', 'antradus' ),
+				$seo_fields,
+				$seo_pages
+			);
+		} else {
+			$lines[] = __( 'Nothing needed writing - Rank Math already holds these words.', 'antradus' );
+		}
+		if ( $seo_kept ) {
+			$lines[] = sprintf(
+				/* translators: %d: number of fields left alone. */
+				__( '%d field you had already written was left alone. Use "Replace what is already there" if you want ours instead.', 'antradus' ),
+				$seo_kept
+			);
+		}
+		if ( $seo_gone ) {
+			$lines[] = sprintf(
+				/* translators: %d: number of pages. */
+				__( '%d page does not exist yet and was skipped - create it on the Pages tab, then press this again.', 'antradus' ),
+				$seo_gone
+			);
+		}
+
+		printf(
+			'<div class="notice notice-success is-dismissible"><p>%s</p></div>',
+			esc_html( implode( ' ', $lines ) )
 		);
 	}
 	// phpcs:enable WordPress.Security.NonceVerification.Recommended

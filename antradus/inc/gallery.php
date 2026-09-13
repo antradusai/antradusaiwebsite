@@ -43,15 +43,15 @@ function antradus_gallery_register() {
  * @return string Markup, or '' when the first image cannot be rendered.
  */
 function antradus_gallery_markup( $ids ) {
-	$main = wp_get_attachment_image( $ids[0], 'large', false, array( 'class' => 'antgl-main-img' ) );
+	$main = wp_get_attachment_image( $ids[0], 'full', false, array( 'class' => 'antgl-main-img' ) );
 	if ( ! $main ) {
 		return '';
 	}
 
 	$thumbs = '';
 	foreach ( $ids as $n => $id ) {
-		$thumb = wp_get_attachment_image( $id, 'medium' );
-		$full  = wp_get_attachment_image_url( $id, 'large' );
+		$thumb = wp_get_attachment_image( $id, 'full' );
+		$full  = antradus_image_full_url( $id );
 		if ( ! $thumb || ! $full ) {
 			continue;
 		}

@@ -93,6 +93,455 @@
 		}
 	});
 
+	/* ---------------------------------------------------------- lightbox */
+
+	/*
+	 * The picture, opened over the page at the size it was uploaded.
+	 *
+	 * One lightbox serves every slider on the page: it is built the first time
+	 * somebody opens one and reused after that, because two of these in a
+	 * document is two things that can both think they own the keyboard.
+	 *
+	 * It is a dialog, so it behaves like one - Escape closes it, Tab cycles
+	 * inside it rather than wandering off into the page underneath, the page
+	 * cannot scroll while it is up, and focus goes back to whatever was clicked
+	 * when it comes down.
+	 */
+	var lightbox = null;
+	var lightboxOpen = false;
+
+	function buildLightbox() {
+		var root = document.createElement('div');
+		root.className = 'ant-lb';
+		root.setAttribute('role', 'dialog');
+		root.setAttribute('aria-modal', 'true');
+		root.hidden = true;
+
+		root.innerHTML =
+			'<div class="ant-lb-veil" data-lb-veil></div>' +
+			'<button type="button" class="ant-lb-close" data-lb-close aria-label="' + t('close', 'Close') + '">' +
+				'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" aria-hidden="true">' +
+				'<path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>' +
+			'</button>' +
+			'<button type="button" class="ant-lb-nav ant-lb-prev" data-lb-prev aria-label="' + t('prev', 'Previous image') + '">' +
+				'<svg viewBox="0 0 24 24" width="26" height="26" fill="none" aria-hidden="true">' +
+				'<path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+			'</button>' +
+			'<figure class="ant-lb-figure">' +
+				'<img class="ant-lb-img" alt="" data-lb-img>' +
+				'<figcaption class="ant-lb-caption" data-lb-caption></figcaption>' +
+			'</figure>' +
+			'<button type="button" class="ant-lb-nav ant-lb-next" data-lb-next aria-label="' + t('next', 'Next image') + '">' +
+				'<svg viewBox="0 0 24 24" width="26" height="26" fill="none" aria-hidden="true">' +
+				'<path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+			'</button>' +
+			'<p class="ant-lb-count" data-lb-count></p>';
+
+		document.body.appendChild(root);
+
+		var lb = {
+			root: root,
+			img: root.querySelector('[data-lb-img]'),
+			caption: root.querySelector('[data-lb-caption]'),
+			count: root.querySelector('[data-lb-count]'),
+			prev: root.querySelector('[data-lb-prev]'),
+			next: root.querySelector('[data-lb-next]'),
+			close: root.querySelector('[data-lb-close]'),
+			items: [],
+			index: 0,
+			opener: null,
+			onClose: null
+		};
+
+		lb.show = function (n) {
+			if (!lb.items.length) {
+				return;
+			}
+			lb.index = (n + lb.items.length) % lb.items.length;
+			var item = lb.items[lb.index];
+
+			lb.img.classList.remove('is-ready');
+			lb.img.onload = function () { lb.img.classList.add('is-ready'); };
+			lb.img.src = item.full;
+			if (lb.img.complete) {
+				lb.img.classList.add('is-ready');
+			}
+
+			lb.caption.textContent = item.caption || '';
+			lb.caption.hidden = !item.caption;
+			lb.count.textContent = lb.items.length > 1
+				? (lb.index + 1) + ' / ' + lb.items.length
+				: '';
+
+			var many = lb.items.length > 1;
+			lb.prev.hidden = !many;
+			lb.next.hidden = !many;
+
+			// The next one is the one most likely to be asked for.
+			if (many) {
+				var ahead = new Image();
+				ahead.src = lb.items[(lb.index + 1) % lb.items.length].full;
+			}
+		};
+
+		lb.hide = function () {
+			if (!lightboxOpen) {
+				return;
+			}
+			lightboxOpen = false;
+			root.hidden = true;
+			document.documentElement.classList.remove('ant-lb-shut');
+			document.documentElement.style.removeProperty('--ant-lb-gap');
+			// Let go of the file so a long gallery does not sit in memory.
+			lb.img.removeAttribute('src');
+
+			if (lb.opener && document.contains(lb.opener)) {
+				lb.opener.focus();
+			}
+			lb.opener = null;
+
+			if (lb.onClose) {
+				lb.onClose();
+				lb.onClose = null;
+			}
+		};
+
+		lb.prev.addEventListener('click', function () { lb.show(lb.index - 1); });
+		lb.next.addEventListener('click', function () { lb.show(lb.index + 1); });
+		lb.close.addEventListener('click', lb.hide);
+		root.querySelector('[data-lb-veil]').addEventListener('click', lb.hide);
+
+		root.addEventListener('keydown', function (e) {
+			if (e.key === 'Escape') {
+				e.preventDefault();
+				lb.hide();
+				return;
+			}
+			if (e.key === 'ArrowLeft') {
+				lb.show(lb.index - 1);
+				return;
+			}
+			if (e.key === 'ArrowRight') {
+				lb.show(lb.index + 1);
+				return;
+			}
+			if (e.key !== 'Tab') {
+				return;
+			}
+			// Keep Tab inside the dialog: it is over the page, not in it.
+			var stops = [lb.close, lb.prev, lb.next].filter(function (el) {
+				return !el.hidden;
+			});
+			var at = stops.indexOf(document.activeElement);
+			var to = e.shiftKey ? at - 1 : at + 1;
+			if (at === -1 || to < 0 || to >= stops.length) {
+				e.preventDefault();
+				stops[e.shiftKey ? stops.length - 1 : 0].focus();
+			}
+		});
+
+		var startX = null;
+		root.addEventListener('pointerdown', function (e) { startX = e.clientX; });
+		root.addEventListener('pointerup', function (e) {
+			if (startX === null) {
+				return;
+			}
+			var dx = e.clientX - startX;
+			startX = null;
+			if (Math.abs(dx) < 40 || lb.items.length < 2) {
+				return;
+			}
+			var rtl = document.documentElement.getAttribute('dir') === 'rtl';
+			lb.show(lb.index + ((rtl ? dx > 0 : dx < 0) ? 1 : -1));
+		});
+
+		return lb;
+	}
+
+	/**
+	 * Open the lightbox on one picture out of a list.
+	 *
+	 * @param {Array}   items   [{ full, caption }]
+	 * @param {number}  index   Which one to show first.
+	 * @param {Element} opener  What to hand focus back to.
+	 * @param {Function} onClose Called once it is closed.
+	 */
+	function openLightbox(items, index, opener, onClose) {
+		if (!items.length) {
+			return;
+		}
+		if (!lightbox) {
+			lightbox = buildLightbox();
+		}
+
+		lightbox.items = items;
+		lightbox.opener = opener || null;
+		lightbox.onClose = onClose || null;
+
+		/*
+		 * Hiding the page's scrollbar makes the page wider by exactly its
+		 * width, which shoves the whole layout sideways behind the veil. The
+		 * gap is measured and given back as padding.
+		 */
+		var gap = window.innerWidth - document.documentElement.clientWidth;
+		if (gap > 0) {
+			document.documentElement.style.setProperty('--ant-lb-gap', gap + 'px');
+		}
+		document.documentElement.classList.add('ant-lb-shut');
+
+		lightbox.root.hidden = false;
+		lightboxOpen = true;
+		lightbox.show(index);
+		lightbox.close.focus();
+	}
+
+	/**
+	 * A localized string, with the English as the fallback.
+	 *
+	 * @param {string} key Key in antradusI18n.
+	 * @param {string} fallback English.
+	 * @return {string}
+	 */
+	function t(key, fallback) {
+		var all = window.antradusI18n || {};
+		return all[key] || fallback;
+	}
+
+	/* ----------------------------------------------------------- sliders */
+
+	/*
+	 * The hero picture, when the slot holds more than one.
+	 *
+	 * Slides cross-fade in place - PHP has already stacked them - so there is no
+	 * track to translate and nothing to mirror in Arabic. All this file decides
+	 * is which slide is current.
+	 *
+	 * It advances on its own, and stops doing so the moment it has any reason
+	 * to: the pointer is on it, something inside it has focus, the tab is in the
+	 * background, the slider has been scrolled past, or the reader has asked
+	 * their system for less motion. A picture that keeps changing behind you is
+	 * the thing people dislike about sliders, and every one of those is a case
+	 * where nobody is looking.
+	 */
+	Array.prototype.forEach.call(document.querySelectorAll('[data-slider]'), function (root) {
+		var slides = root.querySelectorAll('[data-slide]');
+		var captions = root.querySelectorAll('[data-slide-caption]');
+		var dots = root.querySelectorAll('[data-slider-dot]');
+		var prev = root.querySelector('[data-slider-prev]');
+		var next = root.querySelector('[data-slider-next]');
+		if (slides.length < 2) {
+			return;
+		}
+
+		var delay = parseInt(root.getAttribute('data-slider-delay'), 10);
+		if (!(delay >= 2000)) {
+			delay = 6000;
+		}
+
+		var index = 0;
+		var timer = null;
+		var held = false;
+		var seen = true;
+
+		var openers = root.querySelectorAll('[data-slide-open]');
+
+		/*
+		 * Fill in a slide's address when it is about to be needed. The slides
+		 * are stacked in one box, so all of them are in the viewport and
+		 * loading="lazy" would not hold a single one back - this is what keeps
+		 * a hero of eight full-resolution screenshots from being eight
+		 * downloads before the page has finished painting.
+		 */
+		function load(n) {
+			var slide = slides[(n + slides.length) % slides.length];
+			var img = slide ? slide.querySelector('img[data-src]') : null;
+			if (img) {
+				img.src = img.getAttribute('data-src');
+				img.removeAttribute('data-src');
+			}
+		}
+
+		function show(n) {
+			index = (n + slides.length) % slides.length;
+
+			// This one now, and the next one before it is asked for, so a fade
+			// never begins on an empty frame.
+			load(index);
+			load(index + 1);
+
+			Array.prototype.forEach.call(slides, function (slide, i) {
+				var current = i === index;
+				slide.classList.toggle('is-current', current);
+				// Hide the rest from assistive technology rather than only from
+				// the eye: three stacked pictures are one picture at a time.
+				if (current) {
+					slide.removeAttribute('aria-hidden');
+				} else {
+					slide.setAttribute('aria-hidden', 'true');
+				}
+			});
+
+			// Only the picture on show is a control worth tabbing to.
+			Array.prototype.forEach.call(openers, function (opener, i) {
+				if (i === index) {
+					opener.removeAttribute('tabindex');
+				} else {
+					opener.setAttribute('tabindex', '-1');
+				}
+			});
+
+			// The captions are stacked in one cell the same way the slides are,
+			// so this is the same swap, not a second thing to keep in step.
+			Array.prototype.forEach.call(captions, function (caption, i) {
+				var current = i === index;
+				caption.classList.toggle('is-current', current);
+				if (current) {
+					caption.removeAttribute('aria-hidden');
+				} else {
+					caption.setAttribute('aria-hidden', 'true');
+				}
+			});
+
+			Array.prototype.forEach.call(dots, function (dot, i) {
+				dot.classList.toggle('is-current', i === index);
+				if (i === index) {
+					dot.setAttribute('aria-current', 'true');
+				} else {
+					dot.removeAttribute('aria-current');
+				}
+			});
+		}
+
+		function stop() {
+			if (timer) {
+				window.clearInterval(timer);
+				timer = null;
+			}
+		}
+
+		function start() {
+			stop();
+			if (reduce || held || !seen || document.hidden || lightboxOpen) {
+				return;
+			}
+			timer = window.setInterval(function () {
+				show(index + 1);
+			}, delay);
+		}
+
+		// Any deliberate move restarts the clock, so a slide somebody just
+		// chose is not replaced half a second later.
+		function go(n) {
+			show(n);
+			start();
+		}
+
+		if (prev) {
+			prev.addEventListener('click', function () { go(index - 1); });
+		}
+		if (next) {
+			next.addEventListener('click', function () { go(index + 1); });
+		}
+		Array.prototype.forEach.call(dots, function (dot, i) {
+			dot.addEventListener('click', function () { go(i); });
+		});
+
+		root.addEventListener('keydown', function (e) {
+			if (e.key === 'ArrowLeft') {
+				go(index - 1);
+			} else if (e.key === 'ArrowRight') {
+				go(index + 1);
+			}
+		});
+
+		['pointerenter', 'focusin'].forEach(function (name) {
+			root.addEventListener(name, function () {
+				held = true;
+				stop();
+			});
+		});
+		['pointerleave', 'focusout'].forEach(function (name) {
+			root.addEventListener(name, function () {
+				held = false;
+				start();
+			});
+		});
+
+		document.addEventListener('visibilitychange', start);
+
+		/*
+		 * Swipe. A drag towards the end of the line asks for the next picture,
+		 * which in Arabic is a drag to the right - the direction of "forward"
+		 * is the direction the page reads, not a fixed side of the screen.
+		 */
+		var startX = null;
+		var dragged = false;
+		root.addEventListener('pointerdown', function (e) {
+			startX = e.clientX;
+			dragged = false;
+		});
+		root.addEventListener('pointerup', function (e) {
+			if (startX === null) {
+				return;
+			}
+			var dx = e.clientX - startX;
+			startX = null;
+			if (Math.abs(dx) < 40) {
+				return;
+			}
+			// A swipe is not a click on the picture, and the click event that
+			// follows this one has to know that.
+			dragged = true;
+			var rtl = document.documentElement.getAttribute('dir') === 'rtl';
+			var forward = rtl ? dx > 0 : dx < 0;
+			go(forward ? index + 1 : index - 1);
+		});
+		root.addEventListener('pointercancel', function () { startX = null; });
+
+		/*
+		 * The picture opens at the size it was uploaded, in a lightbox that
+		 * carries the whole slot - so somebody who wants a proper look at slide
+		 * two can go on to three without closing it and clicking again. The
+		 * inline slider stops advancing while that is up and picks up where it
+		 * left off, on whichever slide the lightbox was closed on.
+		 */
+		var items = Array.prototype.map.call(openers, function (opener) {
+			return {
+				full: opener.getAttribute('data-full') || '',
+				caption: opener.getAttribute('data-caption') || ''
+			};
+		});
+
+		Array.prototype.forEach.call(openers, function (opener, i) {
+			opener.addEventListener('click', function () {
+				if (dragged) {
+					dragged = false;
+					return;
+				}
+				stop();
+				openLightbox(items, i, opener, function () {
+					if (lightbox) {
+						go(lightbox.index);
+					} else {
+						start();
+					}
+				});
+			});
+		});
+
+		if ('IntersectionObserver' in window) {
+			new IntersectionObserver(function (entries) {
+				entries.forEach(function (entry) {
+					seen = entry.isIntersecting;
+					start();
+				});
+			}, { threshold: 0.25 }).observe(root);
+		}
+
+		show(0);
+		start();
+	});
+
 	/* --------------------------------------------------------- flow lines */
 
 	/*
@@ -108,11 +557,12 @@
 	 * towards the middle. That is what makes the line leave the pill flat,
 	 * bend once, and arrive at the hub flat, instead of turning a corner.
 	 */
-	(function () {
-		var diagram = document.querySelector('[data-compat]');
-		if (!diagram) {
-			return;
-		}
+	/*
+	 * There can be more than one on a site - the home page draws the whole
+	 * picture, an audience page draws its own subset - and each one measures
+	 * itself, so every diagram gets its own state rather than sharing one.
+	 */
+	Array.prototype.forEach.call(document.querySelectorAll('[data-compat]'), function (diagram) {
 		var svg = diagram.querySelector('[data-compat-flow]');
 		var hub = diagram.querySelector('.ant-compat-mark');
 		if (!svg || !hub) {
@@ -283,7 +733,7 @@
 		if ('ResizeObserver' in window) {
 			new ResizeObserver(schedule).observe(diagram);
 		}
-	})();
+	});
 
 	/* -------------------------------------------------------- docs search */
 

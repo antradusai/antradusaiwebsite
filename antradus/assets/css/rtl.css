@@ -118,6 +118,18 @@
 	display: inline-block;
 }
 
+/* The chooser and the fork card both end in an "onward" arrow. */
+[dir="rtl"] .ant-path-go,
+[dir="rtl"] .ant-fork-alt span {
+	transform: scaleX(-1);
+	display: inline-block;
+}
+
+[dir="rtl"] .ant-path:hover .ant-path-go,
+[dir="rtl"] .ant-fork-alt:hover span {
+	transform: scaleX(-1) translateX(3px);
+}
+
 /* =========================================================================
  * 3. The compatibility diagram
  * ====================================================================== */
@@ -256,6 +268,8 @@
 [dir="rtl"] .ant-cmp-f span,
 [dir="rtl"] .ant-rail-item-title,
 [dir="rtl"] .ant-card-title,
+[dir="rtl"] .ant-fork-plan,
+[dir="rtl"] .ant-fork-price,
 [dir="rtl"] .ant-paper-title {
 	unicode-bidi: plaintext;
 	text-align: start;
@@ -268,4 +282,34 @@
  */
 [dir="rtl"] .ant-docs-chips .ant-chip {
 	unicode-bidi: isolate;
+}
+
+/*
+ * The slider mirrors itself: the arrows are positioned with inset-inline and
+ * the slides cross-fade, which has no direction at all. The only thing left is
+ * the chevrons drawn inside the buttons - a "<" points back in English and
+ * forward in Arabic - so the glyph is flipped, not the button.
+ */
+[dir="rtl"] .ant-slider-nav svg {
+	transform: scaleX(-1);
+}
+
+/*
+ * A slide caption is the picture's own, written once in the media library, so
+ * an Arabic page can be showing a caption written in English. Left alone that
+ * is the classic bidi failure - the full stop jumps to the front of the line.
+ * plaintext lets each caption take its direction from its own first letter.
+ * The alignment stays centred, which has no direction to get wrong.
+ */
+[dir="rtl"] .ant-slide-caption {
+	unicode-bidi: plaintext;
+}
+
+/*
+ * Same as the slider's: the lightbox positions itself with inset-inline and
+ * mirrors on its own. Only the chevrons inside the two buttons are drawn
+ * pointing a particular way, so those are flipped.
+ */
+[dir="rtl"] .ant-lb-nav svg {
+	transform: scaleX(-1);
 }

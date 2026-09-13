@@ -52,9 +52,183 @@
 		$wrap.find('.antradus-image-preview').html(
 			$('<span>', {
 				'class': 'antradus-image-empty',
-				text: 'No image yet.'
+				text: strings.noImage || 'No image yet.'
 			})
 		);
+	});
+
+	/* ------------------------------------------------------ media, plural */
+
+	/*
+	 * A slider slot. The thumbnails on screen are the field - the hidden input
+	 * is rewritten from them after every add, move and remove - so there is one
+	 * place the order lives and it is the one the editor is looking at.
+	 */
+
+	function imagesSync($wrap) {
+		var values = $wrap.find('.antradus-images-item').map(function () {
+			return $(this).attr('data-value');
+		}).get();
+
+		$wrap.find('.antradus-images-value').val(values.join(','));
+		$wrap.find('.antradus-images-empty').prop('hidden', values.length > 0);
+		$wrap.find('.antradus-images-value').trigger('change');
+	}
+
+	function imagesItem(value, url) {
+		var $edit = $('<button>', {
+			type: 'button',
+			'class': 'antradus-images-edit',
+			'aria-label': strings.editImage || 'Open this picture in the media library'
+		}).append($('<img>', { src: url, alt: '' }));
+
+		var $tools = $('<span>', { 'class': 'antradus-images-tools' });
+
+		$tools.append($('<button>', {
+			type: 'button',
+			'class': 'antradus-images-move',
+			'data-dir': 'up',
+			'aria-label': strings.moveEarlier || 'Move earlier',
+			html: '&#8592;'
+		}));
+		$tools.append($('<button>', {
+			type: 'button',
+			'class': 'antradus-images-move',
+			'data-dir': 'down',
+			'aria-label': strings.moveLater || 'Move later',
+			html: '&#8594;'
+		}));
+		$tools.append($('<button>', {
+			type: 'button',
+			'class': 'antradus-images-drop',
+			'aria-label': strings.dropImage || 'Remove this picture',
+			html: '&times;'
+		}));
+
+		return $('<li>', { 'class': 'antradus-images-item', 'data-value': String(value) })
+			.append($edit)
+			.append($tools);
+	}
+
+	/*
+	 * Click a thumbnail and WordPress's own media modal opens on that picture,
+	 * which is where its caption, alt text and title are written - the caption
+	 * a slide shows on the site belongs to the file, so it is edited where the
+	 * file is. The modal saves those fields by itself as they are typed.
+	 *
+	 * Picking a different picture before closing swaps this one for it, in
+	 * place, keeping its position in the slide order.
+	 */
+	$(document).on('click', '.antradus-images-edit', function (e) {
+		e.preventDefault();
+
+		var $item = $(this).closest('.antradus-images-item');
+		var $wrap = $item.closest('.antradus-images');
+		var id = parseInt($item.attr('data-value'), 10);
+		if (!id) {
+			return; // A pasted URL is not in the library and has nothing to open.
+		}
+
+		var frame = wp.media({
+			title: strings.editImage || 'Picture details',
+			button: { text: strings.doneImage || 'Done' },
+			library: { type: 'image' },
+			multiple: false
+		});
+
+		// Open on this picture, with its details showing in the sidebar.
+		frame.on('open', function () {
+			var selection = frame.state().get('selection');
+			var attachment = wp.media.attachment(id);
+			attachment.fetch();
+			selection.reset([attachment]);
+		});
+
+		frame.on('select', function () {
+			var picked = frame.state().get('selection').first();
+			if (!picked) {
+				return;
+			}
+			var data = picked.toJSON();
+			if (data.id === id) {
+				return; // Same picture - they came to edit it, not replace it.
+			}
+			if ($wrap.find('.antradus-images-item[data-value="' + data.id + '"]').length) {
+				return; // Already somewhere in this slot.
+			}
+			var url = (data.sizes && data.sizes.medium) ? data.sizes.medium.url : data.url;
+			$item.attr('data-value', data.id).find('img').attr('src', url);
+			imagesSync($wrap);
+		});
+
+		frame.open();
+	});
+
+	$(document).on('click', '.antradus-images-pick', function (e) {
+		e.preventDefault();
+
+		var $wrap = $(this).closest('.antradus-images');
+		var $list = $wrap.find('.antradus-images-list');
+		var max = parseInt($wrap.find('.antradus-images-value').data('max'), 10) || 8;
+
+		var frame = wp.media({
+			title: strings.chooseImages || 'Add pictures',
+			button: { text: strings.useImages || 'Add these pictures' },
+			library: { type: 'image' },
+			multiple: 'add'
+		});
+
+		frame.on('select', function () {
+			// Whatever was picked is appended, in the order it was picked, and
+			// anything already in the list is ignored rather than repeated.
+			frame.state().get('selection').each(function (item) {
+				var data = item.toJSON();
+				var url = data.url;
+
+				if ($list.children('[data-value="' + data.id + '"]').length) {
+					return;
+				}
+				if ($list.children().length >= max) {
+					return;
+				}
+				if (data.sizes && data.sizes.medium) {
+					url = data.sizes.medium.url;
+				}
+				$list.append(imagesItem(data.id, url));
+			});
+			imagesSync($wrap);
+		});
+
+		frame.open();
+	});
+
+	$(document).on('click', '.antradus-images-move', function (e) {
+		e.preventDefault();
+		var $item = $(this).closest('.antradus-images-item');
+
+		if ($(this).attr('data-dir') === 'up') {
+			$item.prev('.antradus-images-item').before($item);
+		} else {
+			$item.next('.antradus-images-item').after($item);
+		}
+		imagesSync($item.closest('.antradus-images'));
+	});
+
+	$(document).on('click', '.antradus-images-drop', function (e) {
+		e.preventDefault();
+		var $wrap = $(this).closest('.antradus-images');
+		$(this).closest('.antradus-images-item').remove();
+		imagesSync($wrap);
+	});
+
+	$(document).on('click', '.antradus-images-clear', function (e) {
+		e.preventDefault();
+		if (!window.confirm(strings.confirmClear || 'Remove every picture from this slot?')) {
+			return;
+		}
+		var $wrap = $(this).closest('.antradus-images');
+		$wrap.find('.antradus-images-list').empty();
+		imagesSync($wrap);
 	});
 
 	/* ---------------------------------------------------------- repeaters */
@@ -154,6 +328,32 @@
 		var $name = $row.find('.antradus-rep-name');
 		var value = $.trim(this.value);
 		$name.text(value || $row.closest('.antradus-rep').data('single') || 'Item');
+	});
+
+	/* ----------------------------------------------------- section order */
+
+	/*
+	 * Moving a section is moving its row: the hidden input travels with it, and
+	 * the form posts the keys in the order they are left on screen. Only the
+	 * visible numbers have to be redrawn afterwards.
+	 */
+	function renumberOrder($list) {
+		$list.find('.antradus-order-num').each(function (i) {
+			this.textContent = String(i + 1);
+		});
+	}
+
+	$(document).on('click', '.antradus-order-up, .antradus-order-down', function (e) {
+		e.preventDefault();
+		var $row = $(this).closest('.antradus-order-row');
+		var $list = $row.closest('.antradus-order');
+
+		if ($(this).hasClass('antradus-order-up')) {
+			$row.prev('.antradus-order-row').before($row);
+		} else {
+			$row.next('.antradus-order-row').after($row);
+		}
+		renumberOrder($list);
 	});
 
 	/* ------------------------------------------------- unsaved-work guard */

@@ -7,8 +7,12 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ANTRADUS_VERSION', '2.5.0' );
+define( 'ANTRADUS_VERSION', '2.12.0' );
 define( 'ANTRADUS_OPTION', 'antradus_theme_options' );
+
+// How many pictures one slider slot will keep. A hero that needs a tenth slide
+// needs a shorter hero.
+define( 'ANTRADUS_MAX_SLIDES', 8 );
 
 /*
  * No one edits theme or plugin files from inside wp-admin on this site. The
@@ -27,6 +31,7 @@ require_once get_template_directory() . '/inc/defaults-ar.php';
 require_once get_template_directory() . '/inc/i18n.php';
 require_once get_template_directory() . '/inc/strings-ar.php';
 require_once get_template_directory() . '/inc/helpers.php';
+require_once get_template_directory() . '/inc/images.php';
 require_once get_template_directory() . '/inc/settings-schema.php';
 require_once get_template_directory() . '/inc/settings.php';
 require_once get_template_directory() . '/inc/security.php';
@@ -36,6 +41,7 @@ require_once get_template_directory() . '/inc/gallery.php';
 require_once get_template_directory() . '/inc/pricing.php';
 require_once get_template_directory() . '/inc/blog.php';
 require_once get_template_directory() . '/inc/docs.php';
+require_once get_template_directory() . '/inc/seo.php';
 
 /* ===========================================================================
  * 1. Theme support
@@ -141,6 +147,10 @@ function antradus_assets() {
 			'rtl'      => antradus_is_rtl() ? 1 : 0,
 			'lang'     => antradus_lang(),
 			'noResult' => antradus_opt( 'docs_empty', __( 'No guide matches that.', 'antradus' ) ),
+			// The lightbox is built in the browser, so its labels travel here.
+			'close'    => __( 'Close', 'antradus' ),
+			'prev'     => __( 'Previous image', 'antradus' ),
+			'next'     => __( 'Next image', 'antradus' ),
 		)
 	);
 

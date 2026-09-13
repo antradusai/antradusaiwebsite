@@ -1,22 +1,34 @@
 <?php
 /**
- * Home - compatibility: what goes in on the left, what comes out on the right.
+ * Compatibility: what goes in on the left, what comes out on the right.
+ *
+ * Written once and rendered wherever the diagram belongs. The home page shows
+ * every source and destination the plugin has; an audience page shows the
+ * subset that audience actually uses, under its own keys - so the studio page
+ * can list the podcast hosts and leave out the keyword sources without the two
+ * diagrams drifting apart in layout.
+ *
+ * Which set of keys to read arrives as `prefix`: '' for the home page's
+ * `home_compat_*`, 'std_' for the studio page's `std_compat_*`.
  *
  * @package Antradus
  */
 
 defined( 'ABSPATH' ) || exit;
 
-$antradus_title = antradus_opt( 'home_compat_title', '' );
-$antradus_in    = antradus_rows( 'home_compat_in' );
-$antradus_out   = antradus_rows( 'home_compat_out' );
+$antradus_p = isset( $args['prefix'] ) ? (string) $args['prefix'] : '';
+$antradus_k = ( '' === $antradus_p ) ? 'home_compat_' : $antradus_p . 'compat_';
+
+$antradus_title = antradus_opt( $antradus_k . 'title', '' );
+$antradus_in    = antradus_rows( $antradus_k . 'in' );
+$antradus_out   = antradus_rows( $antradus_k . 'out' );
 if ( '' === trim( $antradus_title ) || ( ! $antradus_in && ! $antradus_out ) ) {
 	return;
 }
 
-$antradus_centre = antradus_image_url( antradus_opt( 'home_compat_center', '' ), 'medium' );
+$antradus_centre = antradus_image_full_url( antradus_opt( $antradus_k . 'center', '' ) );
 if ( '' === $antradus_centre ) {
-	$antradus_centre = antradus_image_url( antradus_opt( 'brand_logo', '' ), 'medium' );
+	$antradus_centre = antradus_image_full_url( antradus_opt( 'brand_logo', '' ) );
 }
 
 ?>
@@ -25,9 +37,9 @@ if ( '' === $antradus_centre ) {
 
 		<?php
 		antradus_section_head(
-			antradus_opt( 'home_compat_eyebrow', '' ),
+			antradus_opt( $antradus_k . 'eyebrow', '' ),
 			$antradus_title,
-			antradus_opt( 'home_compat_sub', '' )
+			antradus_opt( $antradus_k . 'sub', '' )
 		);
 		?>
 

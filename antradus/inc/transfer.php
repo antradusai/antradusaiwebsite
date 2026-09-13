@@ -52,9 +52,13 @@ const ANTRADUS_EMBED_MAX_TOTAL = 25165824; // 24 MB.
  * ========================================================================= */
 
 /**
- * Every image field in the schema, as key => 'field' or key => sub-key list.
+ * Every image field in the schema, split by the shape of what it holds.
  *
- * @return array{plain:string[],repeaters:array<string,string[]>}
+ * Three shapes, because there are three ways a picture is stored: one field
+ * holding one image, one field holding a comma-separated list of them (a
+ * slider), and a repeater whose rows each hold one.
+ *
+ * @return array{plain:string[],lists:string[],repeaters:array<string,string[]>}
  */
 function antradus_image_fields() {
 	static $map = null;
@@ -63,12 +67,17 @@ function antradus_image_fields() {
 	}
 	$map = array(
 		'plain'     => array(),
+		'lists'     => array(),
 		'repeaters' => array(),
 	);
 	foreach ( antradus_schema_fields() as $key => $field ) {
 		$type = isset( $field['type'] ) ? $field['type'] : 'text';
 		if ( 'image' === $type ) {
 			$map['plain'][] = $key;
+			continue;
+		}
+		if ( 'images' === $type ) {
+			$map['lists'][] = $key;
 			continue;
 		}
 		if ( 'repeater' === $type && ! empty( $field['fields'] ) ) {
@@ -153,6 +162,21 @@ function antradus_expand_images( $values, &$budget ) {
 		if ( isset( $values[ $key ] ) && '' !== $values[ $key ] ) {
 			$values[ $key ] = antradus_describe_image( $values[ $key ], $budget );
 		}
+	}
+
+	// A slider goes out as a list of descriptors, in slide order.
+	foreach ( $fields['lists'] as $key ) {
+		if ( ! isset( $values[ $key ] ) || '' === $values[ $key ] ) {
+			continue;
+		}
+		$described = array();
+		foreach ( antradus_image_list( $values[ $key ] ) as $one ) {
+			$one = antradus_describe_image( $one, $budget );
+			if ( '' !== $one ) {
+				$described[] = $one;
+			}
+		}
+		$values[ $key ] = $described;
 	}
 
 	foreach ( $fields['repeaters'] as $key => $subs ) {
@@ -354,6 +378,30 @@ function antradus_restore_images( $values, &$report ) {
 		if ( isset( $values[ $key ] ) && '' !== $values[ $key ] ) {
 			$values[ $key ] = antradus_restore_image( $values[ $key ], $report );
 		}
+	}
+
+	/*
+	 * A slider comes back as a list and is stored as one string again. A file
+	 * written before this field held more than one picture carries a single
+	 * descriptor rather than a list, which is why the shape is checked here:
+	 * an older export still imports, as one slide.
+	 */
+	foreach ( $fields['lists'] as $key ) {
+		if ( ! isset( $values[ $key ] ) || '' === $values[ $key ] ) {
+			continue;
+		}
+		$incoming = $values[ $key ];
+		if ( ! is_array( $incoming ) || isset( $incoming['__antradus_image'] ) ) {
+			$incoming = array( $incoming );
+		}
+		$restored = array();
+		foreach ( $incoming as $one ) {
+			$one = antradus_restore_image( $one, $report );
+			if ( '' !== $one && ! in_array( $one, $restored, true ) ) {
+				$restored[] = $one;
+			}
+		}
+		$values[ $key ] = implode( ',', $restored );
 	}
 
 	foreach ( $fields['repeaters'] as $key => $subs ) {

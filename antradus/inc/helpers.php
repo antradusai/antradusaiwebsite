@@ -45,11 +45,22 @@ function antradus_opt( $key, $default = '' ) {
  * Rows the editor blanked out entirely are dropped, so clearing every field in
  * a row is how you delete it even without touching the Remove button.
  *
- * @param string $key Field key.
+ * A language can be named to read the rows as that language has them, rather
+ * than as the page is being rendered. Only one caller wants that - matching a
+ * plan by the English name an editor typed into a field both languages share -
+ * and it is the reason this takes a second argument at all.
+ *
+ * @param string      $key  Field key.
+ * @param string|null $lang Language, or null for the one being rendered.
  * @return array
  */
-function antradus_rows( $key ) {
-	$val = antradus_opt( $key, array() );
+function antradus_rows( $key, $lang = null ) {
+	if ( null === $lang ) {
+		$val = antradus_opt( $key, array() );
+	} else {
+		$all = antradus_options( $lang );
+		$val = array_key_exists( $key, $all ) ? $all[ $key ] : array();
+	}
 	if ( ! is_array( $val ) ) {
 		return array();
 	}
@@ -108,48 +119,64 @@ function antradus_on( $key, $default = true ) {
  * ========================================================================= */
 
 /**
- * The seven pages this theme designs.
+ * The nine pages this theme designs.
  *
  * A page is "live" only when a published page with that slug exists. Every
  * navigation link, footer link and in-page CTA runs through antradus_page_url(),
  * so a page left in Draft never appears anywhere on the site - which is exactly
  * what you want while one is still being written.
  *
+ * The two audience pages sit directly after Home on purpose. They are the fork
+ * the site turns on - somebody who runs a website and somebody who runs a show
+ * want different feature lists and end up on different plans - so they come
+ * before the pages that answer "what does it do" and "what does it cost". The
+ * order of this array is the order of the menu.
+ *
  * @return array<string,array<string,string>>
  */
 function antradus_pages() {
 	return array(
-		'home'     => array(
+		'home'      => array(
 			'label' => __( 'Home', 'antradus' ),
 			'slug'  => 'home',
 			'nav'   => __( 'Home', 'antradus' ),
 		),
-		'features' => array(
+		'publisher' => array(
+			'label' => __( 'For publishers', 'antradus' ),
+			'slug'  => 'for-publishers',
+			'nav'   => __( 'Publishers', 'antradus' ),
+		),
+		'studio'    => array(
+			'label' => __( 'For studios', 'antradus' ),
+			'slug'  => 'for-studios',
+			'nav'   => __( 'Studios', 'antradus' ),
+		),
+		'features'  => array(
 			'label' => __( 'Plugin features', 'antradus' ),
 			'slug'  => 'plugin-features',
 			'nav'   => __( 'Features', 'antradus' ),
 		),
-		'pricing'  => array(
+		'pricing'   => array(
 			'label' => __( 'Pricing', 'antradus' ),
 			'slug'  => 'pricing',
 			'nav'   => __( 'Pricing', 'antradus' ),
 		),
-		'docs'     => array(
+		'docs'      => array(
 			'label' => __( 'Docs', 'antradus' ),
 			'slug'  => 'docs',
 			'nav'   => __( 'Docs', 'antradus' ),
 		),
-		'blog'     => array(
+		'blog'      => array(
 			'label' => __( 'Blog', 'antradus' ),
 			'slug'  => 'blog',
 			'nav'   => __( 'Blog', 'antradus' ),
 		),
-		'contact'  => array(
+		'contact'   => array(
 			'label' => __( 'Contact', 'antradus' ),
 			'slug'  => 'contact',
 			'nav'   => __( 'Contact', 'antradus' ),
 		),
-		'welcome'  => array(
+		'welcome'   => array(
 			'label' => __( 'Welcome', 'antradus' ),
 			'slug'  => 'welcome',
 			'nav'   => __( 'Newsletter', 'antradus' ),
@@ -334,16 +361,21 @@ function antradus_current_page_key() {
  * ========================================================================= */
 
 /**
- * Turn a stored image value into a URL.
+ * Turn a stored image value into a URL, at a named size.
  *
  * Stored values are either an attachment ID (what the media picker writes) or
  * a plain URL (what a paste writes). Both are accepted.
+ *
+ * The size only means anything in wp-admin, where the settings screen wants a
+ * small copy for a preview. On the front end `inc/images.php` answers every
+ * size with the uploaded file, so front-end code should say what it means and
+ * call antradus_image_full_url() instead.
  *
  * @param string $value Stored value.
  * @param string $size  Image size for attachment IDs.
  * @return string
  */
-function antradus_image_url( $value, $size = 'large' ) {
+function antradus_image_url( $value, $size = 'full' ) {
 	$value = trim( (string) $value );
 	if ( '' === $value ) {
 		return '';
@@ -353,6 +385,158 @@ function antradus_image_url( $value, $size = 'large' ) {
 		return $url ? $url : '';
 	}
 	return esc_url_raw( $value );
+}
+
+/**
+ * Split a stored image-list value into single image values.
+ *
+ * A slider field stores its pictures as one comma-separated list of attachment
+ * IDs, which is why it is a string rather than an array: it goes through the
+ * same option row, the same sanitizer and the same translation merge as every
+ * other field, instead of needing a second shape for one setting.
+ *
+ * @param string $value Stored value.
+ * @return string[]
+ */
+function antradus_image_list( $value ) {
+	$out = array();
+	foreach ( explode( ',', (string) $value ) as $one ) {
+		$one = trim( $one );
+		if ( '' !== $one ) {
+			$out[] = $one;
+		}
+	}
+	return $out;
+}
+
+/**
+ * The picture behind a stored value: its address, and its size when that can
+ * be known.
+ *
+ * WordPress does not hand back the file you gave it. Anything wider than the
+ * "big image" threshold - 2560px unless a site changes it - is quietly resized
+ * on upload, the resized copy is stored as `-scaled`, and that copy is what the
+ * `full` size returns. For a photograph that is a kindness. For a screenshot of
+ * an interface it is the difference between reading the text in it and not, so
+ * every picture on this site asks for the file itself. `inc/images.php` is
+ * where that rule is kept, and this reads it rather than repeating it.
+ *
+ * An attachment can be measured. A pasted URL is already the file and points at
+ * somebody else's server, so there is nothing here to measure and its size
+ * comes back as zero - a caller leaves the attributes off rather than guessing.
+ *
+ * @param string $value Stored value: an attachment ID or a URL.
+ * @return array{url:string,width:int,height:int}|null Null when there is no picture.
+ */
+function antradus_image_file( $value ) {
+	$value = trim( (string) $value );
+	if ( '' === $value ) {
+		return null;
+	}
+
+	if ( ! ctype_digit( $value ) ) {
+		return array(
+			'url'    => esc_url_raw( $value ),
+			'width'  => 0,
+			'height' => 0,
+		);
+	}
+
+	$file = antradus_original_image( (int) $value );
+	if ( $file ) {
+		return $file;
+	}
+
+	// Not an image - an ID that was deleted, or a file with no picture in it.
+	$url = wp_get_attachment_url( (int) $value );
+	if ( ! $url ) {
+		return null;
+	}
+	return array(
+		'url'    => $url,
+		'width'  => 0,
+		'height' => 0,
+	);
+}
+
+/**
+ * The address of the picture as it was uploaded, for a caller that wants only
+ * the address.
+ *
+ * @param string $value Stored value: an attachment ID or a URL.
+ * @return string
+ */
+function antradus_image_full_url( $value ) {
+	$file = antradus_image_file( $value );
+	return $file ? $file['url'] : '';
+}
+
+/**
+ * The caption written on a picture in the media library.
+ *
+ * Only an attachment has one. A pasted URL points at a file on somebody else's
+ * server and there is nothing here to read a caption from, so it has none - and
+ * a slot mixing the two simply shows captions for the slides that have them.
+ *
+ * The caption is the file's, not the page's, which means it is the same in both
+ * languages. That is the right trade for a screenshot label, and it is the same
+ * rule every other image on this site already follows.
+ *
+ * @param string $value Stored value: an attachment ID or a URL.
+ * @return string
+ */
+function antradus_image_caption( $value ) {
+	$value = trim( (string) $value );
+	if ( '' === $value || ! ctype_digit( $value ) ) {
+		return '';
+	}
+	return trim( (string) wp_get_attachment_caption( (int) $value ) );
+}
+
+/**
+ * Render one picture from a stored value, or the placeholder when it is empty.
+ *
+ * The value, not the key: a slider hands this one slide at a time out of a
+ * list, and a plain image slot hands it the whole setting.
+ *
+ * A picture standing on its own is drawn whole, at its own shape. The slot's
+ * ratio is what the design expects, not a promise about the file, and cropping
+ * a screenshot to it cuts the ends off the very sentences the picture is there
+ * to show. A slider is the exception and sets the ratio itself, because its
+ * slides are stacked in one box and that box needs a height before the second
+ * picture is ever loaded; so is a card in a grid, where the pictures line up
+ * with each other. Neither is this.
+ *
+ * The width and height attributes take the ratio's place: they let the browser
+ * keep the right amount of room while the file is on its way, which is what the
+ * ratio was really buying. An attachment can be measured, a pasted URL cannot,
+ * and for that one the attributes are left off rather than guessed at.
+ *
+ * @param string $value Stored value: an attachment ID or a URL.
+ * @param array  $args  ratio, label, class, alt, eager.
+ */
+function antradus_image_tag( $value, $args ) {
+	$file  = antradus_image_file( $value );
+	$class = trim( 'ant-media ' . $args['class'] );
+
+	if ( ! $file ) {
+		antradus_placeholder( $args['label'], $args['ratio'], $args['class'] );
+		return;
+	}
+
+	$size = '';
+	if ( $file['width'] > 0 && $file['height'] > 0 ) {
+		$size = sprintf( ' width="%d" height="%d"', (int) $file['width'], (int) $file['height'] );
+	}
+
+	printf(
+		'<img class="%1$s" src="%2$s" alt="%3$s"%4$s %5$s decoding="async">',
+		esc_attr( $class ),
+		esc_url( $file['url'] ),
+		esc_attr( $args['alt'] ),
+		$size, // phpcs:ignore WordPress.Security.EscapeOutput -- two integers, printed above.
+		$args['eager'] ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"'
+	);
 }
 
 /**
@@ -376,38 +560,194 @@ function antradus_image( $key, $args = array() ) {
 		)
 	);
 
-	$value = antradus_opt( $key, '' );
-	$url   = antradus_image_url( $value, 'full' );
-	$class = trim( 'ant-media ' . $args['class'] );
+	$args['label'] = $args['label'] ? $args['label'] : $key;
 
-	if ( '' === $url ) {
-		antradus_placeholder( $args['label'] ? $args['label'] : $key, $args['ratio'], $args['class'] );
+	antradus_image_tag( antradus_opt( $key, '' ), $args );
+}
+
+/**
+ * Render an image slot that holds more than one picture, as a slider.
+ *
+ * The count decides the markup, not a setting. One picture is a picture - it
+ * gets the same single tag it always had, with no arrows to press and no
+ * script to load. The slider only exists from the second picture onwards, so
+ * an editor turns it on by adding a second image and off by removing one, and
+ * a page that has never been touched keeps the design it shipped with.
+ *
+ * Slides cross-fade in place rather than sliding along a track. That is a
+ * deliberate choice for a right-to-left site: a fade has no direction to
+ * mirror, so the Arabic hero behaves identically to the English one without a
+ * second code path deciding which way "next" points.
+ *
+ * @param string $key  Option key holding the list.
+ * @param array  $args ratio, label, class, alt, eager, delay.
+ */
+function antradus_slider( $key, $args = array() ) {
+	$args = wp_parse_args(
+		$args,
+		array(
+			'ratio' => '16 / 9',
+			'label' => '',
+			'class' => '',
+			'alt'   => '',
+			'eager' => false,
+			'delay' => 6000,
+		)
+	);
+
+	$args['label'] = $args['label'] ? $args['label'] : $key;
+
+	// A value that no longer resolves - a deleted attachment - is not a slide.
+	$slides = array();
+	foreach ( antradus_image_list( antradus_opt( $key, '' ) ) as $one ) {
+		if ( '' !== antradus_image_full_url( $one ) ) {
+			$slides[] = $one;
+		}
+	}
+
+	if ( count( $slides ) < 2 ) {
+		antradus_image_tag( $slides ? $slides[0] : '', $args );
 		return;
 	}
 
-	if ( ctype_digit( trim( (string) $value ) ) ) {
-		echo wp_get_attachment_image(
-			(int) $value,
-			'full',
-			false,
-			array(
-				'class'   => $class,
-				'alt'     => $args['alt'],
-				'style'   => 'aspect-ratio:' . $args['ratio'],
-				'loading' => $args['eager'] ? 'eager' : 'lazy',
-			)
-		);
-		return;
+	$total = count( $slides );
+
+	/*
+	 * Captions come from the media library, not from a settings field: it is
+	 * the picture's own caption, written once where the picture is, and it
+	 * follows the file if the same shot is used on a second page. The row is
+	 * printed only when at least one slide has one, so a site that never writes
+	 * captions gets exactly the slider it had before.
+	 */
+	$captions = array();
+	$has_caption = false;
+	foreach ( $slides as $slide ) {
+		$caption = antradus_image_caption( $slide );
+		$captions[] = $caption;
+		$has_caption = $has_caption || '' !== $caption;
 	}
 
 	printf(
-		'<img class="%1$s" src="%2$s" alt="%3$s" style="aspect-ratio:%4$s" loading="%5$s" decoding="async">',
-		esc_attr( $class ),
-		esc_url( $url ),
-		esc_attr( $args['alt'] ),
-		esc_attr( $args['ratio'] ),
-		$args['eager'] ? 'eager' : 'lazy'
+		'<div class="ant-slider" data-slider data-slider-delay="%1$d" role="group" aria-roledescription="%2$s" aria-label="%3$s">',
+		(int) $args['delay'],
+		esc_attr__( 'image slider', 'antradus' ),
+		esc_attr( $args['label'] )
 	);
+
+	printf( '<div class="ant-slider-stage" style="aspect-ratio:%s">', esc_attr( $args['ratio'] ) );
+	echo '<ul class="ant-slider-track">';
+
+	/*
+	 * Every slide is the uploaded file at its own resolution, with no srcset -
+	 * which is the rule for every picture on this site, and `inc/images.php` is
+	 * where it is argued for.
+	 *
+	 * The weight that costs is paid back here by loading them one at a time.
+	 * `loading="lazy"` is no help - the slides are stacked in the same box, so
+	 * every one of them is in the viewport from the first frame and a browser
+	 * fetches the lot. Only the first slide carries a `src`; the rest carry the
+	 * address in `data-src` and the script fills it in just before the slide is
+	 * needed. Turn the script off and the first slide is the only one that can
+	 * be reached anyway.
+	 */
+	foreach ( $slides as $index => $slide ) {
+		$url     = antradus_image_full_url( $slide );
+		$first   = ( 0 === $index );
+		$caption = $captions[ $index ];
+
+		printf(
+			'<li class="ant-slide%1$s" data-slide %2$s>',
+			$first ? ' is-current' : '',
+			$first ? '' : 'aria-hidden="true"'
+		);
+
+		/*
+		 * The picture is inside a button, because opening it full size is
+		 * something you do to it - and a button is the one control that a
+		 * keyboard, a screen reader and a thumb all already know how to use.
+		 * Only the current slide's button is reachable; the script moves that
+		 * along with the slide.
+		 */
+		printf(
+			'<button type="button" class="ant-slide-open" data-slide-open data-full="%1$s" data-caption="%2$s"%3$s aria-label="%4$s">',
+			esc_url( $url ),
+			esc_attr( $caption ),
+			$first ? '' : ' tabindex="-1"',
+			esc_attr(
+				$caption
+					/* translators: %s: the picture's caption. */
+					? sprintf( __( 'View full size: %s', 'antradus' ), $caption )
+					: __( 'View this picture full size', 'antradus' )
+			)
+		);
+
+		printf(
+			'<img class="ant-media" %1$s="%2$s" alt="%3$s" style="aspect-ratio:%4$s" %5$s decoding="async">',
+			$first ? 'src' : 'data-src',
+			esc_url( $url ),
+			esc_attr( $args['alt'] ),
+			esc_attr( $args['ratio'] ),
+			$first && $args['eager'] ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"'
+		);
+
+		echo '</button></li>';
+	}
+
+	echo '</ul>';
+
+	printf(
+		'<button type="button" class="ant-slider-nav ant-slider-prev" data-slider-prev aria-label="%s">'
+		. '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true">'
+		. '<path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
+		. '</svg></button>',
+		esc_attr__( 'Previous image', 'antradus' )
+	);
+	printf(
+		'<button type="button" class="ant-slider-nav ant-slider-next" data-slider-next aria-label="%s">'
+		. '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true">'
+		. '<path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
+		. '</svg></button>',
+		esc_attr__( 'Next image', 'antradus' )
+	);
+
+	echo '<div class="ant-slider-dots">';
+	foreach ( $slides as $index => $slide ) {
+		printf(
+			'<button type="button" class="ant-slider-dot%1$s" data-slider-dot %2$s aria-label="%3$s"><span></span></button>',
+			0 === $index ? ' is-current' : '',
+			0 === $index ? 'aria-current="true"' : '',
+			/* translators: 1: number of this image, 2: how many there are. */
+			esc_attr( sprintf( __( 'Image %1$d of %2$d', 'antradus' ), $index + 1, $total ) )
+		);
+	}
+	echo '</div>';
+
+	echo '</div>';
+
+	/*
+	 * Below the picture, outside the stage - a caption printed over a photo is
+	 * a label, and this is a line of text about it.
+	 *
+	 * Every caption is printed at once, stacked in one grid cell, with only the
+	 * current one visible. That is what keeps the row exactly as tall as the
+	 * longest caption from the first frame onwards: swapping the text instead
+	 * would make the hero grow or shrink by a line every few seconds, and drag
+	 * the rest of the page with it.
+	 */
+	if ( $has_caption ) {
+		echo '<div class="ant-slider-captions">';
+		foreach ( $captions as $index => $caption ) {
+			printf(
+				'<p class="ant-slide-caption%1$s" data-slide-caption %2$s>%3$s</p>',
+				0 === $index ? ' is-current' : '',
+				0 === $index ? '' : 'aria-hidden="true"',
+				esc_html( $caption )
+			);
+		}
+		echo '</div>';
+	}
+
+	echo '</div>';
 }
 
 /**
@@ -485,6 +825,61 @@ function antradus_lines( $text ) {
 }
 
 /**
+ * The audience pages' movable sections, in the order they ship in.
+ *
+ * One list, read by the template that renders them and by the settings screen
+ * that reorders them - so a section cannot appear in the chooser without
+ * appearing on the page, or the other way round. The hero is deliberately not
+ * here: it is the page's opening, and nothing good comes of moving it.
+ *
+ * @return array<string,string> Key => the name an editor sees.
+ */
+function antradus_audience_sections_list() {
+	return array(
+		'signals' => __( 'Is this you?', 'antradus' ),
+		'content' => __( 'Whatever the page itself holds', 'antradus' ),
+		'trends'  => __( 'Writing from what is trending', 'antradus' ),
+		'groups'  => __( 'What it does for them', 'antradus' ),
+		'flow'    => __( 'How it actually goes', 'antradus' ),
+		'compat'  => __( 'What it plugs into', 'antradus' ),
+		'plan'    => __( 'The plan this maps to', 'antradus' ),
+		'switch'  => __( 'The way back out', 'antradus' ),
+	);
+}
+
+/**
+ * The order a page's sections should be rendered in.
+ *
+ * The stored value is a comma-separated list of section keys. It is never
+ * trusted to be complete: a key that no longer exists is dropped and a section
+ * added to the theme after the order was saved is appended rather than
+ * silently disappearing from the page. That is the whole reason this is a
+ * function and not a bare explode - a new section must show up on every site
+ * that already saved an order, without anyone reopening the settings screen.
+ *
+ * @param string   $key   Option key holding the order.
+ * @param string[] $known Every section key, in their shipped order.
+ * @return string[]
+ */
+function antradus_section_order( $key, $known ) {
+	$stored = antradus_opt( $key, '' );
+	$wanted = array_filter( array_map( 'trim', explode( ',', (string) $stored ) ) );
+
+	$out = array();
+	foreach ( $wanted as $one ) {
+		if ( in_array( $one, $known, true ) && ! in_array( $one, $out, true ) ) {
+			$out[] = $one;
+		}
+	}
+	foreach ( $known as $one ) {
+		if ( ! in_array( $one, $out, true ) ) {
+			$out[] = $one;
+		}
+	}
+	return $out;
+}
+
+/**
  * Render a button, but only if its destination actually exists.
  *
  * @param string $label   Button text.
@@ -509,6 +904,65 @@ function antradus_button( $label, $target, $variant = 'primary', $attrs = array(
 		$extra, // phpcs:ignore WordPress.Security.EscapeOutput -- assembled from esc_attr() above.
 		esc_html( $label )
 	);
+}
+
+/**
+ * The "which one are you?" chooser.
+ *
+ * Two links that send a reader to the page written for them. It is printed in
+ * the home hero and again under the pricing cards, which is the whole reason
+ * it is a function: the same fork asked in the two places a visitor is most
+ * likely to be undecided, worded once.
+ *
+ * A row whose destination is a draft page resolves to '' and is skipped, and
+ * if that leaves nothing the block is not printed at all - the same rule every
+ * other link in the theme follows.
+ *
+ * @param string $rows_key  Repeater option key: icon, label, text, cta_url.
+ * @param string $label_key Option key of the small line above the links.
+ * @param string $class     Extra classes on the wrapper.
+ */
+function antradus_render_paths( $rows_key, $label_key = '', $class = '' ) {
+	$rows  = antradus_rows( $rows_key );
+	$links = array();
+
+	foreach ( $rows as $row ) {
+		$url   = antradus_link( antradus_cell( $row, 'cta_url' ) );
+		$label = antradus_cell( $row, 'label' );
+		if ( '' === $url || '' === $label ) {
+			continue;
+		}
+		$links[] = array(
+			'url'   => $url,
+			'label' => $label,
+			'text'  => antradus_cell( $row, 'text' ),
+			'icon'  => antradus_cell( $row, 'icon', 'spark' ),
+		);
+	}
+
+	if ( ! $links ) {
+		return;
+	}
+
+	$label = $label_key ? trim( (string) antradus_opt( $label_key, '' ) ) : '';
+
+	echo '<div class="ant-paths ' . esc_attr( $class ) . '">';
+	if ( '' !== $label ) {
+		echo '<p class="ant-paths-label">' . esc_html( $label ) . '</p>';
+	}
+	echo '<ul class="ant-paths-list">';
+	foreach ( $links as $link ) {
+		echo '<li><a class="ant-path" href="' . esc_url( $link['url'] ) . '">';
+		echo '<span class="ant-path-ic">' . antradus_icon( $link['icon'], 19 ) . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput -- static markup.
+		echo '<span class="ant-path-copy"><b>' . esc_html( $link['label'] ) . '</b>';
+		if ( '' !== $link['text'] ) {
+			echo '<span>' . esc_html( $link['text'] ) . '</span>';
+		}
+		echo '</span>';
+		echo '<span class="ant-path-go" aria-hidden="true">&rarr;</span>';
+		echo '</a></li>';
+	}
+	echo '</ul></div>';
 }
 
 /**
@@ -592,7 +1046,7 @@ function antradus_compat_column( $rows, $title, $side ) {
 	echo '<ul>';
 	foreach ( $rows as $row ) {
 		$name = antradus_cell( $row, 'name' );
-		$url  = antradus_image_url( antradus_cell( $row, 'image' ), 'thumbnail' );
+		$url  = antradus_image_full_url( antradus_cell( $row, 'image' ) );
 		echo '<li class="ant-glass ant-compat-item">';
 		if ( $url ) {
 			printf( '<img src="%s" alt="" loading="lazy" decoding="async">', esc_url( $url ) );

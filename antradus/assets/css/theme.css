@@ -26,6 +26,7 @@
  *   17. Quotations
  *   18. Contact cards
  *   19. Wider layouts
+ *   20. The two audiences: the chooser, the fork, the audience pages
  *
  * Right-to-left lives in rtl.css, loaded only on Arabic pages.
  */
@@ -325,6 +326,10 @@ body.ant-site {
 
 .ant-grid--3 {
 	grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.ant-grid--4 {
+	grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .ant-grid--cards {
@@ -641,6 +646,393 @@ body.ant-site {
 .ant-ph-hint {
 	color: var(--ant-ink-4);
 	font-size: 12.5px;
+}
+
+/* -------------------------------------------------------------- sliders */
+
+/*
+ * An image slot holding more than one picture. Every slide is stacked in the
+ * same box and only the current one is opaque, so the frame never changes
+ * height between slides and the layout around it cannot move - which is the
+ * whole reason this is a fade and not a track that slides.
+ *
+ * Nothing here is directional, so there is nothing for rtl.css to mirror
+ * except the two arrow glyphs.
+ */
+.ant-slider {
+	position: relative;
+}
+
+.ant-slider-stage {
+	position: relative;
+	overflow: hidden;
+	border-radius: var(--ant-r);
+	background: var(--ant-tint);
+}
+
+.ant-slider-track {
+	position: absolute;
+	inset: 0;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.ant-slide {
+	position: absolute;
+	inset: 0;
+	opacity: 0;
+	transition: opacity 600ms ease;
+}
+
+.ant-slide.is-current {
+	opacity: 1;
+}
+
+/*
+ * Specific enough to beat the frame rules further down the file, which round
+ * the corners of a lone hero picture. Inside a slider the stage is what has
+ * the corners, so a slide rounded again would show the stage's tint in four
+ * little arcs.
+ */
+.ant-slider .ant-slide .ant-media {
+	width: 100%;
+	height: 100%;
+	border-radius: 0;
+	object-fit: cover;
+}
+
+.ant-slider-nav {
+	position: absolute;
+	top: 50%;
+	z-index: 2;
+	display: grid;
+	place-items: center;
+	width: 42px;
+	height: 42px;
+	padding: 0;
+	background: rgba(255, 255, 255, .86);
+	border: 1px solid var(--ant-glass-edge);
+	border-radius: 50%;
+	box-shadow: var(--ant-sh-2);
+	color: var(--ant-ink);
+	cursor: pointer;
+	opacity: 0;
+	transform: translateY(-50%);
+	transition: opacity 200ms ease, background 200ms ease, transform 200ms ease;
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
+}
+
+/*
+ * The arrows are for the reader who wants to go back, so they stay out of the
+ * picture until there is a pointer on it - but they are never hidden from the
+ * keyboard, which has no other way to reach them.
+ */
+.ant-slider:hover .ant-slider-nav,
+.ant-slider-nav:focus-visible {
+	opacity: 1;
+}
+
+.ant-slider-nav:hover {
+	background: #fff;
+	color: var(--ant-accent-deep);
+	transform: translateY(-50%) scale(1.06);
+}
+
+.ant-slider-prev {
+	inset-inline-start: 12px;
+}
+
+.ant-slider-next {
+	inset-inline-end: 12px;
+}
+
+.ant-slider-dots {
+	position: absolute;
+	inset-inline: 0;
+	bottom: 12px;
+	z-index: 2;
+	display: flex;
+	justify-content: center;
+	gap: 7px;
+	padding: 6px 10px;
+	margin: 0 auto;
+	width: -moz-fit-content;
+	width: fit-content;
+	background: rgba(255, 255, 255, .74);
+	border: 1px solid var(--ant-glass-edge);
+	border-radius: 999px;
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
+}
+
+.ant-slider-dot {
+	display: grid;
+	place-items: center;
+	width: 20px;
+	height: 20px;
+	padding: 0;
+	background: none;
+	border: 0;
+	cursor: pointer;
+}
+
+.ant-slider-dot span {
+	display: block;
+	width: 7px;
+	height: 7px;
+	border-radius: 999px;
+	background: rgba(var(--ant-accent-rgb), .3);
+	transition: width 220ms ease, background 220ms ease;
+}
+
+.ant-slider-dot:hover span {
+	background: rgba(var(--ant-accent-rgb), .55);
+}
+
+.ant-slider-dot.is-current span {
+	width: 18px;
+	background: var(--ant-accent);
+}
+
+/*
+ * The picture is a button. It should not look like one - it should look like
+ * the picture it was before, and say what it does when a pointer is on it.
+ */
+.ant-slide-open {
+	display: block;
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	background: none;
+	border: 0;
+	cursor: zoom-in;
+}
+
+.ant-slide-open:focus-visible {
+	outline: 3px solid var(--ant-accent);
+	outline-offset: -3px;
+}
+
+/*
+ * The captions, stacked in one grid cell. All of them are laid out, so the row
+ * is as tall as the longest one from the first frame and never resizes between
+ * slides - a hero that grew a line every six seconds would push the whole page
+ * down with it.
+ */
+.ant-slider-captions {
+	display: grid;
+	padding-top: 12px;
+}
+
+.ant-slide-caption {
+	grid-area: 1 / 1;
+	margin: 0;
+	color: var(--ant-ink-3);
+	font-size: 13.5px;
+	line-height: 1.55;
+	text-align: center;
+	text-wrap: balance;
+	opacity: 0;
+	transition: opacity 600ms ease;
+}
+
+.ant-slide-caption.is-current {
+	opacity: 1;
+}
+
+/* ---- the lightbox ---- */
+
+/*
+ * The picture over the page, at the size it was uploaded. It is the one place
+ * in this design that is dark: a screenshot is judged against what surrounds
+ * it, and a white page around a white interface hides the edges of the thing
+ * you opened it to look at.
+ */
+.ant-lb-shut,
+.ant-lb-shut body {
+	overflow: hidden;
+}
+
+/*
+ * Hiding the scrollbar makes the page wider by its width and shoves the layout
+ * sideways behind the veil. The script measures it; this gives it back.
+ */
+.ant-lb-shut body {
+	padding-inline-end: var(--ant-lb-gap, 0);
+}
+
+.ant-lb {
+	position: fixed;
+	inset: 0;
+	z-index: 900;
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr) auto;
+	align-items: center;
+	gap: clamp(6px, 2vw, 22px);
+	padding: clamp(14px, 3vw, 34px);
+}
+
+.ant-lb[hidden] {
+	display: none;
+}
+
+.ant-lb-veil {
+	position: absolute;
+	inset: 0;
+	background: rgba(6, 14, 32, .88);
+	-webkit-backdrop-filter: blur(6px);
+	backdrop-filter: blur(6px);
+}
+
+.ant-lb-figure {
+	position: relative;
+	z-index: 1;
+	display: grid;
+	justify-items: center;
+	gap: 14px;
+	margin: 0;
+	min-width: 0;
+}
+
+.ant-lb-img {
+	display: block;
+	/*
+	 * Never upscaled past its own pixels, never taller than the screen. A
+	 * screenshot smaller than the viewport is shown at its real size, which is
+	 * the size it is sharp at.
+	 */
+	max-width: 100%;
+	max-height: 78vh;
+	width: auto;
+	height: auto;
+	border-radius: 10px;
+	box-shadow: 0 30px 80px rgba(0, 0, 0, .5);
+	opacity: 0;
+	transition: opacity 220ms ease;
+}
+
+.ant-lb-img.is-ready {
+	opacity: 1;
+}
+
+.ant-lb-caption {
+	max-width: 70ch;
+	margin: 0;
+	color: rgba(255, 255, 255, .82);
+	font-size: 14px;
+	line-height: 1.6;
+	text-align: center;
+	text-wrap: balance;
+}
+
+.ant-lb-caption[hidden] {
+	display: none;
+}
+
+.ant-lb-nav,
+.ant-lb-close {
+	position: relative;
+	z-index: 1;
+	display: grid;
+	place-items: center;
+	width: 48px;
+	height: 48px;
+	padding: 0;
+	background: rgba(255, 255, 255, .1);
+	border: 1px solid rgba(255, 255, 255, .22);
+	border-radius: 50%;
+	color: #fff;
+	cursor: pointer;
+	transition: background 180ms ease, transform 180ms ease;
+}
+
+.ant-lb-nav:hover,
+.ant-lb-close:hover {
+	background: rgba(255, 255, 255, .2);
+	transform: scale(1.06);
+}
+
+.ant-lb-nav:focus-visible,
+.ant-lb-close:focus-visible {
+	outline: 3px solid #fff;
+	outline-offset: 3px;
+}
+
+.ant-lb-nav[hidden] {
+	/* Kept in the grid so a single picture stays centred. */
+	display: grid;
+	visibility: hidden;
+}
+
+.ant-lb-close {
+	position: absolute;
+	top: clamp(12px, 2.5vw, 26px);
+	inset-inline-end: clamp(12px, 2.5vw, 26px);
+}
+
+.ant-lb-count {
+	position: absolute;
+	z-index: 1;
+	inset-inline: 0;
+	bottom: clamp(10px, 2vw, 20px);
+	margin: 0;
+	color: rgba(255, 255, 255, .6);
+	font-size: 13px;
+	font-variant-numeric: tabular-nums;
+	text-align: center;
+}
+
+@media (max-width: 640px) {
+	.ant-lb {
+		grid-template-columns: 1fr;
+		justify-items: center;
+	}
+
+	/* No room for arrows beside the picture - swipe, or use the dots below. */
+	.ant-lb-nav {
+		position: absolute;
+		bottom: clamp(34px, 9vw, 54px);
+	}
+
+	.ant-lb-prev {
+		inset-inline-start: 16px;
+	}
+
+	.ant-lb-next {
+		inset-inline-end: 16px;
+	}
+
+	.ant-lb-img {
+		max-height: 66vh;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ant-lb-img,
+	.ant-lb-nav,
+	.ant-lb-close {
+		transition: none;
+	}
+}
+
+/* No pointer to hover with, so the arrows have to be there already. */
+@media (hover: none) {
+	.ant-slider-nav {
+		width: 36px;
+		height: 36px;
+		opacity: .92;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ant-slide,
+	.ant-slide-caption,
+	.ant-slider-nav,
+	.ant-slider-dot span {
+		transition: none;
+	}
 }
 
 /* =========================================================================
@@ -2973,6 +3365,30 @@ td.ant-cost-us .ant-ic {
 	font-size: 21px;
 }
 
+/*
+ * A group card's picture, across the top.
+ *
+ * A fixed height rather than a ratio: these are whatever the editor uploaded -
+ * a square logo, a 16:9 screen grab - and letting each keep its own height
+ * leaves the two columns of cards permanently out of step. One height plus
+ * object-fit means six unrelated pictures still read as one set.
+ *
+ * The card's padding is cancelled so the picture reaches the card's edges and
+ * takes its top corners, rather than sitting inside as a pasted-in frame.
+ */
+.ant-group-shot {
+	display: block;
+	width: calc(100% + 2 * clamp(24px, 2.6vw, 32px));
+	height: 172px;
+	margin: calc(-1 * clamp(24px, 2.6vw, 32px)) 0 clamp(20px, 2vw, 26px);
+	margin-inline-start: calc(-1 * clamp(24px, 2.6vw, 32px));
+	object-fit: cover;
+	border-bottom: 1px solid var(--ant-line);
+	border-start-start-radius: var(--ant-r-lg);
+	border-start-end-radius: var(--ant-r-lg);
+	background: var(--ant-tint);
+}
+
 .ant-docs-index ul {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -3005,6 +3421,24 @@ td.ant-cost-us .ant-ic {
 /* =========================================================================
  * 12. Responsive
  * ====================================================================== */
+
+/*
+ * The menu builds itself from the published pages, and the two audience pages
+ * took it from six items to eight. Eight fit at the full measure and run into
+ * the language switch on a laptop, so between the burger and the wide layout
+ * the row is tightened rather than anything being dropped - every one of those
+ * links is somebody's way in.
+ */
+@media (max-width: 1240px) {
+	.ant-header-inner {
+		gap: 14px;
+	}
+
+	.ant-menu a {
+		padding: 9px 10px;
+		font-size: 14.5px;
+	}
+}
 
 @media (max-width: 1080px) {
 	.ant-hero-grid,
@@ -3056,7 +3490,8 @@ td.ant-cost-us .ant-ic {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 
-	.ant-grid--3 {
+	.ant-grid--3,
+	.ant-grid--4 {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 
@@ -3127,6 +3562,7 @@ td.ant-cost-us .ant-ic {
 
 	.ant-grid--2,
 	.ant-grid--3,
+	.ant-grid--4,
 	.ant-plans--2,
 	.ant-plans--3,
 	.ant-plans--4 {
@@ -3297,6 +3733,46 @@ td.ant-cost-us .ant-ic {
 .ant-langs--footer {
 	background: none;
 	border-color: var(--ant-line);
+}
+
+/*
+ * A language that is written but not switched on. Only ever rendered for
+ * somebody who can switch it on, so it is a working note rather than a state
+ * a reader is being shown - dashed, because dashed reads as provisional.
+ */
+.ant-langs .ant-lang.is-draft {
+	border: 1px dashed rgba(var(--ant-accent-rgb), .5);
+	opacity: .75;
+}
+
+.ant-langs .ant-lang.is-draft.is-current {
+	opacity: 1;
+}
+
+/* The strip that says this page is not the one a visitor gets. */
+.ant-preview-bar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 4px 10px;
+	padding: 9px 18px;
+	background: #7c2d12;
+	color: #fff;
+	font-size: 13.5px;
+	line-height: 1.4;
+	text-align: center;
+}
+
+.ant-preview-bar strong {
+	font-weight: 800;
+}
+
+.ant-preview-bar a {
+	color: #fff;
+	font-weight: 700;
+	text-decoration: underline;
+	text-underline-offset: 3px;
 }
 
 /* =========================================================================
@@ -4028,5 +4504,334 @@ td.ant-cost-us .ant-ic {
 	.ant-footer-base .ant-footer-legal {
 		text-align: center;
 		width: 100%;
+	}
+}
+
+/* =========================================================================
+ * 20. The two audiences
+ * ====================================================================== */
+
+/*
+ * Antradus is one product sold to two people who share almost no problem: one
+ * has a content calendar to fill, the other has a back catalogue nobody has
+ * written up. Everything in this section exists to let a visitor say which one
+ * they are as early as possible and then read a page that only talks to them.
+ *
+ * Three pieces, in the order a reader meets them: the chooser (two links, in
+ * the hero and again under the pricing cards), the fork (two full cards on the
+ * home page), and the furniture of the audience pages themselves.
+ */
+
+/* ---- the chooser ---- */
+
+.ant-paths {
+	margin-top: 26px;
+}
+
+.ant-paths-label {
+	margin: 0 0 10px;
+	color: var(--ant-ink-3);
+	font-size: 13.5px;
+	font-weight: 700;
+	letter-spacing: .04em;
+}
+
+.ant-paths-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.ant-paths-list li {
+	margin: 0;
+	list-style: none;
+}
+
+.ant-path {
+	display: inline-flex;
+	align-items: center;
+	gap: 12px;
+	padding: 11px 16px;
+	background: rgba(255, 255, 255, .74);
+	border: 1px solid var(--ant-line);
+	border-radius: 999px;
+	color: var(--ant-ink);
+	transition: border-color var(--ant-t), background var(--ant-t), transform var(--ant-t), box-shadow var(--ant-t);
+}
+
+.ant-path:hover {
+	background: var(--ant-white);
+	border-color: rgba(var(--ant-accent-rgb), .38);
+	color: var(--ant-ink);
+	transform: translateY(-2px);
+	box-shadow: var(--ant-sh-2);
+}
+
+.ant-path-ic {
+	display: grid;
+	place-items: center;
+	flex: 0 0 34px;
+	width: 34px;
+	height: 34px;
+	background: rgba(var(--ant-accent-rgb), .10);
+	border-radius: 50%;
+	color: var(--ant-accent);
+}
+
+.ant-path-copy b {
+	display: block;
+	font-size: 15px;
+	font-weight: 700;
+	line-height: 1.3;
+}
+
+.ant-path-copy span {
+	display: block;
+	margin-top: 1px;
+	color: var(--ant-ink-3);
+	font-size: 13px;
+	line-height: 1.4;
+}
+
+/*
+ * The arrow is the only physical direction in the block, and it means
+ * "onward" rather than "right" - rtl.css turns it around.
+ */
+.ant-path-go {
+	color: var(--ant-accent);
+	font-size: 17px;
+	font-weight: 700;
+	transition: transform var(--ant-t);
+}
+
+.ant-path:hover .ant-path-go {
+	transform: translateX(3px);
+}
+
+.ant-paths--center {
+	margin-top: 40px;
+	text-align: center;
+}
+
+.ant-paths--center .ant-paths-list {
+	justify-content: center;
+}
+
+/* ---- the fork on the home page ---- */
+
+.ant-forks {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: clamp(18px, 2vw, 26px);
+	align-items: stretch;
+}
+
+/*
+ * Both cards are the same height whatever the two lists weigh, and the list
+ * takes the slack - so the two buttons sit on one line and neither audience
+ * gets the card that looks like the afterthought.
+ */
+.ant-fork {
+	display: flex;
+	flex-direction: column;
+	padding: clamp(26px, 2.8vw, 38px);
+	border-radius: var(--ant-r-lg);
+	transition: transform var(--ant-t), box-shadow var(--ant-t);
+}
+
+.ant-fork:hover {
+	transform: translateY(-4px);
+	box-shadow: var(--ant-sh-3);
+}
+
+.ant-fork-head {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+}
+
+.ant-fork-plan {
+	padding: 6px 13px;
+	background: rgba(var(--ant-accent-rgb), .09);
+	border-radius: 999px;
+	color: var(--ant-accent-deep);
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: .02em;
+}
+
+.ant-fork-title {
+	margin: 20px 0 0;
+	font-size: clamp(22px, 2vw, 28px);
+}
+
+.ant-fork-text {
+	margin: 10px 0 0;
+	color: var(--ant-ink-2);
+	font-size: 16px;
+	line-height: 1.6;
+}
+
+.ant-fork-list {
+	flex: 1 1 auto;
+	margin-top: 20px;
+	padding-top: 18px;
+	border-top: 1px solid var(--ant-line-2);
+}
+
+.ant-fork-price {
+	margin: 20px 0 0;
+	color: var(--ant-ink);
+	font-size: 15px;
+	font-weight: 700;
+}
+
+.ant-fork-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px 18px;
+	margin-top: 18px;
+}
+
+.ant-fork-alt {
+	font-size: 14.5px;
+	font-weight: 700;
+}
+
+.ant-fork-alt span {
+	display: inline-block;
+	margin-inline-start: 4px;
+	transition: transform var(--ant-t);
+}
+
+.ant-fork-alt:hover span {
+	transform: translateX(3px);
+}
+
+.ant-fork-note {
+	margin-top: 26px;
+}
+
+/* ---- the audience pages ---- */
+
+.ant-aud-hero {
+	padding-top: clamp(44px, 5vw, 76px);
+}
+
+/*
+ * "This is you if" - a short panel of ticks, wide rather than tall, so it
+ * reads as a checklist somebody scans rather than another feature list.
+ */
+.ant-signals {
+	padding: clamp(24px, 2.6vw, 34px) clamp(24px, 3vw, 40px);
+	border-radius: var(--ant-r-lg);
+}
+
+.ant-signals-title {
+	margin: 0 0 16px;
+	color: var(--ant-accent);
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: .14em;
+	text-transform: uppercase;
+}
+
+.ant-signals-list {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 10px clamp(20px, 3vw, 44px);
+}
+
+/* The numbered flow reuses the step cards; it only needs the list reset. */
+.ant-flow {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	counter-reset: none;
+}
+
+.ant-flow > li {
+	margin: 0;
+	list-style: none;
+}
+
+/*
+ * The trends band's numbered strip sits under its own two-column block rather
+ * than starting a section, so it needs the gap the section head would have
+ * given it.
+ */
+.ant-trend-steps {
+	margin-top: clamp(34px, 4vw, 56px);
+}
+
+.ant-trend-note {
+	max-width: 62ch;
+	margin-inline: auto;
+	margin-top: 24px;
+}
+
+.ant-aud-plan-note {
+	max-width: 62ch;
+	margin-inline: auto;
+	margin-top: 26px;
+}
+
+/*
+ * The way back out. A row, not a card stack: it is an aside, and giving it the
+ * weight of a section would make a reader think they had reached the wrong
+ * page rather than the end of the right one.
+ */
+.ant-switchcard {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 18px 30px;
+	padding: clamp(24px, 2.8vw, 36px) clamp(26px, 3vw, 44px);
+	border-radius: var(--ant-r-lg);
+}
+
+.ant-switchcard-copy h2 {
+	font-size: clamp(21px, 2vw, 27px);
+}
+
+.ant-switchcard-copy p {
+	margin: 8px 0 0;
+	max-width: 62ch;
+	color: var(--ant-ink-2);
+	font-size: 15.5px;
+	line-height: 1.6;
+}
+
+@media (max-width: 960px) {
+	.ant-forks {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+@media (max-width: 760px) {
+	.ant-signals-list {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.ant-switchcard {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+}
+
+@media (max-width: 560px) {
+	/* Two pills side by side become two rows rather than two half-words. */
+	.ant-paths-list {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.ant-path {
+		justify-content: flex-start;
 	}
 }

@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 
 $antradus_nav      = antradus_nav_items();
 $antradus_has_menu = has_nav_menu( 'primary' );
-$antradus_logo     = antradus_image_url( antradus_opt( 'brand_logo', '' ), 'medium' );
+$antradus_logo     = antradus_image_full_url( antradus_opt( 'brand_logo', '' ) );
 $antradus_name     = antradus_opt( 'brand_name', get_bloginfo( 'name' ) );
 ?>
 <!doctype html>

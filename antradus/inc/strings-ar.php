@@ -40,6 +40,10 @@ function antradus_strings_ar() {
 
 		/* ---- navigation and chrome ---- */
 		'Home'                     => 'الرئيسية',
+		'Publishers'               => 'أصحاب المواقع',
+		'Studios'                  => 'أصحاب البودكاست',
+		'For publishers'           => 'لأصحاب المواقع',
+		'For studios'              => 'لأصحاب البودكاست',
 		'Features'                 => 'المزايا',
 		'Plugin features'          => 'مزايا الإضافة',
 		'Pricing'                  => 'الأسعار',
@@ -124,6 +128,19 @@ function antradus_strings_ar() {
 		/* ---- sign-in messages ---- */
 		'Those details were not right. Please try again.' => 'بيانات الدخول غير صحيحة. حاول مرة أخرى.',
 		'Too many failed sign-in attempts from this address. Try again in about fifteen minutes.' => 'تجاوزت عدد محاولات الدخول المسموح بها. حاول مرة أخرى بعد خمس عشرة دقيقة.',
+
+		/*
+		 * ---- previewing a language that is not published ----
+		 *
+		 * Only ever printed for somebody who can publish it, so nobody else
+		 * ever reads these. They are here anyway: an Arabic page with an
+		 * English strip across the top is exactly the seam the strip is
+		 * warning about.
+		 */
+		'%s is switched off.'      => 'لغة %s غير منشورة بعد.',
+		'You are previewing it. Visitors are sent to the English page.' => 'أنت تعاينها وحدك، والزوّار يُحوَّلون إلى الصفحة الإنجليزية.',
+		'Turn it on'               => 'انشرها الآن',
+		'Not published - only you can see this' => 'غير منشورة، ولا يراها أحد سواك',
 	);
 
 	return $map;

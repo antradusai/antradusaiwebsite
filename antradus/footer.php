@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 
 $antradus_cta_title = antradus_opt( 'footer_cta_title', '' );
 $antradus_cta_url   = antradus_link( antradus_opt( 'footer_cta_url', '' ) );
-$antradus_logo      = antradus_image_url( antradus_opt( 'brand_logo', '' ), 'medium' );
+$antradus_logo      = antradus_image_full_url( antradus_opt( 'brand_logo', '' ) );
 $antradus_cols      = antradus_rows( 'footer_cols' );
 $antradus_social    = antradus_link_list( antradus_opt( 'footer_social', '' ) );
 $antradus_trust     = antradus_lines( antradus_opt( 'footer_trust', '' ) );

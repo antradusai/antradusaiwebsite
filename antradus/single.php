@@ -58,7 +58,7 @@ while ( have_posts() ) :
 
 						<?php if ( has_post_thumbnail() ) : ?>
 							<div class="ant-paper-hero">
-								<?php the_post_thumbnail( 'large', array( 'alt' => '' ) ); ?>
+								<?php the_post_thumbnail( 'full', array( 'alt' => '' ) ); ?>
 							</div>
 						<?php endif; ?>
 
@@ -190,7 +190,7 @@ while ( have_posts() ) :
 										<?php
 										if ( has_post_thumbnail() ) {
 											the_post_thumbnail(
-												'medium',
+												'full',
 												array(
 													'loading' => 'lazy',
 													'alt'     => '',

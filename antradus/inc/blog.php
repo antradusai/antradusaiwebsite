@@ -215,7 +215,7 @@ function antradus_post_card() {
 			<?php
 			if ( has_post_thumbnail( $post_id ) ) {
 				the_post_thumbnail(
-					'medium_large',
+					'full',
 					array(
 						'loading' => 'lazy',
 						'alt'     => '',
