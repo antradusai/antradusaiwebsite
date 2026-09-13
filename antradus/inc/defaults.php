@@ -1422,7 +1422,7 @@ function antradus_defaults_transcript() {
 		'tx_app_name'      => 'Transcript for Spotify & YouTube – Speaker Names',
 		'tx_eyebrow'       => 'Chrome extension for Spotify and YouTube',
 		'tx_title'         => 'Spotify podcast transcripts, *in one click*',
-		'tx_sub'           => 'Get the transcript of a Spotify episode or a YouTube video without leaving the page, and export it to TXT, Markdown, Word, SRT or VTT. On a paid plan, AI also guesses who is speaking - and every name is yours to check before you export.',
+		'tx_sub'           => 'Get the transcript of a Spotify episode or a YouTube video without leaving the page, and export it to TXT, Markdown, Word, SRT or VTT. On a paid plan, AI also guesses who is speaking on Spotify episodes - and every name is yours to check before you export.',
 		'tx_cta1'          => 'Add to Chrome - free',
 		'tx_cta1_url'      => $store,
 		'tx_cta2'          => 'See the plans',
@@ -1444,7 +1444,7 @@ function antradus_defaults_transcript() {
 			),
 			array(
 				'title' => 'Check who is speaking',
-				'text'  => 'On Starter and Creator, switch on Guess who is speaking. Each voice comes with a line it says and a timestamp that plays it. Rename or merge anyone.',
+				'text'  => 'On Starter and Creator, switch on Guess who is speaking for a Spotify episode. Each voice comes with a line it says and a timestamp that plays it. YouTube videos skip this step: you get the transcript only.',
 			),
 			array(
 				'title' => 'Export or copy',
@@ -1453,9 +1453,9 @@ function antradus_defaults_transcript() {
 		),
 		'tx_steps_note'    => 'No audio upload, no waiting for a transcription, no pasting links into another website.',
 
-		'tx_why_eyebrow'   => 'On Starter and Creator',
+		'tx_why_eyebrow'   => 'Spotify episodes, on Starter and Creator',
 		'tx_why_title'     => 'Who said it? *Spotify does not say.*',
-		'tx_why_sub'       => 'Spotify labels the voices in a transcript Speaker 1 and Speaker 2, and YouTube captions do not separate them at all. A transcript like that cannot be quoted, cited or handed to a client.',
+		'tx_why_sub'       => 'Spotify labels the voices in a transcript Speaker 1 and Speaker 2. A transcript like that cannot be quoted, cited or handed to a client. On Starter and Creator, one switch in the side panel - it starts off - puts names on them.',
 		'tx_why_points'    => array(
 			array(
 				'icon'  => 'users',
@@ -1478,7 +1478,7 @@ function antradus_defaults_transcript() {
 				'text'  => 'A voice the episode does not name is left blank for you to fill in, rather than given a guessed name.',
 			),
 		),
-		'tx_why_note'      => 'Guessing who is speaking is a switch in the side panel. It starts off, and it is available on Starter and Creator.',
+		'tx_why_note'      => 'Speaker names are for Spotify episodes only. For YouTube videos, you get the transcript without speaker names.',
 		'tx_why_image'     => '',
 
 		'tx_get_eyebrow'   => 'What you get',
@@ -1513,7 +1513,7 @@ function antradus_defaults_transcript() {
 			array(
 				'icon'  => 'play',
 				'title' => 'YouTube too',
-				'text'  => 'Any video with captions, with timestamps and every export. On paid plans, AI works out the turns and the names from the words alone.',
+				'text'  => 'Any video with captions: the transcript with timestamps and every export. No speaker names - those are for Spotify episodes only.',
 			),
 		),
 
@@ -1545,7 +1545,7 @@ function antradus_defaults_transcript() {
 
 		'tx_plans_eyebrow' => 'Pricing',
 		'tx_plans_title'   => 'Start with 3 free. *Upgrade when it pays.*',
-		'tx_plans_sub'     => 'Every plan has every export format. The paid plans add AI that guesses who is speaking, more transcripts and longer episodes.',
+		'tx_plans_sub'     => 'Every plan has every export format. The paid plans add AI that names the speakers on Spotify episodes, more transcripts and longer episodes.',
 		'tx_plans'         => array(
 			array(
 				'name'     => 'Free',
@@ -1578,7 +1578,7 @@ function antradus_defaults_transcript() {
 				'billed'   => 'Or $99 a year',
 				'chip'     => 'Episodes up to 2 hours',
 				'intro'    => 'Everything in Free, plus',
-				'features' => "50 transcripts a month\nAI guesses who is speaking, on Spotify and YouTube\nSpeaker names in your SRT and VTT subtitles",
+				'features' => "50 transcripts a month\nAI guesses who is speaking on Spotify episodes\nSpeaker names in your SRT and VTT subtitles",
 				'cta'      => 'Install, then upgrade',
 				'cta_url'  => $store,
 				'note'     => '',
@@ -1634,11 +1634,11 @@ function antradus_defaults_transcript() {
 			),
 			array(
 				'q' => 'Does it work with YouTube?',
-				'a' => 'Yes, on videos with captions, with timestamps and every export. YouTube captions say nothing about who is speaking, so on paid plans AI works out the turns and the names from the words alone - check them before you publish.',
+				'a' => 'Yes, on videos with captions: you get the transcript with timestamps and every export, without speaker names. Speaker guessing is for Spotify episodes only, because YouTube captions say nothing about who is speaking.',
 			),
 			array(
 				'q' => 'How accurate are the speaker names?',
-				'a' => 'They are AI guesses, and the side panel labels them that way. On Spotify, where the voices are already separated, names are usually right when the show notes or the introductions mention the people. On YouTube it is a best effort. Every name comes with a line and a timestamp so you can check it.',
+				'a' => 'They are AI guesses, and the side panel labels them that way. Names are for Spotify episodes only: the voices are already separated there, and names are usually right when the show notes or the introductions mention the people. Every name comes with a line and a timestamp so you can check it.',
 			),
 			array(
 				'q' => 'What counts as one transcript?',
@@ -1654,7 +1654,7 @@ function antradus_defaults_transcript() {
 			),
 			array(
 				'q' => 'What happens to my data?',
-				'a' => 'Transcripts are read in your own browser. When AI guesses who is speaking, the text it needs is sent to our service and is not kept afterwards; the names it finds are kept for 30 days so the same episode is not processed twice. Audio is never downloaded. The privacy policy has the details.',
+				'a' => 'Transcripts are read in your own browser. When AI names the speakers of a Spotify episode, the text it needs is sent to our service and is not kept afterwards; the names it finds are kept for 30 days so the same episode is not processed twice. A YouTube transcript is never sent, and audio is never downloaded. The privacy policy has the details.',
 			),
 			array(
 				'q' => 'How do I upgrade or cancel?',
@@ -1755,7 +1755,7 @@ function antradus_defaults_seo() {
 
 		'seo_transcript_focus' => 'spotify podcast transcript',
 		'seo_transcript_title' => 'Spotify Podcast Transcript in One Click | Chrome Extension',
-		'seo_transcript_desc'  => 'Get a Spotify podcast transcript in one click in Chrome, then export it to Word, Markdown, SRT or VTT. YouTube too. Paid plans add AI speaker names.',
+		'seo_transcript_desc'  => 'Get a Spotify podcast transcript in one click in Chrome, then export it to Word, Markdown, SRT or VTT. YouTube too. Paid plans name the Spotify speakers.',
 	);
 }
 

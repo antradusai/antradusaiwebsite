@@ -194,7 +194,8 @@ $antradus_title  = '' !== $antradus_title ? $antradus_title : get_the_title();
 					<?php endif; ?>
 
 					<?php if ( antradus_opt( 'tx_why_note', '' ) ) : ?>
-						<p class="ant-note ant-tx-why-note"><?php echo esc_html( antradus_opt( 'tx_why_note', '' ) ); ?></p>
+						<?php // Bold, because it is the line that says what YouTube does not get. ?>
+						<p class="ant-note ant-tx-why-note"><strong><?php echo esc_html( antradus_opt( 'tx_why_note', '' ) ); ?></strong></p>
 					<?php endif; ?>
 				</div>
 

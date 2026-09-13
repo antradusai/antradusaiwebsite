@@ -394,6 +394,10 @@ Extractor**, in both languages, and its own row on the SEO tab.
   price changed there changes here. A `BreadcrumbList` is added only on a site
   with no SEO plugin, because Rank Math and Yoast print their own. No rating is
   printed: there are no reviews on this site to rate it with.
+- **Speaker names are Spotify only.** Since 2.13.1 every line on the tab says
+  that YouTube videos get the transcript without speaker names, and the note
+  under the speaker section prints in bold. A site that saved the Transcript
+  Extractor tab before 2.13.1 keeps its own words, so change them there too.
 - **The facts are the extension's.** Three free transcripts, 50 and 150 a
   month, 2 and 4 hours, the prices and the 30-day free re-export all come from
   the extension's backend and its Freemius plans. When they change, change the

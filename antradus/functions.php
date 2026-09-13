@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ANTRADUS_VERSION', '2.13.0' );
+define( 'ANTRADUS_VERSION', '2.13.1' );
 define( 'ANTRADUS_OPTION', 'antradus_theme_options' );
 
 // How many pictures one slider slot will keep. A hero that needs a tenth slide
