@@ -510,11 +510,11 @@ function antradus_seo_transcript_schema() {
 	$graphs = array( $app );
 
 	/*
-	 * Rank Math already prints a BreadcrumbList in its own graph, and two of
-	 * them on one page is two answers to the same question. Ours is only for a
-	 * site running without it.
+	 * Rank Math, Yoast and the rest each print a BreadcrumbList in their own
+	 * graph, and two of them on one page is two answers to the same question.
+	 * Ours is only for a site running none of them.
 	 */
-	if ( antradus_seo_rank_math_active() ) {
+	if ( '' !== antradus_seo_plugin() ) {
 		antradus_seo_print_json_ld( $graphs );
 		return;
 	}

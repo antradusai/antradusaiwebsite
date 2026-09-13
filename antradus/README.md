@@ -390,8 +390,9 @@ Extractor**, in both languages, and its own row on the SEO tab.
   and after the names. Both are built from the theme's colours. Add a
   screenshot to either slot and it takes the drawing's place.
 - **Structured data.** The page prints `SoftwareApplication` - the product
-  name, the install link and one offer per plan card - and a `BreadcrumbList`,
-  both built from the tab, so a price changed there changes here. No rating is
+  name, the install link and one offer per plan card - built from the tab, so a
+  price changed there changes here. A `BreadcrumbList` is added only on a site
+  with no SEO plugin, because Rank Math and Yoast print their own. No rating is
   printed: there are no reviews on this site to rate it with.
 - **The facts are the extension's.** Three free transcripts, 50 and 150 a
   month, 2 and 4 hours, the prices and the 30-day free re-export all come from
